@@ -1,0 +1,17 @@
+html, body {
+    /*height: 95%;*/
+}
+
+body {
+    -webkit-user-select: text;
+}
+
+textarea#ime {
+    color:white;
+    opacity:0.00;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width: 0px;
+    height: 0px;
+}

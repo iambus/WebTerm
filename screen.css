@@ -1,0 +1,102 @@
+#screen {
+    font-family: monospace;
+    white-space: pre;
+
+    background-color: black;
+    color: silver;
+    /*height: 100%;*/
+    min-height: 360px;
+    min-width: 560px;
+    line-height: 1;
+    box-sizing: border-box;
+}
+#screen div {
+    display: inline;
+}
+.cursor.highlight {
+    color: black;
+    background-color: silver;
+}
+.underline {
+    text-decoration: underline;
+}
+.blink.hidden {
+    opacity:0.00;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.c30 {color: black; }
+.c31 {color: maroon; }
+.c32 {color: green; }
+.c33 {color: olive; }
+.c34 {color: navy; }
+.c35 {color: purple; }
+.c36 {color: teal; }
+.c37 {color: silver; }
+.c30.c1 {color: gray; }
+.c31.c1 {color: red; }
+.c32.c1 {color: lime; }
+.c33.c1 {color: yellow; }
+.c34.c1 {color: blue; }
+.c35.c1 {color: fuchsia; }
+.c36.c1 {color: aqua; }
+.c37.c1 {color: white; }
+.c40 {background-color: black; }
+.c41 {background-color: maroon; }
+.c42 {background-color: green; }
+.c43 {background-color: olive; }
+.c44 {background-color: navy; }
+.c45 {background-color: purple; }
+.c46 {background-color: teal; }
+.c47 {background-color: silver; }
+/*.c48 {background-color: gray; }*/
+
+/* http://www.newsmth.net/static/www2-ansi.css */
+/*font.ff0 {color: black; }*/
+/*font.ff1 {color: maroon; }*/
+/*font.ff2 {color: green; }*/
+/*font.ff3 {color: olive; }*/
+/*font.ff4 {color: navy; }*/
+/*font.ff5 {color: purple; }*/
+/*font.ff6 {color: teal; }*/
+/*font.ff7 {color: silver; }*/
+/*font.ff8 {color: gray; }*/
+/*font.ff9 {color: red; }*/
+/*font.ff10 {color: lime; }*/
+/*font.ff11 {color: yellow; }*/
+/*font.ff12 {color: blue; }*/
+/*font.ff13 {color: fuchsia; }*/
+/*font.ff14 {color: aqua; }*/
+/*font.ff15 {color: white; }*/
+/*font.fb0 {background-color: black; }*/
+/*font.fb1 {background-color: maroon; }*/
+/*font.fb2 {background-color: green; }*/
+/*font.fb3 {background-color: olive; }*/
+/*font.fb4 {background-color: navy; }*/
+/*font.fb5 {background-color: purple; }*/
+/*font.fb6 {background-color: teal; }*/
+/*font.fb7 {background-color: silver; }*/
+/*font.fb8 {background-color: gray; }*/
+
+/* http://bbs.nju.edu.cn/images/bbs.css?Net_3 */
+/*FONT.c30 {color: #000000;}*/
+/*FONT.c31 {color: #e00000;}*/
+/*FONT.c32 {color: #008000;}*/
+/*FONT.c33 {color: #808000;}*/
+/*FONT.c34 {color: #0000ff;}*/
+/*FONT.c35 {color: #d000d0;}*/
+/*FONT.c36 {color: #33a0a0;}*/
+/*FONT.c37 {color: #000000;}*/
+
+/*FONT.c40 {background-color: #ffffff;}*/
+/*FONT.c41 {background-color: #FDE6E6;}*/
+/*FONT.c42 {background-color: #E7FAE7;}*/
+/*FONT.c43 {background-color: #FAFADC;}*/
+/*FONT.c44 {background-color: #E3EEFA;}*/
+/*FONT.c45 {background-color: #FAE7FA;}*/
+/*FONT.c46 {background-color: #E0F6F6;}*/
+/*FONT.c47 {background-color: #ffffff;}*/
+

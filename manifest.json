@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+
+	"name": "Web Term",
+	"description": "A term",
+	"version": "0.0.1",
+
+	"app": {
+		"background": {
+			"scripts": ["launch.js"]
+		}
+	},
+
+	"permissions": [
+		{
+			"socket": [
+				"tcp-connect:*:*"
+			]
+		}
+	]
+}
