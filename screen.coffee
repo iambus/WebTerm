@@ -277,7 +277,8 @@ on_keyboard = (callback) ->
 		key = keymap.event_to_virtual_key event
 		if event.ctrlKey or event.altKey or event.metaKey
 			callback key: key
-		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc']
+		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end',
+		                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
 			callback key: key
 
 	$(selector).on 'keypress', (event) ->

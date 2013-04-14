@@ -124,6 +124,18 @@ key_to_ascii_table =
 	down: '\x1b\x5b\x42'
 	right: '\x1b\x5b\x43'
 	left: '\x1b\x5b\x44'
+	home: '\x1b[1~'
+	end: '\x1b[4~'
+	f1: '\x1b[11~'
+	f2: '\x1b[12~'
+	f3: '\x1b[13~'
+	f4: '\x1b[14~'
+	f6: '\x1b[17~'
+	f7: '\x1b[18~'
+	f8: '\x1b[19~'
+	f9: '\x1b[20~'
+	f10: '\x1b[21~'
+	f11: '\x1b[22~'
 
 key_to_ascii_table['ctrl-'+String.fromCharCode(x)] = String.fromCharCode(x-96) for x in [97..122]
 
