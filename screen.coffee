@@ -319,11 +319,11 @@ class Events
 		# mouse click events
 		@clickables = []
 		mouse_click_at = null
-		mouse_click_when = new Date().getTime()
+		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
 			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
-				now = new Date().getTime()
+				now = new Date()
 				if now - mouse_click_when < 500 and $(e.target).closest(@clickables).length > 0
 					# double clicking on a clickable, let's prevent annoying selections
 					e.preventDefault()
@@ -338,12 +338,18 @@ class Events
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
 
+		# mouse wheels
 		$(@screen.selector).on 'mousewheel', (e) =>
 			delta = e.originalEvent.wheelDelta
 			if delta > 0
 				@send_key "up"
 			else if delta < 0
 				@send_key "down"
+
+		# mouse gestures!
+		$(@screen.selector).gesture (e) =>
+			if e.direction?
+				@send_key e.direction
 
 	put_key: (keys...) ->
 #		console.log 'send key', keys
