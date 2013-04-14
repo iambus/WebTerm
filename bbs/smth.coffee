@@ -251,6 +251,13 @@ class BoardToolbar extends Feature
 				2, 60, 2, 70
 			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'h',
 				2, 72, 2, 78
+		else if toolbar == '[十大模式]  离开[←,e] 记录位置并离开[q] 阅读[→,r] 同主题[^X,p] 同作者[^U,^H]  '
+			map_keys_on_line screen, 2,
+				'离开[←,e]': 'e'
+				'记录位置并离开[q]': 'q'
+				'阅读[→,r]': 'r'
+				'同主题[^X,p]': 'p' # ctrl-x == p?
+				'同作者[^U,^H]': 'ctrl+u' # ctrl-u == ctrl-p?
 
 
 class BoardTopVote extends Feature
@@ -351,6 +358,13 @@ class ArticleUser extends Feature
 				1, left, 1, right
 
 
+map_key_on_line = (screen, row, text, key) ->
+	line = screen.view.text.row(row)
+	area = find_line_area line, text
+	if area
+		screen.area.define_area class: 'clickable', key: key,
+			row, area[0], row, area[1]
+
 map_keys_on_line = (screen, row, bindings) ->
 	line = screen.view.text.row(row)
 	for text, key of bindings
@@ -391,13 +405,13 @@ class ArticleBottom extends Feature
 				'结束 Q,←': "q"
 				'上一封 ↑': "up"
 				'下一封 <Space>,↓': "enter"
-				'主题阅读 ^X或p': "p"
+				'主题阅读 ^X或p': "p" # ctrl-x == p?
 		else if line == '[通知模式] [阅读文章] 结束Q,| 上一篇 | 下一篇<空格>, | 同主题^x,p'
 			map_keys_on_line screen, row,
 				'结束 Q': "q"
 				'上一篇': "up"
 				'下一篇': "whitespace"
-				'主题阅读 ^X或p': "p"
+				'主题阅读 ^X或p': "p" # ctrl-x == p?
 		else if line == '[阅读精华区资料]  结束 Q,← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓'
 			map_keys_on_line screen, row,
 				'结束 Q,←': "q"
@@ -457,6 +471,76 @@ class BoardListToolbar extends Feature
 				'搜寻[/]': "/"
 				'切换[c]': "c"
 				'求助[h]': "h"
+
+##################################################
+# top 10
+##################################################
+
+class Top10 extends Feature
+	scan: (screen) ->
+		text = screen.view.text
+		head = text.head().trim()
+		foot = text.foot().trim()
+
+		scan_topics = (need_enter) ->
+			for i in [1..10]
+				r1 = 1 + i * 2
+				r2 = r1 + 1
+				s = text.row r1
+				a = text.row r2
+				m = s.match /^第\s+(\d+) 名 信区 : (\w+)/
+				if not m
+					# something is wrong
+					return
+				if i != parseInt m[1]
+					# something is wrong
+					return
+				board = m[2]
+				if a[2] == '◆'
+					screen.area.define_area class: 'clickable inner-clickable', key: 's',
+						r1, 17, r1, 17 + board.length - 1
+					screen.area.define_area class: 'clickable', key: 'enter',
+						r2, 1, r2, screen.width
+				else
+					k = i % 10
+					if need_enter
+						if i == 1
+							k = 'enter'
+						else
+							k = 'enter ' + k
+					screen.area.define_area class: 'clickable inner-clickable', key: k + ' s',
+						r1, 17, r1, 17 + board.length - 1
+					screen.area.define_area class: 'clickable', key: k + ' enter',
+						r2, 1, r2, screen.width
+
+		if head == '-----===== 本日十大热门话题 =====-----'
+			scan_topics()
+
+		else if /^-----===== 本日\d+区十大热门话题 =====-----$/.test head
+			m = foot.match /^(选择|查看)分区: (\S+) /
+			if not m
+				# something is wrong
+				return
+			pages = m[2].replace /\[.*\]/, ''
+			if m[1] == '查看'
+				scan_topics()
+				m = {}
+				for i in [0...pages.length]
+					n = pages.charAt i
+					m[n] = 'esc ' + n
+				map_keys_on_line screen, screen.height, m
+			else
+				scan_topics(true)
+				m = {}
+				for i in [0...pages.length]
+					n = pages.charAt i
+					m[n] = n
+				map_keys_on_line screen, screen.height, m
+
+		map_keys_on_line screen, screen.height,
+			'<TAB>阅读分区十大': 'tab'
+			'<H>查阅帮助信息': 'h'
+
 
 ##################################################
 # x list
@@ -599,6 +683,8 @@ is_option_input = (screen) ->
 		return
 	if screen.data.at(screen.height, 1).background
 		return
+	if screen.data.at(screen.height, 1).foreground
+		return
 	line = screen.view.text.foot().trim()
 	if not line
 		return
@@ -629,7 +715,7 @@ talk_menu_mode = featured_mode_by test_headline(/^聊天选单\s/), 'talk_menu',
 	MenuClick
 ]
 
-board_mode = featured_mode_by test_headline(/^(版主: |诚征版主中).* 讨论区 \[.+\]$/), 'board', [
+board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+)\s*\s\s(?:讨论区)? \[(\w+)\]$/), 'board', [
 	RowClick
 	BoardToolbar
 	BoardTopVote
@@ -656,8 +742,16 @@ board_list_mode = featured_mode_by test_headline(/^\[讨论区列表\]\s/), 'boa
 	BoardListToolbar
 	BottomUserClick
 ]
+
 board_group_mode = featured_mode_by test_headline(/^分类讨论区选单\s/), 'board_group', [
 	MenuClick
+]
+
+is_top10_mode = (screen) ->
+	/^\s*-----===== 本日(\d+区)?十大热门话题 =====-----\s*$/.test(screen.view.text.head()) and
+	/<H>查阅帮助信息/.test(screen.view.text.foot())
+top10_mode = featured_mode_by is_top10_mode, 'top10', [
+	Top10
 ]
 
 x_list_mode = featured_mode_by test_footline(/读取资料|修改档案/), 'x', [
@@ -708,6 +802,7 @@ modes = [
 	board_group_mode
 	anykey_mode
 	enterkey_mode
+	top10_mode
 	x_list_mode
 	system_mode
 	user_mode
