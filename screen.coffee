@@ -338,6 +338,13 @@ class Events
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
 
+		$(@screen.selector).on 'mousewheel', (e) =>
+			delta = e.originalEvent.wheelDelta
+			if delta > 0
+				@send_key "up"
+			else if delta < 0
+				@send_key "down"
+
 	put_key: (keys...) ->
 #		console.log 'send key', keys
 		for key in keys
