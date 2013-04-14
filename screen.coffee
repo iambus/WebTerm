@@ -303,16 +303,43 @@ escape_virtual_key_to_text = (key) ->
 		else
 			console.log 'ignore key binding:', key
 
+normalize_key = (k) ->
+	if k.length == 1
+		return k
+	m = k.match /^((?:(?:ctrl|shift|alt|meta)[+-])*)(.+)$/
+	a = []
+	if m[1].indexOf('ctrl') != -1
+		a.push 'ctrl'
+	if m[1].indexOf('shift') != -1
+		a.push 'shift'
+	if m[1].indexOf('alt') != -1
+		a.push 'alt'
+	if m[1].indexOf('meta') != -1
+		a.push 'meta'
+	a.push m[2]
+	return a.join '-'
+
+is_key = (x, y) ->
+	if x == y
+		return true
+	return normalize_key(x) == normalize_key(y)
+
 class Events
 	constructor: (@screen) ->
 		# keyboard buffer
 		@buffer = []
 
 		# keyboard events
+		@key_mappings = []
 		on_keyboard ({key, text}) =>
 			if key?
+				for [k, h] in @key_mappings
+					if is_key(k, key)
+						h(key)
+						return
 				@put_key key
 			if text?
+				console.log 'text key', text
 				@put_text text
 			@send()
 
@@ -350,6 +377,9 @@ class Events
 		$(@screen.selector).gesture (e) =>
 			if e.direction?
 				@send_key e.direction
+
+	on_key: (key, handler) ->
+		@key_mappings.push [key, handler]
 
 	put_key: (keys...) ->
 #		console.log 'send key', keys
