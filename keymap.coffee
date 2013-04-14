@@ -114,6 +114,8 @@ code_to_key[v] = k for k, v of key_to_code
 
 
 key_to_ascii_table =
+	space: ' '
+	whitespace: ' '
 	backspace: '\x08'
 	delete: '\x7f'
 #	enter: '\r\n'

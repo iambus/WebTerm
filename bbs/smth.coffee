@@ -43,13 +43,43 @@ global_mode = featured_mode 'global', [
 ]
 
 ##################################################
+# any key...
+##################################################
+
+class ClickWhitespace extends Feature
+	scan: (screen) ->
+		screen.area.define_area class:'click-whitespace', style:'cursor: pointer',
+			1, 1, screen.height, screen.width
+	render: (screen) ->
+		screen.events.on_click '.click-whitespace', -> screen.events.send_key 'whitespace'
+
+class ClickEnter extends Feature
+	scan: (screen) ->
+		screen.area.define_area class:'click-enter', style:'cursor: pointer',
+			1, 1, screen.height, screen.width
+	render: (screen) ->
+		screen.events.on_click '.click-whitespace', -> screen.events.send_key 'enter'
+
+class PressAnyKeyBottomBar extends Feature
+	scan: (screen) ->
+		line = screen.view.text.foot().trim()
+		m = {}
+		m[line] = 'whitespace'
+		map_keys_on_line screen, screen.height, m
+
+class PressEnterKeyBottomBar extends Feature
+	scan: (screen) ->
+		map_keys_on_line screen, screen.height,
+			'请按 ◆Enter◆ 继续': 'enter'
+
+##################################################
 # main menu
 ##################################################
 
 class MenuClick extends Feature
 	scan: (screen) ->
 		top = 10
-		bottom = screen.data.height
+		bottom = screen.height
 		columns = [9, 17, 43, 45]
 		view = screen.view.text
 		for column in columns
@@ -108,7 +138,7 @@ class GotoDefaultBoard extends Feature
 class RowClick extends Feature
 	scan: (screen) ->
 		top = 4
-		bottom = screen.data.height - 1
+		bottom = screen.height - 1
 		view = screen.view.text
 		current = null
 		for row in [top..bottom]
@@ -527,6 +557,19 @@ class LogoutMenu extends Feature
 # summary
 ##################################################
 
+is_option_input = (screen) ->
+option_input_mode = featured_mode_by is_option_input, 'option_input', [
+]
+
+anykey_mode = featured_mode_by test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.)\s*$/), 'anykey', [
+	ClickWhitespace
+	PressAnyKeyBottomBar
+]
+
+enterkey_mode = featured_mode_by test_footline(/^\s*请按 ◆Enter◆ 继续\s*$/), 'enterkey', [
+	ClickEnter
+	PressEnterKeyBottomBar
+]
 
 main_menu_mode = featured_mode_by test_headline(/^主选单\s/), 'main_menu', [
 	MenuClick
@@ -553,6 +596,7 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	ArticleUser
 	ArticleBottom
 	ArticleURL
+	ClickWhitespace
 ]
 
 favorite_mode = featured_mode_by test_headline(/^\[个人定制区\]\s/), 'favorite', [
@@ -602,13 +646,20 @@ logout_mode = featured_mode_by is_logout_mode, 'logout', [
 	LogoutMenu
 ]
 
+default_mode = featured_mode_by (-> true), 'default', [
+	ClickWhitespace
+]
+
 modes = [
+	option_input_mode
 	main_menu_mode
 	board_mode
 	read_mode
 	favorite_mode
 	board_list_mode
 	board_group_mode
+	anykey_mode
+	enterkey_mode
 	x_list_mode
 	system_mode
 	user_mode
@@ -616,6 +667,7 @@ modes = [
 	user_list_mode
 	talk_menu_mode
 	logout_mode
+	default_mode
 ]
 
 ##################################################
