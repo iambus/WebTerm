@@ -305,13 +305,38 @@ escape_virtual_key_to_text = (key) ->
 
 class Events
 	constructor: (@screen) ->
+		# keyboard buffer
 		@buffer = []
+
+		# keyboard events
 		on_keyboard ({key, text}) =>
 			if key?
 				@put_key key
 			if text?
 				@put_text text
 			@send()
+
+		# mouse click events
+		@clickables = []
+		mouse_click_at = null
+		mouse_click_when = new Date().getTime()
+		$(@screen.selector).mousedown (e) =>
+			if e.button == 0
+				mouse_click_at = [e.offsetX, e.offsetY]
+				now = new Date().getTime()
+				if now - mouse_click_when < 500 and $(e.target).closest(@clickables).length > 0
+					# double clicking on a clickable, let's prevent annoying selections
+					e.preventDefault()
+				mouse_click_when = now
+		$(@screen.selector).mouseup (e) =>
+			if e.button == 0
+				if mouse_click_at?
+					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
+						target = $(e.target).closest(@clickables)
+						if target.length > 0
+							target.data('handler')?(e.target) # XXX: when there are multiple targets?
+							window.getSelection().removeAllRanges() # clear annoying double clicking selections
+					mouse_click_at = null
 
 	put_key: (keys...) ->
 #		console.log 'send key', keys
@@ -342,9 +367,10 @@ class Events
 		@send()
 
 	on_click: (selector, handler) ->
-		$('#screen ' + selector).on 'click', (e) ->
-			handler e.target
-			e.stopPropagation()
+		elements = $(@screen.selector).find(selector)
+		$.merge @clickables, elements
+		elements.data 'handler', (e) ->
+			handler e
 
 	on_click_div: (selector, handler) ->
 		@on_click selector, (e) ->
@@ -366,6 +392,8 @@ class Events
 
 class Screen
 	constructor: (@width=80, @height=24) ->
+		@selector = '#screen'
+
 		@data = new ScreenData @width, @height
 		@cursor = new Cursor @data
 

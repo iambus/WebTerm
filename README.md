@@ -10,7 +10,7 @@ Prerequisites:
 
 Build:
 
-    cake depends
+    cake deps
     cake build
 
 ### To install:

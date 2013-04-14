@@ -5,13 +5,14 @@
 
 
 if module?.exports?
-#	$ = require('jQuery') # XXX: not working on windows?
-#	_ = require 'underscore'
-#	wcwidth
+	$ = require 'jQuery' # XXX: not working on windows?
+	_ = require 'underscore'
+	wcwidth = require 'wcwidth'
 	mode = require './mode'
 else
-#	$ = $
-#	_ = _
+	$ = this.$
+	_ = this._
+	wcwidth = this.wcwidth
 	mode = bbs.mode
 	if not mode
 		throw Error("bbs.mode is not loaded")
