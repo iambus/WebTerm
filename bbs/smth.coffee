@@ -43,6 +43,43 @@ global_mode = featured_mode 'global', [
 ]
 
 ##################################################
+# input options
+##################################################
+
+class Options extends Feature
+	scan: (screen) ->
+		foot = screen.view.text.foot().trim()
+		if foot == '选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)分区十大 6)百大版面 [1]:'
+			map_keys_on_line screen, screen.height,
+				'1)十大话题': 'enter'
+				'2)十大祝福': '2 enter'
+				'3)近期热点': '3 enter'
+				'4)系统热点': '4 enter'
+				'5)分区十大': '5 enter'
+				'6)百大版面': '6 enter'
+		else if foot == '选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)分区十大 6)治版方针 [1]:'
+			map_keys_on_line screen, screen.height,
+				'1)十大话题': 'enter'
+				'2)十大祝福': '2 enter'
+				'3)近期热点': '3 enter'
+				'4)系统热点': '4 enter'
+				'5)分区十大': '5 enter'
+				'6)治版方针': '6 enter'
+		else if foot == '8)本版精华区搜索 9)自删文章 A)积分变更 [1]:'
+			map_keys_on_line screen, screen.height - 1,
+				'1)文摘区': '1 enter'
+				'2)同主题': '2 enter'
+				'3)保留区': '3 enter'
+				'4)原作': '4 enter'
+				'5)同作者': '5 enter'
+				'6)标题关键字': '6 enter'
+				'7)超级文章选择': '7 enter'
+			map_keys_on_line screen, screen.height,
+				'8)本版精华区搜索': '8 enter'
+				'9)自删文章': '9 enter'
+				'A)积分变更': 'a enter'
+
+##################################################
 # any key...
 ##################################################
 
@@ -558,7 +595,18 @@ class LogoutMenu extends Feature
 ##################################################
 
 is_option_input = (screen) ->
+	if screen.cursor.row != screen.height
+		return
+	if screen.data.at(screen.height, 1).background
+		return
+	line = screen.view.text.foot().trim()
+	if not line
+		return
+	if line.indexOf(':') == -1
+		return
+	return true
 option_input_mode = featured_mode_by is_option_input, 'option_input', [
+	Options
 ]
 
 anykey_mode = featured_mode_by test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.)\s*$/), 'anykey', [
