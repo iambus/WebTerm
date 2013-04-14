@@ -113,15 +113,15 @@ class RowClick extends Feature
 		current = null
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^-?>\s+\d+/.test line
+			if /^-?>\s+(\d+|\[提示\])/.test line
 				current = row
 				break
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^-?>\s+\d+/.test line
+			if /^-?>\s+(\d+|\[提示\])/.test line
 				screen.area.define_area class:'clickable', key:'enter',
 					row, 1, row, view.width
-			else if /^\s+\d+/.test line
+			else if /^\s+(\d+|\[提示\])/.test line
 				if current < row
 					key = ('down' for [1..row-current]).join ' '
 				else
@@ -245,12 +245,15 @@ class BoardBMClick extends Feature
 class BoardInfoClick extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match(/\[(\w+)\]$/)
+		m = head.match(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
 		if m
-			board = m[1]
+			cn_board = m[1]
+			board = m[2]
 			key = "U [#{board}] enter"
-			screen.area.define_area class: 'clickable inner-clickable board-info', key: key,
-				1, 80-board.length-1, 1, 80
+			mappings = {}
+			mappings[cn_board] = key
+			mappings["[#{board}]"] = key
+			map_keys_on_line screen, 1, mappings
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
@@ -455,6 +458,30 @@ class UserBottomBar extends Feature
 				'↓': "down"
 				'切换模式 [f]': "f"
 				'求救[h]': "h"
+		else if line == '聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 说明档[l] 驻版[k] 短信[w] 其它键继续'
+			map_keys_on_line screen, screen.height,
+				'聊天[t]': "t"
+				'寄信[m]': "m"
+				'送讯息[s]': "s"
+				'加': "o"
+				'o': "o"
+				'减': "d"
+				'd': "d"
+				'说明档[l]': "l"
+				'驻版[k]': "k"
+				'短信[w]': "w"
+				'其它键继续': "whitespace"
+
+##################################################
+# board info
+##################################################
+
+class BoardInfoBottomBar extends Feature
+	scan: (screen) ->
+		line = screen.view.text.foot().trim()
+		if line == '添加到个人定制区[a]'
+			map_keys_on_line screen, screen.height,
+				'添加到个人定制区[a]': "a"
 
 ##################################################
 # user list
@@ -511,7 +538,7 @@ talk_menu_mode = featured_mode_by test_headline(/^聊天选单\s/), 'talk_menu',
 	MenuClick
 ]
 
-board_mode = featured_mode_by test_headline(/^版主: .* 讨论区 \[.+\]$/), 'board', [
+board_mode = featured_mode_by test_headline(/^(版主: |诚征版主中).* 讨论区 \[.+\]$/), 'board', [
 	RowClick
 	BoardToolbar
 	BoardTopVote
@@ -555,6 +582,10 @@ user_mode = featured_mode_by test_footline(/寄信/), 'user', [
 	UserBottomBar
 ]
 
+board_info_mode = featured_mode_by test_footline(/^\s*添加到个人定制区\[a\]\s*$/), 'board_info', [
+	BoardInfoBottomBar
+]
+
 user_list_mode = featured_mode_by test_headline(/^\[使用者列表\]/), 'user_list', [
 	RowClick
 	UserListToolbar
@@ -581,6 +612,7 @@ modes = [
 	x_list_mode
 	system_mode
 	user_mode
+	board_info_mode
 	user_list_mode
 	talk_menu_mode
 	logout_mode
