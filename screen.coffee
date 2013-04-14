@@ -153,13 +153,15 @@ class View
 
 class ScreenData extends Data
 	constructor: (width=80, height=24) ->
+		@default_new_cell_fn = => @empty_char()
+		@new_cell_fn = @default_new_cell_fn
 		super width, height
 
 	empty_char: ->
 		new Char ' '
 
 	new_cell: ->
-		@empty_char()
+		@new_cell_fn()
 
 	erase_all: ->
 		@clear()
@@ -604,13 +606,17 @@ class Screen
 		else if c == 'K'
 			n = opts?[0] ? '0'
 			if n == '0'
+				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line_to_end @cursor
 			else if n == '1'
+				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line_to_begin @cursor
 			else if n == '2'
+				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line  @cursor
 			else
 				throw Error("Not Implemented: ^#{opts.join ';'}J")
+			@data.new_cell_fn = @data.default_new_cell_fn
 			return
 		else if c == 'I'
 			console.log ("Not Implemented:  ^#{(opts?.join ';') ? ''}#{c}")
