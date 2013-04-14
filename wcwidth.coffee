@@ -71,32 +71,33 @@ wcwidth = (ucs) ->
 	ucs = ucs.charCodeAt 0
 	if bisearch(ucs)
 		return 0
-	return 1 +
-		((ucs in [0xa7, 0xa8]) ||
-		 (ucs in [0x0400..0x044f]) ||
-		 (0x1100 <= ucs <= 0x115f) || # Hangul Jamo init. consonants
-		 ucs == 0x2329 ||
-		 ucs == 0x232a ||
-		 0x2190 <= ucs <= 0x2193 || # XXX: any more?
-		 0x2460 <= ucs <= 0x2573 || # XXX: any more?
-		 0x2581 <= ucs <= 0x258f || # XXX: any more?
-		 0x25a0 <= ucs <= 0x25a1 || # XXX: any more?
-		 ucs == 0x25c6 || # XXX: any more?
-		 ucs == 0x25c7 || # XXX: any more?
-		 ucs == 0x25cc || # XXX: any more?
-		 ucs == 0x25ce || # XXX: any more?
-		 ucs == 0x25cf || # XXX: any more?
-		 0x25e2 <= ucs <= 0x25e5 || # XXX: any more?
-		 (0x2e80 <= ucs <= 0xa4cf &&
-		  ucs != 0x303f) || # CJK ... Yi
-		 0xac00  <= ucs <= 0xd7a3  || # Hangul Syllables
-		 0xf900  <= ucs <= 0xfaff  || # CJK Compatibility Ideographs
-		 0xfe10  <= ucs <= 0xfe19  || # Vertical forms
-		 0xfe30  <= ucs <= 0xfe6f  || # CJK Compatibility Forms
-		 0xff00  <= ucs <= 0xff60  || # Fullwidth Forms
-		 0xffe0  <= ucs <= 0xffe6  ||
-		 0x20000 <= ucs <= 0x2fffd ||
-		 0x30000 <= ucs <= 0x3fffd)
+	return 1 + (ucs > 0x7f)
+#		((ucs in [0xa7, 0xa8]) ||
+#		 (ucs in [0x0400..0x044f]) ||
+#		 (0x1100 <= ucs <= 0x115f) || # Hangul Jamo init. consonants
+#		 0x2010 <= ucs <= 0x2016 || # XXX: any more?
+#		 ucs == 0x2329 ||
+#		 ucs == 0x232a ||
+#		 0x2190 <= ucs <= 0x2193 || # XXX: any more?
+#		 0x2460 <= ucs <= 0x2573 || # XXX: any more?
+#		 0x2581 <= ucs <= 0x258f || # XXX: any more?
+#		 0x25a0 <= ucs <= 0x25a1 || # XXX: any more?
+#		 ucs == 0x25c6 || # XXX: any more?
+#		 ucs == 0x25c7 || # XXX: any more?
+#		 ucs == 0x25cc || # XXX: any more?
+#		 ucs == 0x25ce || # XXX: any more?
+#		 ucs == 0x25cf || # XXX: any more?
+#		 0x25e2 <= ucs <= 0x25e5 || # XXX: any more?
+#		 (0x2e80 <= ucs <= 0xa4cf &&
+#		  ucs != 0x303f) || # CJK ... Yi
+#		 0xac00  <= ucs <= 0xd7a3  || # Hangul Syllables
+#		 0xf900  <= ucs <= 0xfaff  || # CJK Compatibility Ideographs
+#		 0xfe10  <= ucs <= 0xfe19  || # Vertical forms
+#		 0xfe30  <= ucs <= 0xfe6f  || # CJK Compatibility Forms
+#		 0xff00  <= ucs <= 0xff60  || # Fullwidth Forms
+#		 0xffe0  <= ucs <= 0xffe6  ||
+#		 0x20000 <= ucs <= 0x2fffd ||
+#		 0x30000 <= ucs <= 0x3fffd)
 
 wswidth = (ucs) ->
 	len = 0
