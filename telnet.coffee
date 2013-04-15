@@ -35,6 +35,9 @@ class Connection
 		@on_data = null
 		@on_disconnected = null
 
+		@heartbeat = 300
+		@heartbeat_timer_id = null
+
 	connect: ->
 		socket.create 'tcp', {}, (info) =>
 			@socketId = info.socketId
@@ -55,6 +58,7 @@ class Connection
 				@on_disconnected?() # XXX: any other possible reason?
 				return
 			else if info.resultCode > 0
+				@reset_heartbeat()
 				@on_read(info.data)
 			socket.read @socketId, null, callback
 		socket.read @socketId, null, callback
@@ -73,11 +77,13 @@ class Connection
 		@out = []
 
 	write: (buffer) ->
-		socket.write @socketId, buffer, (info) ->
+		socket.write @socketId, buffer, (info) =>
 			if info.bytesWritten < 0
 				console.error 'write error', info
 				@on_disconnected?() # XXX: any other possible reason?
 				return
+			else
+				@reset_heartbeat()
 
 	write_data: (a) ->
 		@write a.buffer
@@ -201,6 +207,13 @@ class Connection
 				throw Error("Not Implemented: #{a[i]}")
 		return new Uint8Array(a).buffer
 
+
+	reset_heartbeat: ->
+		if @heartbeat_timer_id
+			clearTimeout @heartbeat_timer_id
+		if @heartbeat > 0
+			callback = => @write_data new Uint8Array(1)
+			@heartbeat_timer_id = setTimeout callback, @heartbeat * 1000
 
 
 exports =
