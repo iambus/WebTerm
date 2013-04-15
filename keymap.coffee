@@ -11,11 +11,11 @@ key_to_code_table =
 	"Ctrl":17
 	"Alt":18
 	"Pause/Break":19
-	"Caps Lock":20
+	"CapsLock":20
 	"Esc":27
 	"Space":32
-	"Page Up":33
-	"Page Down":34
+	"PageUp":33
+	"PageDown":34
 	"End":35
 	"Home":36
 	"Left":37
@@ -61,22 +61,22 @@ key_to_code_table =
 	"Y":89
 	"Z":90
 	"Windows":91
-	"Right Click":93
-	"Numpad 0":96
-	"Numpad 1":97
-	"Numpad 2":98
-	"Numpad 3":99
-	"Numpad 4":100
-	"Numpad 5":101
-	"Numpad 6":102
-	"Numpad 7":103
-	"Numpad 8":104
-	"Numpad 9":105
-	"Numpad *":106
-	"Numpad +":107
-	"Numpad -":109
-	"Numpad .":110
-	"Numpad /":111
+	"RightClick":93
+	"Numpad0":96
+	"Numpad1":97
+	"Numpad2":98
+	"Numpad3":99
+	"Numpad4":100
+	"Numpad5":101
+	"Numpad6":102
+	"Numpad7":103
+	"Numpad8":104
+	"Numpad9":105
+	"Numpad*":106
+	"Numpad+":107
+	"Numpad-":109
+	"Numpad.":110
+	"Numpad/":111
 	"F1":112
 	"F2":113
 	"F3":114
@@ -90,13 +90,12 @@ key_to_code_table =
 	"F11":122
 	"F12":123
 	"Num Lock":144
-	"Scroll Lock":145
-	"My Computer":182
-	"My Calculator":183
+	"ScrollLock":145
+	"MyComputer":182
+	"MyCalculator":183
 	";":186
 	"=":187
-	"
-	":188
+	"+":188
 	"-":189
 	".":190
 	"/":191
@@ -128,6 +127,9 @@ key_to_ascii_table =
 	left: '\x1b\x5b\x44'
 	home: '\x1b[1~'
 	end: '\x1b[4~'
+	pageup: '\x1b[5~'
+	pagedown: '\x1b[6~'
+	insert: '\x1b[2~'
 	f1: '\x1b[11~'
 	f2: '\x1b[12~'
 	f3: '\x1b[13~'
