@@ -21,7 +21,10 @@
     text-decoration: underline;
 }
 .blink.hidden {
-    opacity:0.00;
+    color: rgba(0, 0, 0, 0);
+}
+span.blink.hidden {
+    color: rgba(0, 0, 0, 0);
 }
 a {
     color: inherit;
