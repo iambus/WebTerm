@@ -1,14 +1,15 @@
 #screen {
-    font-family: monospace;
-    white-space: pre;
-
-    background-color: black;
-    color: silver;
-    /*height: 100%;*/
+    /*padding-bottom: 30%;*/
     min-height: 360px;
     min-width: 560px;
+    font-size: 3.6vmin;
+
+    font-family: monospace;
+    color: silver;
+    background-color: black;
     line-height: 1;
     box-sizing: border-box;
+    white-space: pre;
 }
 #screen div {
     display: inline;

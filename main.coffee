@@ -75,8 +75,10 @@ test = ->
 host = 'bbs.newsmth.net'
 #host = 'bbs.nju.edu.cn'
 
-resize()
+#resize()
+#$(window).resize ->
+#	resize()
 $(window).resize ->
-	resize()
+	$('#screen').css 'z-index': 1
 #test()
 connect(host)
