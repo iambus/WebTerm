@@ -604,7 +604,7 @@ class Screen
 			else if n == 1
 				@data.erase_to_begin @cursor
 			else if n == 2
-				@data.rase_all()
+				@data.erase_all()
 			else
 				throw Error("Not Implemented: ^#{opts.join ';'}J")
 			return

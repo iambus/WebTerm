@@ -108,6 +108,8 @@ class PressEnterKeyBottomBar extends Feature
 	scan: (screen) ->
 		map_keys_on_line screen, screen.height,
 			'请按 ◆Enter◆ 继续': 'enter'
+			'按回车键继续...': 'enter'
+			'按 <ENTER> 键继续...': 'enter'
 
 ##################################################
 # main menu
@@ -260,13 +262,13 @@ class BoardToolbar extends Feature
 				'同作者[^U,^H]': 'ctrl+u' # ctrl-u == ctrl-p?
 
 
-class BoardTopVote extends Feature
+class BoardTopNotification extends Feature
 	scan: (screen) ->
-		head = screen.view.text.head()
-		area = find_line_area(head, '投票中，按 V 进入投票')
-		if area
-			screen.area.define_area class: 'clickable board-top-vote', key: 'V',
-				1, area[0], 1, area[1]
+		map_keys_on_line screen, 1,
+			'投票中，按 V 进入投票': 'V'
+			'[您有信件]': 'v'
+			'[您有@提醒]': 'left left left left m enter k enter'
+			'[您有回复提醒]': 'left left left left m enter l enter'
 
 
 class BoardModeSwitch extends Feature
@@ -319,9 +321,11 @@ class BoardBMClick extends Feature
 class BoardInfoClick extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
+		m = head.match(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
 		if m
 			cn_board = m[1]
+			if /^\[.+\]|投票中，按 V 进入投票$/.test cn_board
+				return
 			board = m[2]
 			key = "U [#{board}] enter"
 			mappings = {}
@@ -551,7 +555,7 @@ class XToolBar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == 'F 寄回自己的信箱┃↑↓ 移动┃→ <Enter> 读取┃←,q 离开'
-			map_keys_on_line screen, screen.height,
+			map_keys_on_line screen, row,
 				'F 寄回自己的信箱': "F"
 				'↑': "up"
 				'↓': "down"
@@ -700,7 +704,7 @@ anykey_mode = featured_mode_by test_footline(/^\s*(按任何键继续|按任何�
 	PressAnyKeyBottomBar
 ]
 
-enterkey_mode = featured_mode_by test_footline(/^\s*请按 ◆Enter◆ 继续\s*$/), 'enterkey', [
+enterkey_mode = featured_mode_by test_footline(/^\s*(请按 ◆Enter◆ 继续|帮助信息显示完成, 按回车键继续\.\.\.|您不能给自己奖励个人积分, 按 <ENTER> 键继续\.\.\.|您不能给该用户奖励个人积分, 按 <ENTER> 键继续\.\.\.)\s*$/), 'enterkey', [
 	ClickEnter
 	PressEnterKeyBottomBar
 ]
@@ -715,10 +719,10 @@ talk_menu_mode = featured_mode_by test_headline(/^聊天选单\s/), 'talk_menu',
 	MenuClick
 ]
 
-board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+)\s*\s\s(?:讨论区)? \[(\w+)\]$/), 'board', [
+board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/), 'board', [
 	RowClick
 	BoardToolbar
-	BoardTopVote
+	BoardTopNotification
 	BoardModeSwitch
 	BoardUserClick
 	BoardBMClick
