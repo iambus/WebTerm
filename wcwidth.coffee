@@ -68,7 +68,6 @@ bisearch = (ucs) ->
 	return false
 
 wcwidth = (ucs) ->
-	ucs = ucs.charCodeAt 0
 	if bisearch(ucs)
 		return 0
 	return 1 + (ucs > 0x7f)
@@ -102,7 +101,7 @@ wcwidth = (ucs) ->
 wswidth = (ucs) ->
 	len = 0
 	for i in [0...ucs.length]
-		len += wcwidth(ucs.charAt(i))
+		len += wcwidth(ucs.charCodeAt(i))
 	return len
 
 exports = this
