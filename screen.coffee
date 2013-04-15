@@ -287,8 +287,10 @@ on_keyboard = (callback) ->
 	$(selector).on 'keypress', (event) ->
 #		console.log 'keypress', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keypress', keymap.event_to_virtual_key event
-		key = keymap.event_to_virtual_key event
-		callback key: key
+		if not event.ctrlKey
+			# XXX: why ctrl-b, ctrl-f, ctrl-n, and may else, still trigger keypress events?
+			key = keymap.event_to_virtual_key event
+			callback key: key
 		event.preventDefault()
 
 	#	$(selector).on 'compositionstart', (event) ->
