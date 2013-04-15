@@ -118,6 +118,9 @@ class Data
 	shift: ->
 		@data.shift()
 		@data.push @new_row()
+	unshift: ->
+		@data.unshift @new_row()
+		@data.pop()
 
 ##################################################
 # View
@@ -593,30 +596,34 @@ class Screen
 				@cursor.reset()
 			return
 		else if c == 'J'
-			n = opts?[0] ? '0'
-			if n == '0'
+			n = opts?[0] ? 0
+			if n == 0
 				@data.erase_to_end @cursor
-			else if n == '1'
+			else if n == 1
 				@data.erase_to_begin @cursor
-			else if n == '2'
+			else if n == 2
 				@data.rase_all()
 			else
 				throw Error("Not Implemented: ^#{opts.join ';'}J")
 			return
 		else if c == 'K'
-			n = opts?[0] ? '0'
-			if n == '0'
+			n = opts?[0] ? 0
+			if n == 0
 				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line_to_end @cursor
-			else if n == '1'
+			else if n == 1
 				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line_to_begin @cursor
-			else if n == '2'
+			else if n == 2
 				@data.new_cell_fn = => @new_styled_char(' ') # XXX: what about other codes (i.e. J)?
 				@data.erase_line  @cursor
 			else
 				throw Error("Not Implemented: ^#{opts.join ';'}J")
 			@data.new_cell_fn = @data.default_new_cell_fn
+			return
+		else if c == 'L'
+			n = opts?[0] ? 1
+			@data.unshift() for [1..n]
 			return
 		else if c == 'I'
 			console.log ("Not Implemented:  ^#{(opts?.join ';') ? ''}#{c}")
