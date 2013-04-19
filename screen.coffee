@@ -229,6 +229,9 @@ class Cursor
 		@data.at @row, @column
 
 	put: (c) ->
+		if @column > @data.width
+			@column -= @data.width
+			@row++
 		@data.set @row, @column, c
 
 	clear: (c) ->
