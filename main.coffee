@@ -40,20 +40,10 @@ test = ->
 
 	bbs.smth(screen)
 
-	chrome_get = (url, callback) ->
-		url = chrome.runtime.getURL url
-		xhr = new XMLHttpRequest
-		xhr.responseType = 'arraybuffer'
-		xhr.onreadystatechange = ->
-			if xhr.readyState == 4
-				callback xhr.response
-		xhr.open("GET", url, true)
-		xhr.send()
-
-	load_ascii = (screen, resources...) ->
+	load_ascii = (screen, files...) ->
 		load_ascii_at = (i) ->
-			if i < resources.length
-				chrome_get "test/" + resources[i], (data) ->
+			if i < files.length
+				resources.get_raw "test/" + files[i], (data) ->
 					screen.fill_ascii_raw new Uint8Array data
 					load_ascii_at i+1
 			else
@@ -80,5 +70,7 @@ host = 'bbs.newsmth.net'
 #	resize()
 $(window).resize ->
 	$('#screen').css 'z-index': 1
-#test()
-connect(host)
+
+storage.init ->
+#	test()
+	connect(host)
