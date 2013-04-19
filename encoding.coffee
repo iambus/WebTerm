@@ -93,9 +93,10 @@ string_to_gbk = (s) ->
 
 
 
-gbk_to_string = (bytes) ->
+gbk_to_string_partial = (bytes) ->
 #	TextDecoder('gbk').decode bytes
 	a = []
+	left = []
 	i = 0
 	len = bytes.length
 	while i < len
@@ -109,25 +110,21 @@ gbk_to_string = (bytes) ->
 		else if 0x81 <= b <= 0xfe
 			b2 = bytes[i++]
 			if not b2?
-				a.push 0x3f # '?'
+				left.push b
 				break
 			if 0x30 <= b2 <= 0x39
 				# gb18030
 				b3 = bytes[i++]
 				if not b3?
-					a.push 0x3f # '?'
-					a.push 0x3f # '?'
+					left.push b
+					left.push b2
 					break
-				if not b3?
-					a.push 0x3f # '?'
-					a.push 0x3f # '?'
-				break
 				if 0x81 <= b3 <= 0xfe
 					b4 = bytes[i++]
 					if not b4?
-						a.push 0x3f # '?'
-						a.push 0x3f # '?'
-						a.push 0x3f # '?'
+						left.push b
+						left.push b2
+						left.push b3
 						break
 					if 0x30 <= b4 <= 0x39
 						a.push (b - 0x81) * 10 + (b2 - 0x30) * 126 + (b3 - 0x81) * 10 + b4 - 0x30
@@ -154,7 +151,12 @@ gbk_to_string = (bytes) ->
 		else
 			a.push 0x3f # '?'
 
-	return String.fromCharCode.apply null, a
+	return [String.fromCharCode.apply(null, a), left]
+
+gbk_to_string = (bytes) ->
+	[s, left] = gbk_to_string_partial(bytes)
+	s += '?' for [1..left.length]
+	return s
 
 ##################################################
 # exports
@@ -164,4 +166,5 @@ exports.string_to_cp1252 = string_to_cp1252
 exports.cp1252_to_string = cp1252_to_string
 exports.string_to_gbk = string_to_gbk
 exports.gbk_to_string = gbk_to_string
+exports.gbk_to_string_partial = gbk_to_string_partial
 

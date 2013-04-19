@@ -694,9 +694,22 @@ class Screen
 
 	fill_ascii_raw: (a) ->
 		if a.constructor.name == 'String'
-			@fill_ascii_unicode encoding.gbk_to_string encoding.string_to_cp1252 a
-		else
-			@fill_ascii_unicode encoding.gbk_to_string a
+			a = encoding.string_to_cp1252 a
+		if @ascii_buffer?
+			concat = (a, b) ->
+				c = new Uint8Array(a.length + b.length)
+				offset = 0
+				for i in [0...a.length]
+					c[offset++] = a[i]
+				for i in [0...b.length]
+					c[offset++] = b[i]
+				c
+			a = concat(@ascii_buffer, a)
+			@ascii_buffer = null
+		[s, left] = encoding.gbk_to_string_partial a
+		if left.length > 0
+			@ascii_buffer = left
+		@fill_ascii_unicode(s)
 
 	fill_ascii_unicode: (s) ->
 		if @buffer
