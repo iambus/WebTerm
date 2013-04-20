@@ -783,10 +783,7 @@ class Screen
 						html.push '</span>'
 						tag = null
 					for attrs in open
-						html.push '<div '
-						for k, v of attrs
-							html.push "#{k}='#{v}'"
-						html.push '>'
+						html.push """<div#{(" #{k}='#{v}'" for k, v of attrs).join ''}>"""
 				if row == @cursor.row and column == @cursor.column
 					styles.push 'cursor'
 				if c.foreground
