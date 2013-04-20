@@ -549,9 +549,6 @@ on_keyboard = (callback) ->
 		key = keymap.event_to_virtual_key event
 		if key in ['ctrl', 'shift', 'alt', 'meta']
 			return
-		pos = $('.cursor').position()
-		if pos?
-			$('.cursor').css {top: "#{pos.top}px", left: "#{pos.left}px"}
 		$('#ime').focus()
 		if event.ctrlKey or event.altKey or event.metaKey
 			callback key: key
