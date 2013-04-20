@@ -238,232 +238,17 @@ class Cursor
 		@data.clear_at @row, @column
 
 ##################################################
-# Area
+# Term
 ##################################################
 
-class AreaManager
-	constructor: (@width, @height) ->
-		@open = []
-		@closed = []
-
-	index: (row, column) ->
-		(row - 1) * @width + column - 1
-
-	define_area: (attrs, top, left, bottom, right) ->
-		attrs = if _.isString(attrs) then {class: attrs} else attrs
-		start = @index top, left
-		end = @index bottom, right
-		names = @open[start] ? []
-		names.push [attrs, end]
-		@open[start] = names
-		n = @closed[end] ? 0
-		@closed[end] = n + 1
-
-	get_open_areas: (row, column) ->
-		names = @open[@index row, column]
-		if names
-			(x[0] for x in _.sortBy(names, (x) -> x[1]).reverse())
-
-	get_closed_area_number: (row, column) ->
-		@closed[@index row, column]
-
-##################################################
-# Events
-##################################################
-
-on_keyboard = (callback) ->
-	selector = 'body'
-	$(selector).on 'keydown', (event) ->
-#		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
-#		console.log 'keydown', keymap.event_to_virtual_key event
-		pos = $('.cursor').position()
-		if pos?
-			$('.cursor').css {top: "#{pos.top}px", left: "#{pos.left}px"}
-		$('#ime').focus()
-		key = keymap.event_to_virtual_key event
-		if event.ctrlKey or event.altKey or event.metaKey
-			callback key: key
-		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
-		                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
-			callback key: key
-
-	$(selector).on 'keypress', (event) ->
-#		console.log 'keypress', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
-#		console.log 'keypress', keymap.event_to_virtual_key event
-		if not event.ctrlKey
-			# XXX: why ctrl-b, ctrl-f, ctrl-n, and may else, still trigger keypress events?
-			key = keymap.event_to_virtual_key event
-			callback key: key
-		event.preventDefault()
-
-	#	$(selector).on 'compositionstart', (event) ->
-	#		console.log 'compositionstart', event.originalEvent.data, event
-	#	$(selector).on 'compositionupdate', (event) ->
-	#		console.log 'compositionupdate!', event.originalEvent.data, event
-	$(selector).on 'compositionend', (event) ->
-		#		console.log 'compositionend', event.originalEvent.data, event
-		callback
-			text: event.originalEvent.data
-			event: event
-
-escape_virtual_key_to_text = (key) ->
-	if key?
-		text = keymap.virtual_key_to_ascii key
-		if text?
-			return text
-		else
-			console.log 'ignore key binding:', key
-
-normalize_key = (k) ->
-	if k.length == 1
-		return k
-	m = k.match /^((?:(?:ctrl|shift|alt|meta)[+-])*)(.+)$/
-	a = []
-	if m[1].indexOf('ctrl') != -1
-		a.push 'ctrl'
-	if m[1].indexOf('shift') != -1
-		a.push 'shift'
-	if m[1].indexOf('alt') != -1
-		a.push 'alt'
-	if m[1].indexOf('meta') != -1
-		a.push 'meta'
-	a.push m[2]
-	return a.join '-'
-
-is_key = (x, y) ->
-	if x == y
-		return true
-	return normalize_key(x) == normalize_key(y)
-
-class Events
-	constructor: (@screen) ->
-		# keyboard buffer
-		@buffer = []
-
-		# keyboard events
-		@key_mappings = []
-		on_keyboard ({key, text}) =>
-			if key?
-				for [k, h] in @key_mappings
-					if is_key(k, key)
-						h(key)
-						return
-				@put_key key
-			if text?
-				@put_text text
-			@send()
-
-		# mouse click events
-		@clickables = []
-		mouse_click_at = null
-		mouse_click_when = new Date()
-		$(@screen.selector).mousedown (e) =>
-			if e.button == 0
-				mouse_click_at = [e.offsetX, e.offsetY]
-				now = new Date()
-				if now - mouse_click_when < 500 and $(e.target).closest(@clickables).length > 0
-					# double clicking on a clickable, let's prevent annoying selections
-					e.preventDefault()
-				mouse_click_when = now
-		$(@screen.selector).mouseup (e) =>
-			if e.button == 0
-				if mouse_click_at?
-					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
-						target = $(e.target).closest(@clickables)
-						if target.length > 0
-							target.data('handler')?(e.target) # XXX: when there are multiple targets?
-							window.getSelection().removeAllRanges() # clear annoying double clicking selections
-					mouse_click_at = null
-
-		# mouse wheels
-		$(@screen.selector).on 'mousewheel', (e) =>
-			delta = e.originalEvent.wheelDelta
-			if delta > 0
-				@send_key "up"
-			else if delta < 0
-				@send_key "down"
-
-		# mouse gestures!
-		$(@screen.selector).gesture (e) =>
-			if e.direction?
-				@send_key e.direction
-
-	on_key: (key, handler) ->
-		@key_mappings.push [key, handler]
-
-	put_key: (keys...) ->
-#		console.log 'send key', keys
-		for key in keys
-			text = escape_virtual_key_to_text key
-			if text?.length > 0
-				@buffer.push text
-
-	put_text: (text) ->
-#		console.log 'send text', text
-		# XXX: TODO: escape?
-		@buffer.push text
-
-	send: ->
-		if @buffer.length > 0
-			text = @buffer.join ''
-			@buffer = []
-			if text.length > 0
-				data = encoding.string_to_gbk(text)
-				@screen.on_data? data
-
-	send_key: (keys...) ->
-		@put_key keys...
-		@send()
-
-	send_text: (text) ->
-		@put_text text
-		@send()
-
-	on_click: (selector, handler) ->
-		elements = $(@screen.selector).find(selector)
-		$.merge @clickables, elements
-		elements.data 'handler', (e) ->
-			handler e
-
-	on_click_div: (selector, handler) ->
-		@on_click selector, (e) ->
-			handler $(e).closest('div')[0]
-
-
-	send_key_on_click: (selector, keys...) ->
-		@on_click selector, =>
-			@send_key keys...
-
-
-##################################################
-# HTML builder
-##################################################
-
-##################################################
-# Screen
-##################################################
-
-class Screen
+class Term
 	constructor: (@width=80, @height=24) ->
-		@selector = '#screen'
 
 		@data = new ScreenData @width, @height
 		@cursor = new Cursor @data
 
-		@events = new Events @
-
 		@buffer = null
 		@clear_style()
-
-		@on_screen_updated = null
-		@on_screen_rendered = null
-		@on_data = null
-
-	update_area: ->
-		@area = new AreaManager(@width, @height)
-
-	update_view: ->
-		@view = new View @data
 
 	dummy_char: ->
 		new Char ''
@@ -690,30 +475,6 @@ class Screen
 	# user interface #
 	##################
 
-	screen_updated: ->
-		@update_area()
-		@update_view()
-		@on_screen_updated?()
-
-	fill_ascii_raw: (a) ->
-		if a.constructor.name == 'String'
-			a = encoding.string_to_cp1252 a
-		if @ascii_buffer?
-			concat = (a, b) ->
-				c = new Uint8Array(a.length + b.length)
-				offset = 0
-				for i in [0...a.length]
-					c[offset++] = a[i]
-				for i in [0...b.length]
-					c[offset++] = b[i]
-				c
-			a = concat(@ascii_buffer, a)
-			@ascii_buffer = null
-		[s, left] = encoding.gbk_to_string_partial a
-		if left.length > 0
-			@ascii_buffer = left
-		@fill_ascii_unicode(s)
-
 	fill_ascii_unicode: (s) ->
 		if @buffer
 			s = @buffer + s
@@ -745,6 +506,263 @@ class Screen
 			else
 				@echo c
 
+
+##################################################
+# Area
+##################################################
+
+class AreaManager
+	constructor: (@width, @height) ->
+		@open = []
+		@closed = []
+
+	index: (row, column) ->
+		(row - 1) * @width + column - 1
+
+	define_area: (attrs, top, left, bottom, right) ->
+		attrs = if _.isString(attrs) then {class: attrs} else attrs
+		start = @index top, left
+		end = @index bottom, right
+		names = @open[start] ? []
+		names.push [attrs, end]
+		@open[start] = names
+		n = @closed[end] ? 0
+		@closed[end] = n + 1
+
+	get_open_areas: (row, column) ->
+		names = @open[@index row, column]
+		if names
+			(x[0] for x in _.sortBy(names, (x) -> x[1]).reverse())
+
+	get_closed_area_number: (row, column) ->
+		@closed[@index row, column]
+
+##################################################
+# Events
+##################################################
+
+on_keyboard = (callback) ->
+	selector = 'body'
+	$(selector).on 'keydown', (event) ->
+#		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
+#		console.log 'keydown', keymap.event_to_virtual_key event
+		pos = $('.cursor').position()
+		if pos?
+			$('.cursor').css {top: "#{pos.top}px", left: "#{pos.left}px"}
+		$('#ime').focus()
+		key = keymap.event_to_virtual_key event
+		if event.ctrlKey or event.altKey or event.metaKey
+			callback key: key
+		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
+		                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
+			callback key: key
+
+	$(selector).on 'keypress', (event) ->
+#		console.log 'keypress', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
+#		console.log 'keypress', keymap.event_to_virtual_key event
+		if not event.ctrlKey
+			# XXX: why ctrl-b, ctrl-f, ctrl-n, and may else, still trigger keypress events?
+			key = keymap.event_to_virtual_key event
+			callback key: key
+		event.preventDefault()
+
+	#	$(selector).on 'compositionstart', (event) ->
+	#		console.log 'compositionstart', event.originalEvent.data, event
+	#	$(selector).on 'compositionupdate', (event) ->
+	#		console.log 'compositionupdate!', event.originalEvent.data, event
+	$(selector).on 'compositionend', (event) ->
+		#		console.log 'compositionend', event.originalEvent.data, event
+		callback
+			text: event.originalEvent.data
+			event: event
+
+escape_virtual_key_to_text = (key) ->
+	if key?
+		text = keymap.virtual_key_to_ascii key
+		if text?
+			return text
+		else
+			console.log 'ignore key binding:', key
+
+normalize_key = (k) ->
+	if k.length == 1
+		return k
+	m = k.match /^((?:(?:ctrl|shift|alt|meta)[+-])*)(.+)$/
+	a = []
+	if m[1].indexOf('ctrl') != -1
+		a.push 'ctrl'
+	if m[1].indexOf('shift') != -1
+		a.push 'shift'
+	if m[1].indexOf('alt') != -1
+		a.push 'alt'
+	if m[1].indexOf('meta') != -1
+		a.push 'meta'
+	a.push m[2]
+	return a.join '-'
+
+is_key = (x, y) ->
+	if x == y
+		return true
+	return normalize_key(x) == normalize_key(y)
+
+class Events
+	constructor: (@screen) ->
+		# keyboard buffer
+		@buffer = []
+
+		# keyboard events
+		@key_mappings = []
+		on_keyboard ({key, text}) =>
+			if key?
+				for [k, h] in @key_mappings
+					if is_key(k, key)
+						h(key)
+						return
+				@put_key key
+			if text?
+				@put_text text
+			@send()
+
+		# mouse click events
+		@clickables = []
+		mouse_click_at = null
+		mouse_click_when = new Date()
+		$(@screen.selector).mousedown (e) =>
+			if e.button == 0
+				mouse_click_at = [e.offsetX, e.offsetY]
+				now = new Date()
+				if now - mouse_click_when < 500 and $(e.target).closest(@clickables).length > 0
+					# double clicking on a clickable, let's prevent annoying selections
+					e.preventDefault()
+				mouse_click_when = now
+		$(@screen.selector).mouseup (e) =>
+			if e.button == 0
+				if mouse_click_at?
+					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
+						target = $(e.target).closest(@clickables)
+						if target.length > 0
+							target.data('handler')?(e.target) # XXX: when there are multiple targets?
+							window.getSelection().removeAllRanges() # clear annoying double clicking selections
+					mouse_click_at = null
+
+		# mouse wheels
+		$(@screen.selector).on 'mousewheel', (e) =>
+			delta = e.originalEvent.wheelDelta
+			if delta > 0
+				@send_key "up"
+			else if delta < 0
+				@send_key "down"
+
+		# mouse gestures!
+		$(@screen.selector).gesture (e) =>
+			if e.direction?
+				@send_key e.direction
+
+	on_key: (key, handler) ->
+		@key_mappings.push [key, handler]
+
+	put_key: (keys...) ->
+#		console.log 'send key', keys
+		for key in keys
+			text = escape_virtual_key_to_text key
+			if text?.length > 0
+				@buffer.push text
+
+	put_text: (text) ->
+#		console.log 'send text', text
+		# XXX: TODO: escape?
+		@buffer.push text
+
+	send: ->
+		if @buffer.length > 0
+			text = @buffer.join ''
+			@buffer = []
+			if text.length > 0
+				data = encoding.string_to_gbk(text)
+				@screen.on_data? data
+
+	send_key: (keys...) ->
+		@put_key keys...
+		@send()
+
+	send_text: (text) ->
+		@put_text text
+		@send()
+
+	on_click: (selector, handler) ->
+		elements = $(@screen.selector).find(selector)
+		$.merge @clickables, elements
+		elements.data 'handler', (e) ->
+			handler e
+
+	on_click_div: (selector, handler) ->
+		@on_click selector, (e) ->
+			handler $(e).closest('div')[0]
+
+
+	send_key_on_click: (selector, keys...) ->
+		@on_click selector, =>
+			@send_key keys...
+
+
+##################################################
+# HTML builder
+##################################################
+
+##################################################
+# Screen
+##################################################
+
+class Screen
+	constructor: (@width=80, @height=24) ->
+		@selector = '#screen'
+
+		@term = new Term(@width, @height)
+		@data = @term.data
+		@cursor = @term.cursor
+
+		@events = new Events @
+
+		@on_screen_updated = null
+		@on_screen_rendered = null
+		@on_data = null
+
+	update_area: ->
+		@area = new AreaManager(@width, @height)
+
+	update_view: ->
+		@view = new View @data
+
+	##################
+	# user interface #
+	##################
+
+	screen_updated: ->
+		@update_area()
+		@update_view()
+		@on_screen_updated?()
+
+	fill_ascii_raw: (a) ->
+		if a.constructor.name == 'String'
+			a = encoding.string_to_cp1252 a
+		if @ascii_buffer?
+			concat = (a, b) ->
+				c = new Uint8Array(a.length + b.length)
+				offset = 0
+				for i in [0...a.length]
+					c[offset++] = a[i]
+				for i in [0...b.length]
+					c[offset++] = b[i]
+				c
+			a = concat(@ascii_buffer, a)
+			@ascii_buffer = null
+		[s, left] = encoding.gbk_to_string_partial a
+		if left.length > 0
+			@ascii_buffer = left
+		@fill_ascii_unicode(s)
+
+	fill_ascii_unicode: (s) ->
+		@term.fill_ascii_unicode(s)
 		@screen_updated()
 
 	to_text: ->
