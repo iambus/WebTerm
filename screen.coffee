@@ -726,6 +726,31 @@ class Screen
 		@on_screen_rendered = null
 		@on_data = null
 
+		chrome.contextMenus.removeAll ->
+			chrome.contextMenus.create(
+				title: '复制文本'
+				id: 'copy'
+				contexts: ['selection']
+			)
+			chrome.contextMenus.create(
+				title: '复制屏幕'
+				id: 'copy-all'
+				contexts: ['all']
+			)
+		chrome.contextMenus.onClicked.addListener (info) =>
+			if info.menuItemId == 'copy'
+				selected = window.getSelection().toString()
+				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+				$('#ime').val(selected).select()
+				document.execCommand('copy')
+				$('#ime').val('')
+			else if info.menuItemId == 'copy-all'
+				selected = @to_text()
+				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+				$('#ime').val(selected).select()
+				document.execCommand('copy')
+				$('#ime').val('')
+
 	update_area: ->
 		@area = new AreaManager(@width, @height)
 

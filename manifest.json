@@ -17,6 +17,9 @@
 				"tcp-connect:*:*"
 			]
 		},
-		"storage"
+		"storage",
+		"contextMenus",
+		"clipboardRead",
+		"clipboardWrite"
 	]
 }
