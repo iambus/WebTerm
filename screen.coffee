@@ -546,11 +546,13 @@ on_keyboard = (callback) ->
 	$(selector).on 'keydown', (event) ->
 #		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keydown', keymap.event_to_virtual_key event
+		key = keymap.event_to_virtual_key event
+		if key in ['ctrl', 'shift', 'alt', 'meta']
+			return
 		pos = $('.cursor').position()
 		if pos?
 			$('.cursor').css {top: "#{pos.top}px", left: "#{pos.left}px"}
 		$('#ime').focus()
-		key = keymap.event_to_virtual_key event
 		if event.ctrlKey or event.altKey or event.metaKey
 			callback key: key
 		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
