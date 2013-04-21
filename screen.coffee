@@ -739,6 +739,75 @@ class Events
 
 
 ##################################################
+# Commands
+##################################################
+
+class Commands
+	constructor: (@screen) ->
+		@commands = {}
+	register: (name, command) ->
+		@commands[name] = command
+	clear: ->
+		@commands = {}
+
+
+##################################################
+# Context Menus
+##################################################
+
+class ContextMenus
+	constructor: (@screen) ->
+		@persisted = []
+		@menus = []
+
+	register_persisted: (menu) ->
+		@persisted.push menu
+
+	register: (menu) ->
+		@menus.push menu
+
+	clear: ->
+		@menus = []
+
+	compute_session: ->
+		session = []
+		for menu in @persisted
+			session.push menu.id
+		for menu in @menus
+			session.push menu.id
+		session
+
+	update_menus: ->
+		callbacks = {}
+		for menu in @persisted
+			callbacks[menu.id] = menu.onclick
+		for menu in @menus
+			callbacks[menu.id] = menu.onclick
+		chrome.contextMenus.removeAll =>
+			for {id, title, contexts} in @persisted
+				chrome.contextMenus.create
+					title: title
+					id: id
+					contexts: contexts ? ['all']
+			for {id, title, contexts} in @menus
+				chrome.contextMenus.create
+					title: title
+					id: id
+					contexts: contexts ? ['all']
+		chrome.contextMenus.onClicked.addListener (info) ->
+			callback = callbacks[info.menuItemId]
+			if callback?
+				callback()
+			else
+				console.error "No handler for menu #{info}"
+		@session = @compute_session()
+
+	refresh: ->
+		if @session and _.isEqual(@session, @compute_session())
+			return
+		@update_menus()
+
+##################################################
 # HTML builder
 ##################################################
 
@@ -756,25 +825,16 @@ class Screen
 
 		@events = new Events @
 
+		@commands = new Commands @
+
 		@column_mode = null
 
-		@on_screen_updated = null
-		@on_screen_rendered = null
-		@on_data = null
-
-		chrome.contextMenus.removeAll ->
-			chrome.contextMenus.create(
-				title: '复制文本'
-				id: 'copy'
-				contexts: ['all']
-			)
-			chrome.contextMenus.create(
-				title: '复制屏幕'
-				id: 'copy-all'
-				contexts: ['all']
-			)
-		chrome.contextMenus.onClicked.addListener (info) =>
-			if info.menuItemId == 'copy'
+		@context_menus = new ContextMenus @
+		@context_menus.register_persisted
+			title: '复制文本'
+			id: 'copy'
+			contexts: ['all']
+			onclick: =>
 				if @column_mode and @column_mode != true
 					selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
 					selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
@@ -792,12 +852,22 @@ class Screen
 					$('#ime').val(selected).select()
 					document.execCommand('copy')
 					$('#ime').val('')
-			else if info.menuItemId == 'copy-all'
+		@context_menus.register_persisted
+			title: '复制屏幕'
+			id: 'copy-all'
+			contexts: ['all']
+			onclick: =>
 				selected = @to_text()
 				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
 				$('#ime').val(selected).select()
 				document.execCommand('copy')
 				$('#ime').val('')
+		@context_menus.refresh()
+
+
+		@on_screen_updated = null
+		@on_screen_rendered = null
+		@on_data = null
 
 	update_area: ->
 		@area = new AreaManager(@width, @height)
@@ -812,7 +882,18 @@ class Screen
 	screen_updated: ->
 		@update_area()
 		@update_view()
+		@commands.clear()
+		@context_menus.clear()
 		@on_screen_updated?()
+
+	screen_rendered: ->
+		@context_menus.refresh()
+		@on_screen_rendered?()
+
+	render: ->
+		$('#screen').html @to_html()
+		$('#ime').offset $('.cursor').offset()
+		@screen_rendered()
 
 	fill_ascii_raw: (a) ->
 		if a.constructor.name == 'String'
@@ -905,11 +986,6 @@ class Screen
 		if tag?
 			html.push '</span>'
 		return html.join ''
-
-	render: ->
-		$('#screen').html @to_html()
-		$('#ime').offset $('.cursor').offset()
-		@on_screen_rendered?()
 
 ##################################################
 # exports
