@@ -794,12 +794,15 @@ class ContextMenus
 					title: title
 					id: id
 					contexts: contexts ? ['all']
-		chrome.contextMenus.onClicked.addListener (info) ->
+		if @listener
+			chrome.contextMenus.onClicked.removeListener @listener
+		@listener = (info) ->
 			callback = callbacks[info.menuItemId]
 			if callback?
 				callback()
 			else
-				console.error "No handler for menu #{info}"
+				console.error "No handler for menu #{info.menuItemId}"
+		chrome.contextMenus.onClicked.addListener @listener
 		@session = @compute_session()
 
 	refresh: ->
