@@ -852,9 +852,12 @@ class Screen
 				else
 					selected = window.getSelection().toString()
 					selected = (line.trimRight() for line in selected.split('\n')).join('\n')
-					$('#ime').val(selected).select()
-					document.execCommand('copy')
-					$('#ime').val('')
+					if selected
+						$('#ime').val(selected).select()
+						document.execCommand('copy')
+						$('#ime').val('')
+					else
+						console.log 'nothing to copy' # TODO: send this message to end user
 		@context_menus.register_persisted
 			title: '复制屏幕'
 			id: 'copy-all'
