@@ -31,6 +31,9 @@ a {
     color: inherit;
     text-decoration: none;
 }
+span.selected {
+    background: #ffb7b7;
+}
 
 .c30 {color: black; }
 .c31 {color: maroon; }

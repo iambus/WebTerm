@@ -627,6 +627,23 @@ class Events
 		mouse_click_at = null
 		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
+			if e.button == 0 and e.which == 1 and e.altKey
+				@screen.column_mode = true
+				@screen.render()
+				span = document.elementFromPoint e.pageX, e.pageY
+				row = span.getAttribute('row')
+				column = span.getAttribute('column')
+				if row? and column?
+					row = parseInt(row)
+					column = parseInt(column)
+					@screen.column_mode = [[row, column], [row, column]]
+					e.preventDefault()
+					return
+				else
+					@screen.column_mode = null
+			else if e.button == 0 and @screen.column_mode
+					@screen.column_mode = null
+					@screen.render()
 			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
 				now = new Date()
@@ -635,6 +652,8 @@ class Events
 					e.preventDefault()
 				mouse_click_when = now
 		$(@screen.selector).mouseup (e) =>
+			if e.button == 0 and e.which == 1 and e.altKey and @screen.column_mode
+				return
 			if e.button == 0
 				if mouse_click_at?
 					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
@@ -643,6 +662,21 @@ class Events
 							target.data('handler')?(e.target) # XXX: when there are multiple targets?
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
+		$(@screen.selector).mousemove (e) =>
+			if e.button == 0 and e.which == 1 and e.altKey and @screen.column_mode
+				span = document.elementFromPoint e.pageX, e.pageY
+				row = span.getAttribute('row')
+				column = span.getAttribute('column')
+				if row? and column?
+					row = parseInt(row)
+					column = parseInt(column)
+					if @screen.column_mode[1][0] != row or @screen.column_mode[1][1] != column
+						@screen.column_mode[1] = [row, column]
+						@screen.render()
+				else
+					@screen.column_mode = null
+
+
 
 		# mouse wheels
 		$(@screen.selector).on 'mousewheel', (e) =>
@@ -722,6 +756,8 @@ class Screen
 
 		@events = new Events @
 
+		@column_mode = null
+
 		@on_screen_updated = null
 		@on_screen_rendered = null
 		@on_data = null
@@ -730,7 +766,7 @@ class Screen
 			chrome.contextMenus.create(
 				title: '复制文本'
 				id: 'copy'
-				contexts: ['selection']
+				contexts: ['all']
 			)
 			chrome.contextMenus.create(
 				title: '复制屏幕'
@@ -739,11 +775,23 @@ class Screen
 			)
 		chrome.contextMenus.onClicked.addListener (info) =>
 			if info.menuItemId == 'copy'
-				selected = window.getSelection().toString()
-				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
-				$('#ime').val(selected).select()
-				document.execCommand('copy')
-				$('#ime').val('')
+				if @column_mode and @column_mode != true
+					selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
+					selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
+					selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
+					selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
+					selected = ((@data.data[i-1][j-1].char for j in [selected_left..selected_right]).join('') for i in [selected_top..selected_bottom]).join '\n'
+					$('#ime').val(selected).select()
+					document.execCommand('copy')
+					$('#ime').val('')
+					@column_mode = null
+					@render()
+				else
+					selected = window.getSelection().toString()
+					selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+					$('#ime').val(selected).select()
+					document.execCommand('copy')
+					$('#ime').val('')
 			else if info.menuItemId == 'copy-all'
 				selected = @to_text()
 				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
@@ -795,6 +843,13 @@ class Screen
 	to_html: ->
 		html = []
 		tag = null
+		selecting = @column_mode
+		selected = @column_mode and @column_mode != true
+		if selected
+			selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
+			selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
+			selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
+			selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
 		for line, i in @data.data
 			for c, j in line
 				row = i + 1
@@ -820,8 +875,13 @@ class Screen
 					styles.push 'underline'
 				if c.blink
 					styles.push 'blink'
-				if styles.length
-					new_tag = "<span class='#{styles.join ' '}'>"
+				if selected and selected_top <= row <= selected_bottom and selected_left <= column <= selected_right
+					styles.push 'selected'
+				if styles.length or selecting
+					if selecting
+						new_tag = "<span class='#{styles.join ' '}' row='#{row}' column='#{column}'>"
+					else
+						new_tag = "<span class='#{styles.join ' '}'>"
 					if tag?
 						if tag != new_tag
 							html.push '</span>'
