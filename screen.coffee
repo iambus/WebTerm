@@ -811,6 +811,25 @@ class ContextMenus
 		@update_menus()
 
 ##################################################
+# Expect
+##################################################
+
+class Expect
+	constructor: (@screen) ->
+		@callbacks = {}
+		@counter = 0
+	check: (check, callback) ->
+		@callbacks[@counter++] = [check, callback]
+	update: ->
+		to_remove = []
+		for id, [check, callback] of @callbacks
+			if check @screen
+				callback @screen
+		for id in to_remove
+			@callbacks[id] = undefined
+
+
+##################################################
 # HTML builder
 ##################################################
 
@@ -870,6 +889,7 @@ class Screen
 				$('#ime').val('')
 		@context_menus.refresh()
 
+		@expect = new Expect @
 
 		@on_screen_updated = null
 		@on_screen_rendered = null
@@ -890,6 +910,7 @@ class Screen
 		@update_view()
 		@commands.clear()
 		@context_menus.clear()
+		@expect.update()
 		@on_screen_updated?()
 
 	screen_rendered: ->

@@ -439,6 +439,49 @@ class ArticleURL extends Feature
 		$('div.href').replaceWith ->
 			"<a href='#{$(@).text()}' target='_blank'>#{$(@).html()}</a>"
 
+class ArticleDownload extends Feature
+	scan: (screen) ->
+		command = ->
+			buffer = []
+			last_bottom = null
+			is_article_start = (screen) ->
+				head = screen.view.text.head()
+				bottom = screen.view.text.foot()
+				/^发信人:/.test(head) and /^\[阅读文章\]|第\(1-\d+\)行/.test(bottom)
+			is_article_end = (screen) ->
+				if /^\[阅读文章\]|\(100%\)/.test screen.view.text.foot() # XXX: 100% may be a wrong check
+					/^※ 来源/m.test screen.to_text()
+			is_article_changed = (screen) ->
+				bottom = screen.view.text.foot()
+				if bottom != last_bottom
+					last_bottom = bottom
+					true
+			callback = ->
+				console.log 'done!', buffer
+			paging = ->
+				buffer.push screen.to_text()
+				if is_article_end(screen)
+					callback()
+					return
+				append = (screen) ->
+					buffer.push screen.to_text()
+					if is_article_end(screen)
+						callback()
+						return
+					screen.expect.check is_article_changed, append
+					screen.events.send_key 'whitespace'
+				screen.expect.check is_article_changed, append
+				screen.events.send_key 'whitespace'
+			if is_article_start(screen)
+				paging()
+			else
+				screen.expect.check is_article_start, paging
+				screen.events.send_key 's'
+		screen.commands.register 'download_article', command
+		screen.context_menus.register
+			id: 'download_article'
+			title: '全文下载'
+			onclick: command
 
 
 ##################################################
@@ -734,6 +777,7 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	ArticleUser
 	ArticleBottom
 	ArticleURL
+	ArticleDownload
 	ClickWhitespace
 ]
 
