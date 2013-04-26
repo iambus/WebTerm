@@ -18,13 +18,13 @@ resize = ->
 		height: "${height}px"
 		'font-size': "#{px}px"
 
-connect = (host, port) ->
+connect = (host, port, mode) ->
 	connection = new telnet.Connection host, port
 	connection.connect()
 
 	screen = new Screen
 
-	bbs.smth(screen)
+	mode(screen)
 
 	connection.on_data = (data) =>
 		screen.fill_ascii_raw data
@@ -36,9 +36,6 @@ connect = (host, port) ->
 	window.screen = screen # XXX: for debugging
 
 
-host = 'bbs.newsmth.net'
-#host = 'bbs.nju.edu.cn'
-
 #resize()
 #$(window).resize ->
 #	resize()
@@ -47,4 +44,5 @@ $(window).resize ->
 
 storage.init ->
 #	test()
-	connect(host)
+	connect('bbs.newsmth.net', 23, bbs.smth)
+#	connect('bbs.nju.edu.cn', 23, bbs.nju)
