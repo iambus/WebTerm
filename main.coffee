@@ -44,5 +44,5 @@ $(window).resize ->
 
 storage.init ->
 #	test()
-	connect('bbs.newsmth.net', 23, bbs.smth)
-#	connect('bbs.nju.edu.cn', 23, bbs.nju)
+#	connect('bbs.newsmth.net', 23, bbs.smth)
+	connect('bbs.nju.edu.cn', 23, bbs.lily)

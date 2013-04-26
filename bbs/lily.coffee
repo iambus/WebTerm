@@ -24,5 +24,5 @@ if module?.exports?
 	module.exports = exports
 else
 	this.bbs = this.bbs ? {}
-	this.bbs.nju = exports
+	this.bbs.lily = exports
 
