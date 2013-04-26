@@ -10,6 +10,7 @@ Prerequisites:
 
 Build:
 
+	npm install
     cake deps
     cake build
 

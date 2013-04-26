@@ -15,6 +15,7 @@ task 'deps', 'Install dependencies', ->
 ##################################################
 
 fs = require 'fs'
+path = require 'path'
 {spawn} = require 'child_process'
 http = require 'http'
 
@@ -42,20 +43,72 @@ coffee = (args, on_stdout, on_stderr) ->
 		if code != 0
 			console.error red "something wrong! coffee: #{options}"
 
-download = (url, path) ->
-	console.log green('http'), url, '->', path
-	out = fs.createWriteStream path
+download = (url, file) ->
+	dir = path.dirname file
+	if not fs.existsSync dir
+		fs.mkdirSync dir
+	console.log green('http'), url, '->', file
 	request = http.get url, (response) ->
-		response.pipe out
+		response.pipe fs.createWriteStream file
 	request.on 'error', (e) ->
 		console.error red e
+
+download_jquery_ui = ->
+	zip = 'lib/jquery-ui-1.10.2.custom.zip'
+	if fs.existsSync zip
+		return
+
+	url = 'http://download.jqueryui.com/download'
+	form =
+		'version': '1.10.2'
+		'core': 'on'
+		'widget': 'on'
+		'mouse': 'on'
+		'position': 'on'
+		'draggable': 'on'
+		'droppable': 'on'
+		'resizable': 'on'
+		'selectable': 'on'
+		'sortable': 'on'
+		'accordion': 'on'
+		'autocomplete': 'on'
+		'button': 'on'
+		'datepicker': 'on'
+		'dialog': 'on'
+		'menu': 'on'
+		'progressbar': 'on'
+		'slider': 'on'
+		'spinner': 'on'
+		'tabs': 'on'
+		'tooltip': 'on'
+		'effect': 'on'
+		'effect-blind': 'on'
+		'effect-bounce': 'on'
+		'effect-clip': 'on'
+		'effect-drop': 'on'
+		'effect-explode': 'on'
+		'effect-fade': 'on'
+		'effect-fold': 'on'
+		'effect-highlight': 'on'
+		'effect-pulsate': 'on'
+		'effect-scale': 'on'
+		'effect-shake': 'on'
+		'effect-slide': 'on'
+		'effect-transfer': 'on'
+		'theme-folder-name': 'ui-lightness'
+		'scope': ''
+	request = require 'request'
+	console.log green('http'), url, '->', zip
+	request.post(url, form: form).pipe(fs.createWriteStream(zip)).on 'close', ->
+		AdmZip = require('adm-zip')
+		zip = new AdmZip(zip)
+		zip.extractAllTo 'lib/'
 
 download_depends = ->
 	libs =
 		'http://code.jquery.com/jquery-1.9.1.js': 'lib/jquery-1.9.1.js'
 		'http://underscorejs.org/underscore.js': 'lib/underscore.js'
-	if not fs.existsSync 'lib'
-		fs.mkdirSync 'lib'
-	for url, path of libs
-		if not fs.existsSync path
-			download url, path
+	for url, file of libs
+		if not fs.existsSync file
+			download url, file
+	download_jquery_ui()

@@ -1,0 +1,10 @@
+{
+	"name": "WebTerm",
+	"description": "https://github.com/iambus/WebTerm",
+	"version": "0.0.1",
+	"private": true,
+	"dependencies": {
+		"request": "latest",
+		"adm-zip": "latest"
+	}
+}
