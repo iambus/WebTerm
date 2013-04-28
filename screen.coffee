@@ -987,7 +987,7 @@ class Screen
 					for attrs in open
 						html.push """<div#{(" #{k}='#{v}'" for k, v of attrs).join ''}>"""
 				if row == @cursor.row and column == @cursor.column
-					styles.push 'cursor'
+					styles.push 'cursor highlight'
 				if c.foreground
 					styles.push 'c' + c.foreground
 				if c.background
