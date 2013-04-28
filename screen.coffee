@@ -542,14 +542,13 @@ class AreaManager
 ##################################################
 
 on_keyboard = (callback) ->
-	selector = 'body'
-	$(selector).on 'keydown', (event) ->
+	$('body').on 'keydown', (event) ->
 #		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keydown', keymap.event_to_virtual_key event
 		key = keymap.event_to_virtual_key event
 		if key in ['ctrl', 'shift', 'alt', 'meta']
 			return
-		if key in ['ctrl-c', 'ctrl-v']
+		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert']
 			event.preventDefault()
 		$('#ime').focus()
 		if event.ctrlKey or event.altKey or event.metaKey
@@ -557,8 +556,10 @@ on_keyboard = (callback) ->
 		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
 		                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
 			callback key: key
+		else if key in ['shift-insert']
+			callback key: key
 
-	$(selector).on 'keypress', (event) ->
+	$('#ime').on 'keypress', (event) ->
 #		console.log 'keypress', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keypress', keymap.event_to_virtual_key event
 		if not event.ctrlKey
@@ -567,7 +568,7 @@ on_keyboard = (callback) ->
 			callback key: key
 		event.preventDefault()
 
-	$(selector).on 'textInput', (event) ->
+	$('#ime').on 'textInput', (event) ->
 #		console.log 'textInput', event.originalEvent.data, event
 		callback
 			text: event.originalEvent.data
@@ -771,6 +772,11 @@ class Commands
 		@commands[name] = command
 	lookup: (name) ->
 		@commands[name] or @persisted[name]
+	execute: (name) ->
+		command = @lookup(name)
+		if not command
+			throw Error("Command not found: #{name}")
+		command()
 	clear: ->
 		@commands = {}
 
@@ -875,42 +881,68 @@ class Screen
 
 		@column_mode = null
 
+		copy = =>
+			if @column_mode and @column_mode != true
+				selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
+				selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
+				selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
+				selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
+				selected = ((@data.data[i-1][j-1].char for j in [selected_left..selected_right]).join('') for i in [selected_top..selected_bottom]).join '\n'
+				$('#clipboard').val(selected).select()
+				document.execCommand('copy')
+				$('#clipboard').val('')
+				@column_mode = null
+				@render()
+			else
+				selected = window.getSelection().toString()
+				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+				if selected
+					$('#clipboard').val(selected).select()
+					document.execCommand('copy')
+					$('#clipboard').val('')
+				else
+					console.log 'nothing to copy' # TODO: send this message to end user
+
+		copy_all = =>
+			selected = @to_text()
+			selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+			$('#clipboard').val(selected).select()
+			document.execCommand('copy')
+			$('#clipboard').val('')
+
+		paste = =>
+			$('#clipboard').val('').select()
+			document.execCommand('paste')
+			data = $('#clipboard').val()
+			$('#clipboard').val('')
+			data = data.replace /\x1b/g, '\x1b\x1b'
+			@events.send_text data
+
+		@commands.register_persisted 'copy', copy
+		@commands.register_persisted 'copy-all', copy_all
+		@commands.register_persisted 'paste', paste
+
+		@events.on_key_persisted 'ctrl-insert', =>
+			@commands.execute('copy')
+		@events.on_key_persisted 'shift-insert', =>
+			@commands.execute('paste')
+
 		@context_menus = new ContextMenus @
 		@context_menus.register_persisted
 			title: '复制文本'
 			id: 'copy'
 			contexts: ['all']
-			onclick: =>
-				if @column_mode and @column_mode != true
-					selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
-					selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
-					selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
-					selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
-					selected = ((@data.data[i-1][j-1].char for j in [selected_left..selected_right]).join('') for i in [selected_top..selected_bottom]).join '\n'
-					$('#ime').val(selected).select()
-					document.execCommand('copy')
-					$('#ime').val('')
-					@column_mode = null
-					@render()
-				else
-					selected = window.getSelection().toString()
-					selected = (line.trimRight() for line in selected.split('\n')).join('\n')
-					if selected
-						$('#ime').val(selected).select()
-						document.execCommand('copy')
-						$('#ime').val('')
-					else
-						console.log 'nothing to copy' # TODO: send this message to end user
+			onclick: copy
 		@context_menus.register_persisted
 			title: '复制屏幕'
 			id: 'copy-all'
 			contexts: ['all']
-			onclick: =>
-				selected = @to_text()
-				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
-				$('#ime').val(selected).select()
-				document.execCommand('copy')
-				$('#ime').val('')
+			onclick: copy_all
+		@context_menus.register_persisted
+			title: '粘贴'
+			id: 'paste'
+			contexts: ['all']
+			onclick: paste
 		@context_menus.refresh()
 
 		@expect = new Expect @

@@ -10,8 +10,17 @@ textarea#ime {
     color:white;
     opacity:0.00;
     position:absolute;
-    top:0px;
-    left:0px;
-    width: 0px;
-    height: 0px;
+    top:0;
+    left:0;
+    width: 0;
+    height: 0;
+}
+textarea#clipboard {
+    color:white;
+    opacity:0.00;
+    position:absolute;
+    top:0;
+    left:0;
+    width: 0;
+    height: 0;
 }
