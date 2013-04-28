@@ -117,9 +117,9 @@ class PressEnterKeyBottomBar extends Feature
 
 class MenuClick extends Feature
 	scan: (screen) ->
-		top = 10
+		top = 5
 		bottom = screen.height
-		columns = [9, 17, 43, 45]
+		columns = [7, 9, 17, 43, 45]
 		view = screen.view.text
 		for column in columns
 			menus = []
@@ -137,7 +137,6 @@ class MenuClick extends Feature
 
 	is_menu: (view, row, column) ->
 		view.at(row, column+1) == ')' and
-		view.at(row, column+2) == ' ' and
 		(('A' <= view.at(row, column) <= 'Z') or ('0' <= view.at(row, column) <= '9')) and
 		((view.at(row, column-2) == ' ' and view.at(row, column-1) == ' ') or
 		 (view.at(row, column-2) == '◆' and view.at(row, column-1) == ''))
@@ -185,6 +184,9 @@ class RowClick extends Feature
 			if /^-?>\s+(\d+|\[提示\])/.test line
 				current = row
 				break
+		if not current?
+			# something is wrong
+			return
 		for row in [top..bottom]
 			line = view.row(row)
 			if /^-?>\s+(\d+|\[提示\])/.test line
@@ -192,10 +194,12 @@ class RowClick extends Feature
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
 				if current < row
-					key = ('down' for [1..row-current]).join ' '
+					key = ('down' for [1..row-current]).join(' ') + ' enter'
+				else if current > row
+					key = ('up' for [1..current-row]).join(' ') + ' enter'
 				else
-					key = ('up' for [1..current-row]).join ' '
-				screen.area.define_area class:'clickable', key: key + ' enter',
+					key = 'enter'
+				screen.area.define_area class:'clickable', key: key,
 					row, 1, row, view.width
 
 find_line_areas = (s, exprs) ->
@@ -281,18 +285,18 @@ class BoardModeSwitch extends Feature
 class BoardUserClick extends Feature
 	scan: (screen) ->
 		header = screen.view.text.row 3
-		i = header.indexOf '刊'
-		if i < 0
+		i = header.match(/刊\s*登\s*者|发布者|发信者/)?.index
+		if not i?
 			# something is wrong...
 			return
 		left = wcwidth(header.substring(0, i)) + 1
 		for row in [4..screen.height-1]
-			box = screen.view.text.row_range row, left, 22
+			box = screen.view.text.row_range row, left, left + 12
 			i = box.indexOf ' '
 			if i == 0
 				continue
 			if i < 0
-				right = 22
+				right = left + 12
 			else
 				right = left + i - 1
 			user = $.trim(box)
@@ -488,6 +492,21 @@ class ArticleDownload extends Feature
 # favorite
 ##################################################
 
+class FavorateListToolbar extends Feature
+	scan: (screen) ->
+		row = 2
+		toolbar = screen.view.text.row(row).trim()
+		if toolbar == '主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加[a,A] 移动[m] 删除[d] 排序[S] 求助[h]'
+			map_keys_on_line screen, row,
+				'主选单[←,e]': "e"
+				'阅读[→,r]': "r"
+				'↑': "up"
+				'↓': "down"
+				'添加[a,A]': "a"
+				'移动[m]': "m"
+				'删除[d]': "d"
+				'排序[S]': "S"
+				'求助[h]': "h"
 
 ##################################################
 # board list
@@ -617,13 +636,73 @@ class XBottomBar extends Feature
 				'j': "j"
 				'↓': "down"
 				'读取资料 Rtn,→': "enter"
-		else if lien == '[版  主]  说明 h │ 离开 q,← │ 新增文章 a │ 新增目录 g │ 修改档案 e'
+		else if line == '[版  主]  说明 h │ 离开 q,← │ 新增文章 a │ 新增目录 g │ 修改档案 e'
 			map_keys_on_line screen, screen.height,
 				'说明 h': "h"
 				'离开 q,←': "q"
 				'新增文章 a': "a"
 				'新增目录 g': "g"
 				'修改档案 e': "e"
+
+##################################################
+# mail
+##################################################
+
+class MailMenuToolbar extends Feature
+	scan: (screen) ->
+		row = 2
+		toolbar = screen.view.text.row(row).trim()
+		if toolbar == '主选单[←,e] 进入[Enter] 选择[↑,↓] 左右切换[Tab] 添加[a] 改名[T] 删除[d]'
+			map_keys_on_line screen, row,
+				'主选单[←,e]': "e"
+				'进入[Enter]': "enter"
+				'↑': "up"
+				'↓': "down"
+				'左右切换[Tab]': "tab"
+				'添加[a]': "a"
+				'改名[T]': "T"
+				'删除[d]': "d"
+
+class RowBoardClick extends Feature
+	scan: (screen) ->
+		header = screen.view.text.row 3
+		i = header.match(/讨论区名称/)?.index
+		if not i?
+			# something is wrong...
+			return
+		left = wcwidth(header.substring(0, i)) + 1
+		top = 4
+		bottom = screen.height - 1
+		current = null
+		for row in [top..bottom]
+			line = screen.view.text.row(row)
+			if /^-?>/.test line
+				current = row
+				break
+		if not current?
+			# something is wrong
+			return
+		for row in [top..bottom]
+			line = screen.view.text.row(row)
+			box = screen.view.text.row_range row, left, left + 12
+			i = box.indexOf ' '
+			if i == 0
+				continue
+			if i < 0
+				right = left + 12
+			else
+				right = left + i - 1
+			board = $.trim(box)
+			if /^(-?>\s*|\s+)\d+/.test line
+				if current < row
+					key = ('down' for [1..row-current]).join(' ') + ' s'
+				else if current > row
+					key = ('up' for [1..current-row]).join(' ') + ' s'
+				else
+					key = 's'
+				screen.area.define_area class: 'clickable inner-clickable', key: key,
+					row, left, row, right
+
 
 ##################################################
 # user
@@ -783,6 +862,8 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 
 favorite_mode = featured_mode_by test_headline(/^\[个人定制区\]\s/), 'favorite', [
 	RowClick
+	FavorateListToolbar
+	BottomUserClick
 ]
 
 board_list_mode = featured_mode_by test_headline(/^\[讨论区列表\]\s/), 'board_list', [
@@ -808,7 +889,36 @@ x_list_mode = featured_mode_by test_footline(/读取资料|修改档案/), 'x', 
 	XBottomBar
 ]
 
-system_mode = featured_mode_by test_headline(/^系统资讯选单\s/), 'system', [
+mail_menu_mode = featured_mode_by test_headline(/^\[处理信笺选单\]\s/), 'mail', [
+	MenuClick
+	MailMenuToolbar
+]
+
+mail_list_mode = featured_mode_by test_headline(/^邮件选单\s/), 'mail_list', [
+	RowClick
+	BoardUserClick
+	BottomUserClick
+]
+
+mail_replies_mode = featured_mode_by test_headline(/^\[回复我的文章\]\s/), 'mail_replies', [
+	RowClick
+	BoardUserClick
+	RowBoardClick
+	BottomUserClick
+]
+
+mail_at_mode = featured_mode_by test_headline(/^\[@我的文章\]\s/), 'mail_at', [
+	RowClick
+	BoardUserClick
+	RowBoardClick
+	BottomUserClick
+]
+
+info_menu_mode = featured_mode_by test_headline(/^工具箱选单\s/), 'system', [
+	MenuClick
+]
+
+system_menu_mode = featured_mode_by test_headline(/^系统资讯选单\s/), 'system', [
 	MenuClick
 ]
 
@@ -852,7 +962,12 @@ modes = [
 	enterkey_mode
 	top10_mode
 	x_list_mode
-	system_mode
+	mail_menu_mode
+	mail_list_mode
+	mail_replies_mode
+	mail_at_mode
+	info_menu_mode
+	system_menu_mode
 	user_mode
 	board_info_mode
 	user_list_mode
