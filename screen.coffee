@@ -632,7 +632,7 @@ class Events
 		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
 			if e.button == 0 and e.which == 1 and e.altKey
-				@screen.column_mode = true
+				@screen.selection = new Selection(@screen)
 				@screen.render()
 				span = document.elementFromPoint e.pageX, e.pageY
 				row = span.getAttribute('row')
@@ -640,13 +640,14 @@ class Events
 				if row? and column?
 					row = parseInt(row)
 					column = parseInt(column)
-					@screen.column_mode = [[row, column], [row, column]]
+					@screen.selection.range = [[row, column], [row, column]]
 					e.preventDefault()
 					return
 				else
-					@screen.column_mode = null
-			else if e.button == 0 and @screen.column_mode
-					@screen.column_mode = null
+					@screen.selection = null
+					@screen.render()
+			else if e.button == 0 and @screen.selection
+					@screen.selection = null
 					@screen.render()
 			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
@@ -656,7 +657,7 @@ class Events
 					e.preventDefault()
 				mouse_click_when = now
 		$(@screen.selector).mouseup (e) =>
-			if e.button == 0 and e.which == 1 and e.altKey and @screen.column_mode
+			if e.button == 0 and e.which == 1 and e.altKey and @screen.selection
 				return
 			if e.button == 0
 				if mouse_click_at?
@@ -667,18 +668,18 @@ class Events
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>
-			if e.button == 0 and e.which == 1 and e.altKey and @screen.column_mode
+			if e.button == 0 and e.which == 1 and e.altKey and @screen.selection
 				span = document.elementFromPoint e.pageX, e.pageY
 				row = span.getAttribute('row')
 				column = span.getAttribute('column')
 				if row? and column?
 					row = parseInt(row)
 					column = parseInt(column)
-					if @screen.column_mode[1][0] != row or @screen.column_mode[1][1] != column
-						@screen.column_mode[1] = [row, column]
+					if @screen.selection.update_range row, column
 						@screen.render_selection()
 				else
-					@screen.column_mode = null
+					@screen.selection = null
+					@screen.render()
 
 
 		# mouse wheels
@@ -860,6 +861,22 @@ class Expect
 
 
 ##################################################
+# Selection
+##################################################
+
+class Selection
+	constructor: () ->
+	update_range: (x, y) ->
+		if @range[1][0] != x or @range[1][1] != y
+			@range[1] = [x, y]
+			return true
+	get_area: ->
+		top   : _.min([@range[0][0], @range[1][0]])
+		bottom: _.max([@range[0][0], @range[1][0]])
+		left  : _.min([@range[0][1], @range[1][1]])
+		right : _.max([@range[0][1], @range[1][1]])
+
+##################################################
 # HTML builder
 ##################################################
 
@@ -879,19 +896,16 @@ class Screen
 
 		@commands = new Commands @
 
-		@column_mode = null
+		@selection = null
 
 		copy = =>
-			if @column_mode and @column_mode != true
-				selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
-				selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
-				selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
-				selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
-				selected = ((@data.data[i-1][j-1].char for j in [selected_left..selected_right]).join('') for i in [selected_top..selected_bottom]).join '\n'
+			if @selection?.range
+				{top, bottom, left, right} = @selection.get_area()
+				selected = ((@data.data[i-1][j-1].char for j in [left..right]).join('') for i in [top..bottom]).join '\n'
 				$('#clipboard').val(selected).select()
 				document.execCommand('copy')
 				$('#clipboard').val('')
-				@column_mode = null
+				@selection = null
 				@render()
 			else
 				selected = window.getSelection().toString()
@@ -1008,13 +1022,6 @@ class Screen
 	to_html: ->
 		html = []
 		tag = null
-		selecting = @column_mode
-		selected = @column_mode and @column_mode != true
-		if selected
-			selected_top = _.min([@column_mode[0][0], @column_mode[1][0]])
-			selected_bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
-			selected_left = _.min([@column_mode[0][1], @column_mode[1][1]])
-			selected_right = _.max([@column_mode[0][1], @column_mode[1][1]])
 		for line, i in @data.data
 			for c, j in line
 				row = i + 1
@@ -1040,10 +1047,8 @@ class Screen
 					styles.push 'underline'
 				if c.blink
 					styles.push 'blink'
-				if selected and selected_top <= row <= selected_bottom and selected_left <= column <= selected_right
-					styles.push 'selected'
-				if styles.length or selecting
-					if selecting
+				if styles.length or @selection
+					if @selection
 						new_tag = "<span class='#{styles.join ' '}' row='#{row}' column='#{column}'>"
 					else
 						new_tag = "<span class='#{styles.join ' '}'>"
@@ -1072,13 +1077,8 @@ class Screen
 		return html.join ''
 
 	render_selection: ->
-		selecting = @column_mode
-		selected = @column_mode and @column_mode != true
-		if selected
-			top = _.min([@column_mode[0][0], @column_mode[1][0]])
-			bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
-			left = _.min([@column_mode[0][1], @column_mode[1][1]])
-			right = _.max([@column_mode[0][1], @column_mode[1][1]])
+		if @selection
+			{top, bottom, left, right} = @selection.get_area()
 			$(@selector).find('span.selected').removeClass('selected')
 			cells = $(@selector).find('span[row][column]').filter ->
 				row = parseInt(@getAttribute('row'))
