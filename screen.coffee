@@ -565,12 +565,8 @@ on_keyboard = (callback) ->
 			callback key: key
 		event.preventDefault()
 
-	#	$(selector).on 'compositionstart', (event) ->
-	#		console.log 'compositionstart', event.originalEvent.data, event
-	#	$(selector).on 'compositionupdate', (event) ->
-	#		console.log 'compositionupdate!', event.originalEvent.data, event
-	$(selector).on 'compositionend', (event) ->
-		#		console.log 'compositionend', event.originalEvent.data, event
+	$(selector).on 'textInput', (event) ->
+#		console.log 'textInput', event.originalEvent.data, event
 		callback
 			text: event.originalEvent.data
 			event: event
