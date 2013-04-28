@@ -678,7 +678,6 @@ class Events
 					@screen.column_mode = null
 
 
-
 		# mouse wheels
 		$(@screen.selector).on 'mousewheel', (e) =>
 			delta = e.originalEvent.wheelDelta
@@ -688,14 +687,21 @@ class Events
 				@send_key "down"
 
 		# mouse gestures!
+		@gestures = {}
 		$(@screen.selector).gesture (e) =>
-			if e.direction?
-				@send_key e.direction
+			gesture = e.direction
+			if gesture?
+				handler = @gestures[gesture]
+				if handler?
+					handler()
+				else
+					@send_key gesture
 
 
 	clear: ->
 		@key_mappings = []
 		@clickables = []
+		@gestures = {}
 
 	on_key: (key, handler) ->
 		@key_mappings.push [key, handler]
@@ -746,6 +752,8 @@ class Events
 		@on_click selector, =>
 			@send_key keys...
 
+	on_mouse_gesture: (gesture, callback) ->
+		@gestures[gesture] = callback
 
 ##################################################
 # Commands

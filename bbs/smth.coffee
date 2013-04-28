@@ -42,6 +42,13 @@ global_mode = featured_mode 'global', [
 	Clickable
 ]
 
+class MousePaging extends Feature
+	scan: (screen) ->
+		screen.events.on_mouse_gesture 'up', ->
+			screen.events.send_key 'pageup'
+		screen.events.on_mouse_gesture 'down', ->
+			screen.events.send_key 'pagedown'
+
 ##################################################
 # input options
 ##################################################
@@ -850,6 +857,7 @@ board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主�
 	BoardBMClick
 	BoardInfoClick
 	BottomUserClick
+	MousePaging
 ]
 
 read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[阅读精华区资料\])\s/), 'read', [
@@ -858,18 +866,21 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	ArticleURL
 	ArticleDownload
 	ClickWhitespace
+	MousePaging
 ]
 
 favorite_mode = featured_mode_by test_headline(/^\[个人定制区\]\s/), 'favorite', [
 	RowClick
 	FavorateListToolbar
 	BottomUserClick
+	MousePaging
 ]
 
 board_list_mode = featured_mode_by test_headline(/^\[讨论区列表\]\s/), 'board_list', [
 	RowClick
 	BoardListToolbar
 	BottomUserClick
+	MousePaging
 ]
 
 board_group_mode = featured_mode_by test_headline(/^分类讨论区选单\s/), 'board_group', [
@@ -887,6 +898,7 @@ x_list_mode = featured_mode_by test_footline(/读取资料|修改档案/), 'x', 
 	RowClick
 	XToolBar
 	XBottomBar
+	MousePaging
 ]
 
 mail_menu_mode = featured_mode_by test_headline(/^\[处理信笺选单\]\s/), 'mail', [
@@ -905,6 +917,7 @@ mail_replies_mode = featured_mode_by test_headline(/^\[回复我的文章\]\s/),
 	BoardUserClick
 	RowBoardClick
 	BottomUserClick
+	MousePaging
 ]
 
 mail_at_mode = featured_mode_by test_headline(/^\[@我的文章\]\s/), 'mail_at', [
@@ -912,6 +925,7 @@ mail_at_mode = featured_mode_by test_headline(/^\[@我的文章\]\s/), 'mail_at'
 	BoardUserClick
 	RowBoardClick
 	BottomUserClick
+	MousePaging
 ]
 
 info_menu_mode = featured_mode_by test_headline(/^工具箱选单\s/), 'system', [
@@ -933,6 +947,7 @@ board_info_mode = featured_mode_by test_footline(/^\s*添加到个人定制区\[
 user_list_mode = featured_mode_by test_headline(/^\[使用者列表\]/), 'user_list', [
 	RowClick
 	UserListToolbar
+	MousePaging
 ]
 
 press_any_key_mode = featured_mode_by test_footline(/^\s*按任何键继续 \.\.\s*$/), 'user', [
