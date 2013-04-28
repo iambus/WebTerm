@@ -676,7 +676,7 @@ class Events
 					column = parseInt(column)
 					if @screen.column_mode[1][0] != row or @screen.column_mode[1][1] != column
 						@screen.column_mode[1] = [row, column]
-						@screen.render()
+						@screen.render_selection()
 				else
 					@screen.column_mode = null
 
@@ -1070,6 +1070,24 @@ class Screen
 		if tag?
 			html.push '</span>'
 		return html.join ''
+
+	render_selection: ->
+		selecting = @column_mode
+		selected = @column_mode and @column_mode != true
+		if selected
+			top = _.min([@column_mode[0][0], @column_mode[1][0]])
+			bottom = _.max([@column_mode[0][0], @column_mode[1][0]])
+			left = _.min([@column_mode[0][1], @column_mode[1][1]])
+			right = _.max([@column_mode[0][1], @column_mode[1][1]])
+			$(@selector).find('span.selected').removeClass('selected')
+			cells = $(@selector).find('span[row][column]').filter ->
+				row = parseInt(@getAttribute('row'))
+				column = parseInt(@getAttribute('column'))
+				top <= row <= bottom and left <= column <= right
+			cells.addClass('selected')
+
+
+jQuery.expr[':'].area =
 
 ##################################################
 # exports
