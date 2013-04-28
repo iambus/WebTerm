@@ -687,6 +687,11 @@ class Events
 			if e.direction?
 				@send_key e.direction
 
+
+	clear: ->
+		@key_mappings = []
+		@clickables = []
+
 	on_key: (key, handler) ->
 		@key_mappings.push [key, handler]
 
@@ -909,6 +914,7 @@ class Screen
 	screen_updated: ->
 		@update_area()
 		@update_view()
+		@events.clear()
 		@commands.clear()
 		@context_menus.clear()
 		@expect.update()
