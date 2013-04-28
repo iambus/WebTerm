@@ -18,6 +18,8 @@
 			]
 		},
 		"storage",
+		"fileSystem",
+		"fileSystem.write",
 		"contextMenus",
 		"clipboardRead",
 		"clipboardWrite"
