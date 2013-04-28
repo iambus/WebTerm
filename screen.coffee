@@ -606,10 +606,15 @@ class Events
 		@buffer = []
 
 		# keyboard events
+		@key_mappings_persisted = []
 		@key_mappings = []
 		on_keyboard ({key, text}) =>
 			if key?
 				for [k, h] in @key_mappings
+					if is_key(k, key)
+						h(key)
+						return
+				for [k, h] in @key_mappings_persisted
 					if is_key(k, key)
 						h(key)
 						return
@@ -694,6 +699,9 @@ class Events
 
 	on_key: (key, handler) ->
 		@key_mappings.push [key, handler]
+
+	on_key_persisted: (key, handler) ->
+		@key_mappings_persisted.push [key, handler]
 
 	put_key: (keys...) ->
 #		console.log 'send key', keys
