@@ -41,7 +41,7 @@ coffee = (args, on_stdout, on_stderr) ->
 			console.error red s
 	app.on 'close', (code) ->
 		if code != 0
-			console.error red "something wrong! coffee: #{options}"
+			console.error red "something wrong! coffee: #{args}"
 
 download = (url, file) ->
 	dir = path.dirname file
