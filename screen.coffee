@@ -677,9 +677,6 @@ class Events
 					column = parseInt(column)
 					if @screen.selection.update_range row, column
 						@screen.render_selection()
-				else
-					@screen.selection = null
-					@screen.render()
 
 
 		# mouse wheels
