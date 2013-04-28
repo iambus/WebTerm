@@ -740,9 +740,14 @@ class Events
 
 class Commands
 	constructor: (@screen) ->
+		@persisted = {}
 		@commands = {}
+	register_persisted: (name, command) ->
+		@persisted[name] = command
 	register: (name, command) ->
 		@commands[name] = command
+	lookup: (name) ->
+		@commands[name] or @persisted[name]
 	clear: ->
 		@commands = {}
 
