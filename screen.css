@@ -32,7 +32,8 @@ a {
     text-decoration: none;
 }
 span.selected {
-    background: #ffb7b7;
+    background: #972F2C;
+    color: #FFF;
 }
 
 .c30 {color: black; }
