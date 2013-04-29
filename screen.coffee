@@ -942,12 +942,16 @@ class Selection
 						builder.append_line()
 				builder.complete()
 
+	select_all: ->
+		@set_range [[1, 1], [@screen.height, @screen.width]]
+		@
+
+	# helpers
 	position_of_span: (span) ->
 		row = span.getAttribute('row')
 		column = span.getAttribute('column')
 		if top? and column?
 			[parseInt(row), parseInt(column)]
-
 	position_at_point: (x, y) ->
 		@position_of_span document.elementFromPoint x, y
 
@@ -1051,8 +1055,7 @@ class Screen
 				console.log 'nothing to copy' # TODO: send this message to end user
 
 		copy_all = =>
-			selected = @to_text()
-			selected = (line.trimRight() for line in selected.split('\n')).join('\n')
+			selected = new Selection(@).select_all().get_selected_text()
 			$('#clipboard').val(selected).select()
 			document.execCommand('copy')
 			$('#clipboard').val('')
