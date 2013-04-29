@@ -1046,16 +1046,10 @@ class Screen
 		copy = =>
 			selected = @selection?.get_selected_text()
 			if selected
-				$('#clipboard').val(selected).select()
-				document.execCommand('copy')
-				$('#clipboard').val('')
 				@selection = null
 				@render()
 			else
-				console.log 'nothing to copy' # TODO: send this message to end user
-
-		copy_all = =>
-			selected = new Selection(@).select_all().get_selected_text()
+				selected = new Selection(@).select_all().get_selected_text()
 			$('#clipboard').val(selected).select()
 			document.execCommand('copy')
 			$('#clipboard').val('')
@@ -1063,13 +1057,13 @@ class Screen
 		copy_ascii = =>
 			selected = @selection?.get_selected_ascii()
 			if selected
-				$('#clipboard').val(selected).select()
-				document.execCommand('copy')
-				$('#clipboard').val('')
 				@selection = null
 				@render()
 			else
-				console.log 'nothing to copy' # TODO: send this message to end user
+				selected = new Selection(@).select_all().get_selected_ascii()
+			$('#clipboard').val(selected).select()
+			document.execCommand('copy')
+			$('#clipboard').val('')
 
 		copy_if = =>
 			selected = @selection?.get_selected_text()
@@ -1092,7 +1086,6 @@ class Screen
 			@events.send_text data
 
 		@commands.register_persisted 'copy', copy
-		@commands.register_persisted 'copy-all', copy_all
 		@commands.register_persisted 'copy-ascii', copy_ascii
 		@commands.register_persisted 'copy-if', copy_if
 		@commands.register_persisted 'paste', paste
@@ -1108,15 +1101,10 @@ class Screen
 
 		@context_menus = new ContextMenus @
 		@context_menus.register_persisted
-			title: '复制文本'
+			title: '文本复制'
 			id: 'copy'
 			contexts: ['all']
 			onclick: copy
-		@context_menus.register_persisted
-			title: '复制屏幕'
-			id: 'copy-all'
-			contexts: ['all']
-			onclick: copy_all
 		@context_menus.register_persisted
 			title: '彩色复制'
 			id: 'copy-ascii'
