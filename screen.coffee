@@ -632,6 +632,9 @@ class Events
 		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
 			if e.button == 0 and e.which == 1
+				if @screen.selection
+					@screen.selection = null
+					@screen.render()
 				@screen.selection = new Selection(@screen)
 				@screen.selection.start = [e.pageX, e.pageY]
 				@screen.selection.column_mode = e.altKey
