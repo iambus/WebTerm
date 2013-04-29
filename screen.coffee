@@ -969,6 +969,18 @@ class Screen
 			document.execCommand('copy')
 			$('#clipboard').val('')
 
+		copy_if = =>
+			selected = @selection?.get_selected_text()
+			if selected
+				$('#clipboard').val(selected).select()
+				document.execCommand('copy')
+				$('#clipboard').val('')
+				@selection = null
+				@render()
+			else
+				@events.send_key 'ctrl-c'
+
+
 		paste = =>
 			$('#clipboard').val('').select()
 			document.execCommand('paste')
@@ -979,8 +991,11 @@ class Screen
 
 		@commands.register_persisted 'copy', copy
 		@commands.register_persisted 'copy-all', copy_all
+		@commands.register_persisted 'copy-if', copy_if
 		@commands.register_persisted 'paste', paste
 
+		@events.on_key_persisted 'ctrl-c', =>
+			@commands.execute('copy-if')
 		@events.on_key_persisted 'ctrl-insert', =>
 			@commands.execute('copy')
 		@events.on_key_persisted 'shift-insert', =>
