@@ -687,7 +687,18 @@ class Events
 					if @screen.selection.update_range pos
 						@screen.render_selection()
 						e.preventDefault()
-
+			else if e.button == 0 and e.which == 1 and @screen.selection and @screen.selection.done
+				# when user holds on mouse at the edge of screen
+				@screen.selection = null
+				@screen.render()
+				@screen.selection = new Selection(@screen)
+				@screen.selection.start = [e.pageX, e.pageY]
+				@screen.selection.column_mode = e.altKey
+			else if e.button == 0 and e.which == 1 and not @screen.selection
+				# when user holds on mouse at the edge of screen
+				@screen.selection = new Selection(@screen)
+				@screen.selection.start = [e.pageX, e.pageY]
+				@screen.selection.column_mode = e.altKey
 
 		# mouse wheels
 		$(@screen.selector).on 'mousewheel', (e) =>

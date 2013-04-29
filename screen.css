@@ -1,4 +1,6 @@
 #screen {
+    -webkit-user-select: none;
+
     /*padding-bottom: 30%;*/
     min-height: 360px;
     min-width: 560px;
