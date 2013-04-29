@@ -667,25 +667,17 @@ class Events
 				if not @screen.selection.range?
 					@screen.selection.ready = true
 					@screen.render()
-					span = document.elementFromPoint @screen.selection.start[0], @screen.selection.start[1]
-					top = span.getAttribute('row')
-					left = span.getAttribute('column')
-					if top and left
-						top = parseInt(top)
-						left = parseInt(left)
-						@screen.selection.set_range [[top, left], [top, left]]
+					pos = @screen.selection.position_at_point @screen.selection.start[0], @screen.selection.start[1]
+					if pos
+						@screen.selection.set_range [pos, pos]
 						@screen.render_selection()
 					else
 						@screen.selection = null
 						@screen.render()
 						return
-				span = document.elementFromPoint e.pageX, e.pageY
-				bottom = span.getAttribute('row')
-				right = span.getAttribute('column')
-				if bottom and right
-					bottom = parseInt(bottom)
-					right = parseInt(right)
-					if @screen.selection.update_range bottom, right
+				pos = @screen.selection.position_at_point e.pageX, e.pageY
+				if pos?
+					if @screen.selection.update_range pos
 						@screen.render_selection()
 						e.preventDefault()
 
@@ -879,7 +871,7 @@ class Selection
 		@range = range
 		@update_range_cache()
 
-	update_range: (r, c) ->
+	update_range: ([r, c]) ->
 		if @range[1][0] != r or @range[1][1] != c
 			@range[1] = [r, c]
 			@update_range_cache()
@@ -926,6 +918,16 @@ class Selection
 					if column == @screen.width
 						buffer.push '\n'
 				buffer.join ''
+
+	position_of_span: (span) ->
+		row = span.getAttribute('row')
+		column = span.getAttribute('column')
+		if top? and column?
+			[parseInt(row), parseInt(column)]
+
+	position_at_point: (x, y) ->
+		@position_of_span document.elementFromPoint x, y
+
 
 ##################################################
 # HTML builder
@@ -1124,8 +1126,7 @@ class Screen
 			selection = @selection
 			$(@selector).find('span.selected').removeClass('selected')
 			cells = $(@selector).find('span[row][column]').filter ->
-				row = parseInt(@getAttribute('row'))
-				column = parseInt(@getAttribute('column'))
+				[row, column] = selection.position_of_span @
 				selection.contains row, column
 			cells.addClass('selected')
 
