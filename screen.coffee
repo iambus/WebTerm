@@ -668,9 +668,13 @@ class Events
 		$(@screen.selector).mousemove (e) =>
 			if e.button == 0 and e.which == 1 and @screen.selection and not @screen.selection.done
 				if not @screen.selection.range?
+					start_x = @screen.selection.start[0]
+					start_y = @screen.selection.start[1]
+					if start_x == e.pageX and start_y == e.pageY
+						return
 					@screen.selection.ready = true
 					@screen.render()
-					pos = @screen.selection.position_at_point @screen.selection.start[0], @screen.selection.start[1]
+					pos = @screen.selection.position_at_point start_x, start_y
 					if pos
 						@screen.selection.set_range [pos, pos]
 						@screen.render_selection()
