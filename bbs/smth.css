@@ -6,6 +6,9 @@
     background-color: rgba(128, 128, 128, 0.5);
     cursor: pointer;
 }
+.clickable:hover span.selected {
+    background-color: #972F2C;
+}
 .inner-clickable:hover {
     /*background-color: yellow;*/
     color: yellow;
