@@ -920,6 +920,28 @@ class Selection
 				text = buffer.join ''
 				text.replace /\x20+$/gm, ''
 
+	get_selected_ascii: ->
+		if @column_mode
+			if @rect
+				{top, bottom, left, right} = @rect
+				builder = new ASCIIBuilder
+				for i in [top..bottom]
+					for j in [left..right]
+						builder.append @screen.data.at i, j
+					builder.append_line()
+				builder.complete()
+		else
+			if @band
+				[start, end] = @band
+				builder = new ASCIIBuilder
+				for i in [start..end]
+					row = (Math.floor i / @screen.width) + 1
+					column = (i % @screen.width) + 1
+					builder.append @screen.data.at row, column
+					if column == @screen.width
+						builder.append_line()
+				builder.complete()
+
 	position_of_span: (span) ->
 		row = span.getAttribute('row')
 		column = span.getAttribute('column')
@@ -929,6 +951,71 @@ class Selection
 	position_at_point: (x, y) ->
 		@position_of_span document.elementFromPoint x, y
 
+
+##################################################
+# ASCII builder
+##################################################
+
+class ASCIIBuilder
+	constructor: ->
+		@buffer = []
+		@foreground = null
+		@background = null
+		@bright = null
+		@underline = null
+		@blink = null
+	append: (c) ->
+		if @equal_styles(@, c)
+			@buffer.push c.char
+		else if not @has_styles(c)
+			@buffer.push '\x1b[m'
+			@buffer.push c.char
+			@copy_styles c, @
+		else
+			@buffer.push '\x1b[m'
+			styles = []
+			if c.foreground
+				styles.push c.foreground
+			if c.background
+				styles.push c.background
+			if c.bright
+				styles.push 1
+			if c.underline
+				styles.push 4
+			if c.blink
+				styles.push 5
+			@buffer.push "\x1b[#{styles.join ';'}m"
+			@buffer.push c.char
+			@copy_styles c, @
+	append_line: ->
+		@buffer.push '\n'
+	complete: ->
+		if @has_styles @
+			@buffer.push '\x1b[m'
+		@buffer.join ''
+
+	## helpers
+	equal: (x, y) ->
+		if x? and y?
+			return x == y
+		else if x? or y?
+			return false
+		else
+			return true
+	equal_styles: (x, y) ->
+		@equal(x.foreground, y.foreground) and
+		@equal(x.background, y.background) and
+		@equal(x.bright, y.bright) and
+		@equal(x.underline, y.underline) and
+		@equal(x.blink, y.blink)
+	has_styles: (x) ->
+		x.foreground? or x.background? or x.bright? or x.underline? or x.blink?
+	copy_styles: (from, to) ->
+		to.foreground = from.foreground
+		to.background= from.background
+		to.bright = from.bright
+		to.underline = from.underline
+		to.blink = from.blink
 
 ##################################################
 # HTML builder
@@ -970,6 +1057,17 @@ class Screen
 			document.execCommand('copy')
 			$('#clipboard').val('')
 
+		copy_ascii = =>
+			selected = @selection?.get_selected_ascii()
+			if selected
+				$('#clipboard').val(selected).select()
+				document.execCommand('copy')
+				$('#clipboard').val('')
+				@selection = null
+				@render()
+			else
+				console.log 'nothing to copy' # TODO: send this message to end user
+
 		copy_if = =>
 			selected = @selection?.get_selected_text()
 			if selected
@@ -992,15 +1090,18 @@ class Screen
 
 		@commands.register_persisted 'copy', copy
 		@commands.register_persisted 'copy-all', copy_all
+		@commands.register_persisted 'copy-ascii', copy_ascii
 		@commands.register_persisted 'copy-if', copy_if
 		@commands.register_persisted 'paste', paste
 
-		@events.on_key_persisted 'ctrl-c', =>
-			@commands.execute('copy-if')
 		@events.on_key_persisted 'ctrl-insert', =>
 			@commands.execute('copy')
 		@events.on_key_persisted 'shift-insert', =>
 			@commands.execute('paste')
+		@events.on_key_persisted 'ctrl-shift-c', =>
+			@commands.execute('copy-ascii')
+		@events.on_key_persisted 'ctrl-c', =>
+			@commands.execute('copy-if')
 
 		@context_menus = new ContextMenus @
 		@context_menus.register_persisted
@@ -1013,6 +1114,11 @@ class Screen
 			id: 'copy-all'
 			contexts: ['all']
 			onclick: copy_all
+		@context_menus.register_persisted
+			title: '彩色复制'
+			id: 'copy-ascii'
+			contexts: ['all']
+			onclick: copy_ascii
 		@context_menus.register_persisted
 			title: '粘贴'
 			id: 'paste'
