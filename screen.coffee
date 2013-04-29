@@ -631,24 +631,11 @@ class Events
 		mouse_click_at = null
 		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
-			if e.button == 0 and e.which == 1 and e.altKey
+			if e.button == 0 and e.which == 1
 				@screen.selection = new Selection(@screen)
-				@screen.render()
-				span = document.elementFromPoint e.pageX, e.pageY
-				row = span.getAttribute('row')
-				column = span.getAttribute('column')
-				if row? and column?
-					row = parseInt(row)
-					column = parseInt(column)
-					@screen.selection.range = [[row, column], [row, column]]
-					e.preventDefault()
-					return
-				else
-					@screen.selection = null
-					@screen.render()
-			else if e.button == 0 and @screen.selection
-					@screen.selection = null
-					@screen.render()
+				@screen.selection.start = [e.pageX, e.pageY]
+				@screen.selection.column_mode = e.altKey
+				e.preventDefault()
 			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
 				now = new Date()
@@ -657,8 +644,16 @@ class Events
 					e.preventDefault()
 				mouse_click_when = now
 		$(@screen.selector).mouseup (e) =>
-			if e.button == 0 and e.which == 1 and e.altKey and @screen.selection
-				return
+			if e.button == 0 and e.which == 1 and @screen.selection
+				if not @screen.selection.ready
+					@screen.selection = null
+				else if @screen.selection.done
+					@screen.selection = null
+					@screen.render()
+					return
+				else
+					@screen.selection.done = true
+					return
 			if e.button == 0
 				if mouse_click_at?
 					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
@@ -668,15 +663,30 @@ class Events
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>
-			if e.button == 0 and e.which == 1 and e.altKey and @screen.selection
+			if e.button == 0 and e.which == 1 and @screen.selection and not @screen.selection.done
+				if not @screen.selection.range?
+					@screen.selection.ready = true
+					@screen.render()
+					span = document.elementFromPoint @screen.selection.start[0], @screen.selection.start[1]
+					top = span.getAttribute('row')
+					left = span.getAttribute('column')
+					if top and left
+						top = parseInt(top)
+						left = parseInt(left)
+						@screen.selection.range = [[top, left], [top, left]]
+					else
+						@screen.selection = null
+						@screen.render()
+						return
 				span = document.elementFromPoint e.pageX, e.pageY
-				row = span.getAttribute('row')
-				column = span.getAttribute('column')
-				if row? and column?
-					row = parseInt(row)
-					column = parseInt(column)
-					if @screen.selection.update_range row, column
+				bottom = span.getAttribute('row')
+				right = span.getAttribute('column')
+				if bottom and right
+					bottom = parseInt(bottom)
+					right = parseInt(right)
+					if @screen.selection.update_range bottom, right
 						@screen.render_selection()
+						e.preventDefault()
 
 
 		# mouse wheels
@@ -862,16 +872,52 @@ class Expect
 ##################################################
 
 class Selection
-	constructor: () ->
-	update_range: (x, y) ->
-		if @range[1][0] != x or @range[1][1] != y
-			@range[1] = [x, y]
+	constructor: (@screen) ->
+
+	update_range: (r, c) ->
+		if @range[1][0] != r or @range[1][1] != c
+			@range[1] = [r, c]
+			if @column_mode
+				@rect = @get_rect()
+			else
+				@band = @get_band()
 			return true
-	get_area: ->
+
+	get_rect: ->
 		top   : _.min([@range[0][0], @range[1][0]])
 		bottom: _.max([@range[0][0], @range[1][0]])
 		left  : _.min([@range[0][1], @range[1][1]])
 		right : _.max([@range[0][1], @range[1][1]])
+
+	get_band: ->
+		start = (@range[0][0]-1) * @screen.width + (@range[0][1]-1)
+		end = (@range[1][0]-1) * @screen.width + (@range[1][1]-1)
+		[_.min([start, end]), _.max([start, end])]
+
+	contains: (row, column) ->
+		if @column_mode
+			@rect.top <= row <= @rect.bottom and @rect.left <= column <= @rect.right
+		else
+			if not @band
+				console.log 'error!'
+			@band[0] <= (row-1) * @screen.width + (column-1) <= @band[1]
+
+	get_selected_text: ->
+		if @column_mode
+			if @rect
+				{top, bottom, left, right} = @rect
+				((@screen.data.data[i-1][j-1].char for j in [left..right]).join('') for i in [top..bottom]).join '\n'
+		else
+			if @band
+				[start, end] = @band
+				buffer = []
+				for i in [start..end]
+					row = (Math.floor i / @screen.width) + 1
+					column = (i % @screen.width) + 1
+					buffer.push @screen.data.at(row, column).char
+					if column == @screen.width
+						buffer.push '\n'
+				buffer.join ''
 
 ##################################################
 # HTML builder
@@ -896,23 +942,15 @@ class Screen
 		@selection = null
 
 		copy = =>
-			if @selection?.range
-				{top, bottom, left, right} = @selection.get_area()
-				selected = ((@data.data[i-1][j-1].char for j in [left..right]).join('') for i in [top..bottom]).join '\n'
+			selected = @selection?.get_selected_text()
+			if selected
 				$('#clipboard').val(selected).select()
 				document.execCommand('copy')
 				$('#clipboard').val('')
 				@selection = null
 				@render()
 			else
-				selected = window.getSelection().toString()
-				selected = (line.trimRight() for line in selected.split('\n')).join('\n')
-				if selected
-					$('#clipboard').val(selected).select()
-					document.execCommand('copy')
-					$('#clipboard').val('')
-				else
-					console.log 'nothing to copy' # TODO: send this message to end user
+				console.log 'nothing to copy' # TODO: send this message to end user
 
 		copy_all = =>
 			selected = @to_text()
@@ -1044,8 +1082,8 @@ class Screen
 					styles.push 'underline'
 				if c.blink
 					styles.push 'blink'
-				if styles.length or @selection
-					if @selection
+				if styles.length or @selection?.ready?
+					if @selection?.ready?
 						new_tag = "<span class='#{styles.join ' '}' row='#{row}' column='#{column}'>"
 					else
 						new_tag = "<span class='#{styles.join ' '}'>"
@@ -1074,13 +1112,13 @@ class Screen
 		return html.join ''
 
 	render_selection: ->
-		if @selection
-			{top, bottom, left, right} = @selection.get_area()
+		if @selection?.range?
+			selection = @selection
 			$(@selector).find('span.selected').removeClass('selected')
 			cells = $(@selector).find('span[row][column]').filter ->
 				row = parseInt(@getAttribute('row'))
 				column = parseInt(@getAttribute('column'))
-				top <= row <= bottom and left <= column <= right
+				selection.contains row, column
 			cells.addClass('selected')
 
 
