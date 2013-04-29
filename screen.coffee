@@ -993,20 +993,14 @@ class ASCIIBuilder
 			@buffer.push '\x1b[m'
 			@buffer.push c.char
 			@copy_styles c, @
+		else if not @has_styles(@)
+			@buffer.push @generate_styles c
+			@buffer.push c.char
+			@copy_styles c, @
 		else
-			@buffer.push '\x1b[m'
-			styles = []
-			if c.foreground
-				styles.push c.foreground
-			if c.background
-				styles.push c.background
-			if c.bright
-				styles.push 1
-			if c.underline
-				styles.push 4
-			if c.blink
-				styles.push 5
-			@buffer.push "\x1b[#{styles.join ';'}m"
+			reset = @generate_reset_styles(c)
+			diff = @generate_diff_styles(c)
+			@buffer.push if reset.length < diff.length then reset else diff
 			@buffer.push c.char
 			@copy_styles c, @
 	append_line: ->
@@ -1015,6 +1009,40 @@ class ASCIIBuilder
 		if @has_styles @
 			@buffer.push '\x1b[m'
 		@buffer.join ''
+
+	generate_styles: (c) ->
+		styles = []
+		if c.foreground
+			styles.push c.foreground
+		if c.background
+			styles.push c.background
+		if c.bright
+			styles.push 1
+		if c.underline
+			styles.push 4
+		if c.blink
+			styles.push 5
+		"\x1b[#{styles.join ';'}m"
+
+	generate_reset_styles: (c) ->
+		"\x1b[m" + @generate_styles(c)
+
+	generate_diff_styles: (c) ->
+		styles = []
+		if not @equal(@foreground, c.foreground)
+			styles.push if not c.foreground then 39 else c.foreground
+		if not @equal(@background, c.background)
+			styles.push if not c.background then 49 else c.background
+		if not (@equal(@bright, c.bright) and @equal(@underline, c.underline) and @equal(@blink, c.blink))
+			if @bright or @underline or @blink
+				styles.push 0
+			if c.bright
+				styles.push 1
+			if c.underline
+				styles.push 4
+			if c.blink
+				styles.push 5
+		"\x1b[#{styles.join ';'}m"
 
 	## helpers
 	equal: (x, y) ->
