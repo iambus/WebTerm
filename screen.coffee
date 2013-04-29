@@ -673,7 +673,8 @@ class Events
 					if top and left
 						top = parseInt(top)
 						left = parseInt(left)
-						@screen.selection.range = [[top, left], [top, left]]
+						@screen.selection.set_range [[top, left], [top, left]]
+						@screen.render_selection()
 					else
 						@screen.selection = null
 						@screen.render()
@@ -874,13 +875,14 @@ class Expect
 class Selection
 	constructor: (@screen) ->
 
+	set_range: (range) ->
+		@range = range
+		@update_range_cache()
+
 	update_range: (r, c) ->
 		if @range[1][0] != r or @range[1][1] != c
 			@range[1] = [r, c]
-			if @column_mode
-				@rect = @get_rect()
-			else
-				@band = @get_band()
+			@update_range_cache()
 			return true
 
 	get_rect: ->
@@ -893,6 +895,12 @@ class Selection
 		start = (@range[0][0]-1) * @screen.width + (@range[0][1]-1)
 		end = (@range[1][0]-1) * @screen.width + (@range[1][1]-1)
 		[_.min([start, end]), _.max([start, end])]
+
+	update_range_cache: ->
+		if @column_mode
+			@rect = @get_rect()
+		else
+			@band = @get_band()
 
 	contains: (row, column) ->
 		if @column_mode
