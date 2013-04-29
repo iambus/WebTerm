@@ -906,7 +906,7 @@ class Selection
 		if @column_mode
 			if @rect
 				{top, bottom, left, right} = @rect
-				((@screen.data.data[i-1][j-1].char for j in [left..right]).join('') for i in [top..bottom]).join '\n'
+				((@screen.data.data[i-1][j-1].char for j in [left..right]).join('').trimRight() for i in [top..bottom]).join '\n'
 		else
 			if @band
 				[start, end] = @band
@@ -917,7 +917,8 @@ class Selection
 					buffer.push @screen.data.at(row, column).char
 					if column == @screen.width
 						buffer.push '\n'
-				buffer.join ''
+				text = buffer.join ''
+				text.replace /\x20+$/gm, ''
 
 	position_of_span: (span) ->
 		row = span.getAttribute('row')
