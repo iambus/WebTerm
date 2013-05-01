@@ -22,6 +22,108 @@ Feature = mode.Feature
 {featured_mode, featured_mode_by, test_headline, test_footline} = mode.utils
 
 ##################################################
+# helpers
+##################################################
+
+find_line_areas = (s, exprs) ->
+	index = 0
+	left = 1
+	right = 1
+	areas = []
+	for expr in exprs
+		right = left
+		for i in [0...expr.length]
+			if expr.charAt(i) != s.charAt(index)
+				return
+			right += wcwidth(s.charAt(index))
+			i++
+			index++
+		areas.push [left, right-1]
+		left = right
+		if s.charAt(index) not in ['', ' ']
+			return
+		while s.charAt(index) == ' '
+			index++
+			left++
+		if s.charAt(index) == ''
+			if areas.length == exprs.length
+				return areas
+			else
+				return
+	return areas
+
+find_line_area = (s, expr) ->
+	start = s.indexOf(expr)
+	if start == -1
+		return
+	left = 1 + wcwidth(s.substring(0, start))
+	row = left + wcwidth(expr) - 1
+	return [left, row]
+
+map_key_on_line = (screen, row, text, key) ->
+	line = screen.view.text.row(row)
+	area = find_line_area line, text
+	if area
+		screen.area.define_area class: 'clickable', key: key,
+			row, area[0], row, area[1]
+
+map_keys_on_line = (screen, row, bindings) ->
+	line = screen.view.text.row(row)
+	for text, key of bindings
+		area = find_line_area line, text
+		if area
+			screen.area.define_area class: 'clickable', key: key,
+				row, area[0], row, area[1]
+
+map_areas_on_line = (screen, row, areas, bindings) ->
+	if areas.length != bindings.length
+		# something is wrong!
+		return
+	for i in [0...areas.length]
+		[left, right] = areas[i]
+		key = bindings[i]
+		screen.area.define_area class: 'clickable', key: key,
+			row, left, row, right
+
+map_areas_by_whitespaces_on_line = (screen, row, text, bindings) ->
+	line = screen.view.text.row(row)
+	index = line.indexOf text
+	if index >= 0
+		areas = []
+		m = text.split /\s+/
+		for i in [0...m.length]
+			word = m[i]
+			index = line.indexOf word, index
+			if index < 0
+				# something is wrong!
+				return
+			left = 1 + wcwidth(line.substring(0, index))
+			right = left + wcwidth(word) - 1
+			areas.push [left, right]
+		map_areas_on_line screen, row, areas, bindings
+
+map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
+	line = screen.view.text.row(row)
+	m = line.match regexp
+	if m
+		if m.length == 1
+			left = 1 + wcwidth(line.substring(0, index))
+			right = left + wcwidth(m[0]) - 1
+			return map_areas_on_line screen, row, [[left, right]], [bindings]
+		areas = []
+		index = m.index
+		for i in [1...m.length]
+			word = m[i]
+			index = line.indexOf word, index
+			if index < 0
+				# something is wrong!
+				return
+			left = 1 + wcwidth(line.substring(0, index))
+			right = left + wcwidth(word) - 1
+			areas.push [left, right]
+		map_areas_on_line screen, row, areas, bindings
+
+##################################################
 # global
 ##################################################
 
@@ -55,36 +157,15 @@ class MousePaging extends Feature
 
 class Options extends Feature
 	scan: (screen) ->
-		foot = screen.view.text.foot().trim()
-		if foot == '选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)分区十大 6)百大版面 [1]:'
-			map_keys_on_line screen, screen.height,
-				'1)十大话题': 'enter'
-				'2)十大祝福': '2 enter'
-				'3)近期热点': '3 enter'
-				'4)系统热点': '4 enter'
-				'5)分区十大': '5 enter'
-				'6)百大版面': '6 enter'
-		else if foot == '选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)分区十大 6)治版方针 [1]:'
-			map_keys_on_line screen, screen.height,
-				'1)十大话题': 'enter'
-				'2)十大祝福': '2 enter'
-				'3)近期热点': '3 enter'
-				'4)系统热点': '4 enter'
-				'5)分区十大': '5 enter'
-				'6)治版方针': '6 enter'
-		else if foot == '8)本版精华区搜索 9)自删文章 A)积分变更 [1]:'
-			map_keys_on_line screen, screen.height - 1,
-				'1)文摘区': '1 enter'
-				'2)同主题': '2 enter'
-				'3)保留区': '3 enter'
-				'4)原作': '4 enter'
-				'5)同作者': '5 enter'
-				'6)标题关键字': '6 enter'
-				'7)超级文章选择': '7 enter'
-			map_keys_on_line screen, screen.height,
-				'8)本版精华区搜索': '8 enter'
-				'9)自删文章': '9 enter'
-				'A)积分变更': 'a enter'
+		map_areas_by_regexp_on_line screen, screen.height,
+			/选择: (1\)十大话题) (2\)十大祝福) (3\)近期热点) (4\)系统热点) (5\)分区十大) (6\)百大版面) \[1\]:/
+			['enter' , '2 enter' , '3 enter' , '4 enter' , '5 enter' , '6 enter']
+		map_areas_by_whitespaces_on_line screen, screen.height-1,
+			'1)文摘区 2)同主题 3)保留区 4)原作 5)同作者 6)标题关键字 7)超级文章选择'
+			['enter' , '2 enter' , '3 enter' , '4 enter' , '5 enter' , '6 enter' , '7 enter']
+		map_areas_by_regexp_on_line screen, screen.height,
+			/(8\)本版精华区搜索) (9\)自删文章) (A\)积分变更) \[1\]:/
+			['9 enter' , '9 enter' , 'a enter']
 
 ##################################################
 # any key...
@@ -209,62 +290,13 @@ class RowClick extends Feature
 				screen.area.define_area class:'clickable', key: key,
 					row, 1, row, view.width
 
-find_line_areas = (s, exprs) ->
-	index = 0
-	left = 1
-	right = 1
-	areas = []
-	for expr in exprs
-		right = left
-		for i in [0...expr.length]
-			if expr.charAt(i) != s.charAt(index)
-				return
-			right += wcwidth(s.charAt(index))
-			i++
-			index++
-		areas.push [left, right-1]
-		left = right
-		if s.charAt(index) not in ['', ' ']
-			return
-		while s.charAt(index) == ' '
-			index++
-			left++
-		if s.charAt(index) == ''
-			if areas.length == exprs.length
-				return areas
-			else
-				return
-	return areas
-
-find_line_area = (s, expr) ->
-	start = s.indexOf(expr)
-	if start == -1
-		return
-	left = 1 + wcwidth(s.substring(0, start))
-	row = left + wcwidth(expr) - 1
-	return [left, row]
-
 class BoardToolbar extends Feature
 	scan: (screen) ->
 		toolbar = screen.view.text.row 2
-		if toolbar == '离开[←,e] 选择[↑,↓] 阅读[→,r] 发表文章[Ctrl-P] 砍信[d] 备忘录[TAB] 求助[h]  '
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'left',
-				2, 1, 2, 10
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'up',
-				2, 17, 2, 17
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'down',
-				2, 20, 2, 20
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'right',
-				2, 24, 2, 33
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'ctrl-p',
-				2, 35, 2, 50
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'd',
-				2, 52, 2, 58
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'tab',
-				2, 60, 2, 70
-			screen.area.define_area class: 'clickable board-toolbar-hint', key: 'h',
-				2, 72, 2, 78
-		else if toolbar == '[十大模式]  离开[←,e] 记录位置并离开[q] 阅读[→,r] 同主题[^X,p] 同作者[^U,^H]  '
+		map_areas_by_regexp_on_line screen, 2,
+			/(离开\[←,e\]) 选择\[(↑),(↓)\] (阅读\[→,r\]) (发表文章\[Ctrl-P\]) (砍信\[d\]) (备忘录\[TAB\]) (求助\[h\])/
+			['left', 'up', 'down', 'right', 'ctrl-p', 'd', 'tab', 'h']
+		if toolbar == '[十大模式]  离开[←,e] 记录位置并离开[q] 阅读[→,r] 同主题[^X,p] 同作者[^U,^H]  '
 			map_keys_on_line screen, 2,
 				'离开[←,e]': 'e'
 				'记录位置并离开[q]': 'q'
@@ -371,22 +403,6 @@ class ArticleUser extends Feature
 			right = left + wcwidth(m[1]) - 1
 			screen.area.define_area class: 'clickable', key: "u [#{user}] enter",
 				1, left, 1, right
-
-
-map_key_on_line = (screen, row, text, key) ->
-	line = screen.view.text.row(row)
-	area = find_line_area line, text
-	if area
-		screen.area.define_area class: 'clickable', key: key,
-			row, area[0], row, area[1]
-
-map_keys_on_line = (screen, row, bindings) ->
-	line = screen.view.text.row(row)
-	for text, key of bindings
-		area = find_line_area line, text
-		if area
-			screen.area.define_area class: 'clickable', key: key,
-				row, area[0], row, area[1]
 
 class ArticleBottom extends Feature
 	scan: (screen) ->
