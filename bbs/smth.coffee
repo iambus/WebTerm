@@ -60,21 +60,6 @@ find_line_area = (s, expr) ->
 	row = left + wcwidth(expr) - 1
 	return [left, row]
 
-map_key_on_line = (screen, row, text, key) ->
-	line = screen.view.text.row(row)
-	area = find_line_area line, text
-	if area
-		screen.area.define_area class: 'clickable', key: key,
-			row, area[0], row, area[1]
-
-map_keys_on_line = (screen, row, bindings) ->
-	line = screen.view.text.row(row)
-	for text, key of bindings
-		area = find_line_area line, text
-		if area
-			screen.area.define_area class: 'clickable', key: key,
-				row, area[0], row, area[1]
-
 map_areas_on_line = (screen, row, areas, bindings) ->
 	if areas.length != bindings.length
 		# something is wrong!
@@ -82,8 +67,21 @@ map_areas_on_line = (screen, row, areas, bindings) ->
 	for i in [0...areas.length]
 		[left, right] = areas[i]
 		key = bindings[i]
-		screen.area.define_area class: 'clickable', key: key,
+		attrs = if _.isObject(key) then key else class: 'clickable', key: key
+		screen.area.define_area attrs,
 			row, left, row, right
+
+map_areas_by_words_on_line = (screen, row, bindings) ->
+	line = screen.view.text.row(row)
+	areas = []
+	keys = []
+	for text, key of bindings
+		area = find_line_area line, text
+		if area
+			areas.push area
+			keys.push key
+	if areas.length > 0
+		map_areas_on_line screen, row, areas, keys
 
 map_areas_by_whitespaces_on_line = (screen, row, text, bindings) ->
 	line = screen.view.text.row(row)
@@ -190,11 +188,11 @@ class PressAnyKeyBottomBar extends Feature
 		line = screen.view.text.foot().trim()
 		m = {}
 		m[line] = 'whitespace'
-		map_keys_on_line screen, screen.height, m
+		map_areas_by_words_on_line screen, screen.height, m
 
 class PressEnterKeyBottomBar extends Feature
 	scan: (screen) ->
-		map_keys_on_line screen, screen.height,
+		map_areas_by_words_on_line screen, screen.height,
 			'请按 ◆Enter◆ 继续': 'enter'
 			'按回车键继续...': 'enter'
 			'按 <ENTER> 键继续...': 'enter'
@@ -297,7 +295,7 @@ class BoardToolbar extends Feature
 			/(离开\[←,e\]) 选择\[(↑),(↓)\] (阅读\[→,r\]) (发表文章\[Ctrl-P\]) (砍信\[d\]) (备忘录\[TAB\]) (求助\[h\])/
 			['left', 'up', 'down', 'right', 'ctrl-p', 'd', 'tab', 'h']
 		if toolbar == '[十大模式]  离开[←,e] 记录位置并离开[q] 阅读[→,r] 同主题[^X,p] 同作者[^U,^H]  '
-			map_keys_on_line screen, 2,
+			map_areas_by_words_on_line screen, 2,
 				'离开[←,e]': 'e'
 				'记录位置并离开[q]': 'q'
 				'阅读[→,r]': 'r'
@@ -307,7 +305,7 @@ class BoardToolbar extends Feature
 
 class BoardTopNotification extends Feature
 	scan: (screen) ->
-		map_keys_on_line screen, 1,
+		map_areas_by_words_on_line screen, 1,
 			'投票中，按 V 进入投票': 'V'
 			'[您有信件]': 'v'
 			'[您有@提醒]': 'left left left left m enter k enter'
@@ -373,7 +371,7 @@ class BoardInfoClick extends Feature
 			if not /^\[.+\]|投票中，按 V 进入投票$/.test cn_board
 				mappings[cn_board] = key
 			mappings["[#{board}]"] = key
-			map_keys_on_line screen, 1, mappings
+			map_areas_by_words_on_line screen, 1, mappings
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
@@ -408,7 +406,7 @@ class ArticleBottom extends Feature
 		row = screen.height
 		line = screen.view.text.foot().trim()
 		if line.indexOf('| g 跳转 | l n 上下篇 | / ? 搜索 | s e 开头末尾|') > 0
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'g 跳转': "g"
 				'l': "l"
 				'n': "n"
@@ -421,7 +419,7 @@ class ArticleBottom extends Feature
 				'开头': "s"
 				'末尾': "e"
 		else if line.indexOf('| g 跳转 | / ? 搜索 | s e 开头末尾|') > 0
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'g 跳转': "g"
 				'/': "/"
 				'?': "?"
@@ -430,20 +428,20 @@ class ArticleBottom extends Feature
 				'开头': "s"
 				'末尾': "e"
 		else if line == '[阅读文章]  回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓│主题阅读 ^X或p'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'回信 R': "r"
 				'结束 Q,←': "q"
 				'上一封 ↑': "up"
 				'下一封 <Space>,↓': "enter"
 				'主题阅读 ^X或p': "p" # ctrl-x == p?
 		else if line == '[通知模式] [阅读文章] 结束Q,| 上一篇 | 下一篇<空格>, | 同主题^x,p'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'结束 Q': "q"
 				'上一篇': "up"
 				'下一篇': "whitespace"
 				'主题阅读 ^X或p': "p" # ctrl-x == p?
 		else if line == '[阅读精华区资料]  结束 Q,← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'结束 Q,←': "q"
 				'上一项资料 U,↑': "up"
 				'下一项资料 <Enter>,<Space>,↓': "enter"
@@ -519,7 +517,7 @@ class FavorateListToolbar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == '主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加[a,A] 移动[m] 删除[d] 排序[S] 求助[h]'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'主选单[←,e]': "e"
 				'阅读[→,r]': "r"
 				'↑': "up"
@@ -540,7 +538,7 @@ class BoardListToolbar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == '主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加到收藏夹[a] 排序[S] 求助[h]'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'主选单[←,e]': "e"
 				'阅读[→,r]': "r"
 				'↑': "up"
@@ -549,7 +547,7 @@ class BoardListToolbar extends Feature
 				'排序[S]': "S"
 				'求助[h]': "h"
 		else if toolbar == '主选单[←,e] 阅读[→,r] 选择[↑,↓] 列出[y] 排序[S] 搜寻[/] 切换[c] 求助[h]'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'主选单[←,e]': "e"
 				'阅读[→,r]': "r"
 				'↑': "up"
@@ -616,16 +614,16 @@ class Top10 extends Feature
 				for i in [0...pages.length]
 					n = pages.charAt i
 					m[n] = 'esc ' + n
-				map_keys_on_line screen, screen.height, m
+				map_areas_by_words_on_line screen, screen.height, m
 			else
 				scan_topics(true)
 				m = {}
 				for i in [0...pages.length]
 					n = pages.charAt i
 					m[n] = n
-				map_keys_on_line screen, screen.height, m
+				map_areas_by_words_on_line screen, screen.height, m
 
-		map_keys_on_line screen, screen.height,
+		map_areas_by_words_on_line screen, screen.height,
 			'<TAB>阅读分区十大': 'tab'
 			'<H>查阅帮助信息': 'h'
 
@@ -639,7 +637,7 @@ class XToolBar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == 'F 寄回自己的信箱┃↑↓ 移动┃→ <Enter> 读取┃←,q 离开'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'F 寄回自己的信箱': "F"
 				'↑': "up"
 				'↓': "down"
@@ -650,7 +648,7 @@ class XBottomBar extends Feature
 	scan: (screen) ->
 		line = screen.view.text.foot().trim()
 		if line == '[功能键]  说明 h │ 离开 q,← │ 移动游标 k,↑,j,↓ │ 读取资料 Rtn,→'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'说明 h': "h"
 				'离开 q,←': "q"
 				'k': "k"
@@ -659,7 +657,7 @@ class XBottomBar extends Feature
 				'↓': "down"
 				'读取资料 Rtn,→': "enter"
 		else if line == '[版  主]  说明 h │ 离开 q,← │ 新增文章 a │ 新增目录 g │ 修改档案 e'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'说明 h': "h"
 				'离开 q,←': "q"
 				'新增文章 a': "a"
@@ -675,7 +673,7 @@ class MailMenuToolbar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == '主选单[←,e] 进入[Enter] 选择[↑,↓] 左右切换[Tab] 添加[a] 改名[T] 删除[d]'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'主选单[←,e]': "e"
 				'进入[Enter]': "enter"
 				'↑': "up"
@@ -734,7 +732,7 @@ class UserBottomBar extends Feature
 	scan: (screen) ->
 		line = screen.view.text.foot().trim()
 		if line == '寄信[m]           加,减朋友[o,d] 说明档[l] 驻版[k] 短信[w] 其它键继续'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'寄信[m]': "m"
 				'加': "o"
 				'o': "o"
@@ -745,7 +743,7 @@ class UserBottomBar extends Feature
 				'短信[w]': "w"
 				'其它键继续': "whitespace"
 		else if line == '聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 选择使用者[↑,↓] 切换模式 [f] 求救[h]'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'聊天[t]': "t"
 				'寄信[m]': "m"
 				'送讯息[s]': "s"
@@ -758,7 +756,7 @@ class UserBottomBar extends Feature
 				'切换模式 [f]': "f"
 				'求救[h]': "h"
 		else if line == '聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 说明档[l] 驻版[k] 短信[w] 其它键继续'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'聊天[t]': "t"
 				'寄信[m]': "m"
 				'送讯息[s]': "s"
@@ -779,7 +777,7 @@ class BoardInfoBottomBar extends Feature
 	scan: (screen) ->
 		line = screen.view.text.foot().trim()
 		if line == '添加到个人定制区[a]'
-			map_keys_on_line screen, screen.height,
+			map_areas_by_words_on_line screen, screen.height,
 				'添加到个人定制区[a]': "a"
 
 ##################################################
@@ -791,7 +789,7 @@ class UserListToolbar extends Feature
 		row = 2
 		toolbar = screen.view.text.row(row).trim()
 		if toolbar == '聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 看说明档[→,r] 切换模式 [f] 求救[h]'
-			map_keys_on_line screen, row,
+			map_areas_by_words_on_line screen, row,
 				'聊天[t]': "t"
 				'寄信[m]': "m"
 				'送讯息[s]': "s"
