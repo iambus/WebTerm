@@ -955,6 +955,7 @@ user_mode = featured_mode_by test_footline(/寄信/), 'user', [
 
 board_info_mode = featured_mode_by test_footline(/^\s*添加到个人定制区\[a\]\s*$/), 'board_info', [
 	BoardInfoBottomBar
+	ClickWhitespace
 ]
 
 user_list_mode = featured_mode_by test_headline(/^\[使用者列表\]/), 'user_list', [
@@ -980,14 +981,14 @@ default_mode = featured_mode_by (-> true), 'default', [
 
 modes = [
 	option_input_mode
+	anykey_mode
+	enterkey_mode
 	main_menu_mode
 	board_mode
 	read_mode
 	favorite_mode
 	board_list_mode
 	board_group_mode
-	anykey_mode
-	enterkey_mode
 	top10_mode
 	x_list_mode
 	mail_menu_mode
