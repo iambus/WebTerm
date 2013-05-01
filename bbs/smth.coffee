@@ -509,6 +509,27 @@ class ArticleDownload extends Feature
 
 
 ##################################################
+# reply
+##################################################
+
+class ReplyOptions extends Feature
+	scan: (screen) ->
+		map_areas_by_regexp_on_line screen, screen.height,
+			/(S)\/(Y)\/(N)\/(R)\/(A) 改引言模式，(b回复到信箱)，(T改标题)，(u传附件), (Q放弃), (Enter继续):/
+			[
+				{class: 'clickable', key: 'S enter', title: '引用前三行（默认）'}
+				{class: 'clickable', key: 'Y enter', title: '完整引用原文'}
+				{class: 'clickable', key: 'N enter', title: '不引用原文'}
+				{class: 'clickable', key: 'R enter', title: '完整引用原文及回复，不加引用:，不包含签名档'}
+				{class: 'clickable', key: 'A enter', title: '完整引用原文及回复，加引用:，包括签名档'}
+				'b enter'
+				'T enter'
+				'u enter'
+				'Q enter'
+				'enter'
+			]
+
+##################################################
 # favorite
 ##################################################
 
@@ -882,6 +903,10 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	MousePaging
 ]
 
+reply_mode = featured_mode_by test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/), 'reply', [
+	ReplyOptions
+]
+
 favorite_mode = featured_mode_by test_headline(/^\[个人定制区\]\s/), 'favorite', [
 	RowClick
 	FavorateListToolbar
@@ -986,6 +1011,7 @@ modes = [
 	main_menu_mode
 	board_mode
 	read_mode
+	reply_mode
 	favorite_mode
 	board_list_mode
 	board_group_mode
