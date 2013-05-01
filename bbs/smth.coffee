@@ -367,12 +367,11 @@ class BoardInfoClick extends Feature
 		m = head.match(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
 		if m
 			cn_board = m[1]
-			if /^\[.+\]|投票中，按 V 进入投票$/.test cn_board
-				return
 			board = m[2]
 			key = "U [#{board}] enter"
 			mappings = {}
-			mappings[cn_board] = key
+			if not /^\[.+\]|投票中，按 V 进入投票$/.test cn_board
+				mappings[cn_board] = key
 			mappings["[#{board}]"] = key
 			map_keys_on_line screen, 1, mappings
 
