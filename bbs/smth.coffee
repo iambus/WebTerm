@@ -463,6 +463,10 @@ class ArticleURL extends Feature
 		$('div.href').replaceWith ->
 			"<a href='#{$(@).text()}' target='_blank'>#{$(@).html()}</a>"
 
+class ArticleImagePreview extends Feature
+	render: (screen) ->
+		$(screen.selector).find('a').preview()
+
 class ArticleDownload extends Feature
 	scan: (screen) ->
 		command = ->
@@ -898,6 +902,7 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	ArticleUser
 	ArticleBottom
 	ArticleURL
+	ArticleImagePreview
 	ArticleDownload
 	ClickWhitespace
 	MousePaging

@@ -17,6 +17,7 @@
 				"tcp-connect:*:*"
 			]
 		},
+		"<all_urls>",
 		"storage",
 		"fileSystem",
 		"fileSystem.write",
