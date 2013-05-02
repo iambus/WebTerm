@@ -51,6 +51,8 @@ class GestureCanvas
 		@element.css 'z-index': -10
 
 	draw_line: ([x1, y1], [x2, y2])->
+		@context.strokeStyle = 'orangered'
+		@context.lineWidth = 2
 		@context.beginPath()
 		@context.moveTo x1, y1
 		@context.lineTo x2, y2
@@ -58,8 +60,6 @@ class GestureCanvas
 
 	clear: ->
 		@context.clearRect(0, 0, @canvas.width, @canvas.height)
-		@context.strokeStyle = 'orangered'
-		@context.lineWidth = 2
 
 
 class Gesture
