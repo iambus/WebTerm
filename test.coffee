@@ -13,11 +13,13 @@ load_ascii = (screen, files...) ->
 load_json = (screen, file) ->
 	resources.get_text "test/" + file, (data) ->
 		screen.data.data = JSON.parse data
+		screen.cursor.row = screen.height
+		screen.cursor.height = screen.width
 		screen.screen_updated()
 		screen.render()
 
 ctrl_s = (screen) ->
-	screen.commands.register_persisted 'ctrl+s', ->
+	screen.commands.register_persisted 'ctrl-s', ->
 		chrome.fileSystem.chooseEntry type: 'saveFile', accepts: [extensions: ['json']], (writableFileEntry) ->
 			if not writableFileEntry
 				console.log 'save file canceled?'
@@ -30,8 +32,10 @@ ctrl_s = (screen) ->
 					console.log 'save file good!', arguments
 				writer.write new Blob [JSON.stringify(screen.data.data)], type: 'text/plain'
 			writableFileEntry.createWriter writer_callback, error_handler
-	screen.events.on_key_persisted 'ctrl+s', ->
-		screen.commands.lookup('ctrl+s')?()
+	screen.events.on_key_persisted 'ctrl-s', ->
+		screen.commands.execute('ctrl-s')
+	screen.events.on_key_persisted 'ctrl-shift-s', ->
+		screen.events.send_key('ctrl-s')
 
 setup = (screen) ->
 	bbs.smth(screen)
@@ -44,7 +48,7 @@ test = ->
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'
 #	load_ascii screen, 'smth_list_1', 'smth_list_2'
 #	load_ascii screen, 'list_bug_a_1', 'list_bug_a_2'
-	load_ascii screen, 'smth_read_a_1', 'smth_read_a_2', 'smth_read_a_3'
+#	load_ascii screen, 'smth_read_a_1', 'smth_read_a_2', 'smth_read_a_3'
 #	load_ascii screen, 'smth_long_url'
 #	load_ascii screen, 'smth_logout'
 #	load_ascii screen, 'board_list_1', 'board_list_2'
@@ -58,7 +62,20 @@ test = ->
 #	load_ascii screen, 'shida_sub_1', 'shida_sub_2', 'shida_sub_3'
 #	load_ascii screen, 'shida_sub_on_1', 'shida_sub_on_2', 'shida_sub_on_3'
 #	load_ascii screen, 'netnovel_1', 'netnovel_2', 'netnovel_3'
+#	load_ascii screen, 'any_key_2'
 #	load_json screen, 'a.json'
+#	load_json screen, 'fav.json'
+#	load_json screen, 'mail_menu.json'
+#	load_json screen, 'reply_me.json'
+#	load_json screen, 'at_me.json'
+#	load_json screen, 'mail_list.json'
+#	load_json screen, 'toolbox.json'
+#	load_json screen, 'can_not_select.json'
+#	load_json screen, 'posting.json'
+#	load_json screen, 'posting1.json'
+	load_json screen, 'replying.json'
+#	load_json screen, 'login.json'
+#	load_json screen, 'H.json'
 
 	window.screen = screen # XXX: for debugging
 
