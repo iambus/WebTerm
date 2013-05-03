@@ -67,8 +67,7 @@ $.fn.preview = ->
 #		img.attr 'src', link
 		load_image img[0], link
 	hover_out = ->
-		console.log 'out!'
 		container.hide()
-		img.unbind('load').attr('src', '').hide()
+		img.unbind('load').attr('src', '').css(width:'', height:'').hide()
 	images.hover hover_in, hover_out
 
