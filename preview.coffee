@@ -57,12 +57,13 @@ $.fn.preview = ->
 #		container.css
 #			top: "#{e.pageY + 10}px"
 #			left: "#{e.pageX + 10}px"
-	hover_in = ->
+	hover_in = (e) ->
 		link = @getAttribute('href')
 		container.addClass('preview-loading').show()
 		img.load ->
 			container.removeClass('preview-loading')
 			resize(img)
+			mousemove(e)
 			img.show()
 #		img.attr 'src', link
 		load_image img[0], link
