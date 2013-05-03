@@ -18,7 +18,8 @@ gestrue_direction = ([x1, y1], [x2, y2]) ->
 		return 'up'
 
 trivial_gesture =  (vector) ->
-	if vector.length > 5
+	minimum_samples = 5
+	if vector.length > minimum_samples
 		start = vector[0]
 		middle = vector[Math.floor vector.length/2]
 		end = vector[vector.length - 1]
@@ -221,6 +222,7 @@ class GestureManager
 		@vector = []
 		@gesture_at = new Date()
 		@canvas = new GestureCanvas @at
+		@minimum_samples = 1
 
 	trace: ->
 		@vector = []
@@ -235,7 +237,7 @@ class GestureManager
 
 	update: (x, y) ->
 		if @vector.length > 0
-			if @vector.length == 5
+			if @vector.length == @minimum_samples
 				@start()
 			@canvas.draw_line @vector[@vector.length-1], [x, y]
 		@vector.push [x, y]
@@ -245,7 +247,7 @@ class GestureManager
 
 	end: ->
 		@canvas.hide()
-		if @vector.length > 5
+		if @vector.length > @minimum_samples
 			@process()
 			@gesture_at = new Date()
 		@vector = []
