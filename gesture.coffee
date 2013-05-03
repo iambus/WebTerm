@@ -1,4 +1,9 @@
 
+##################################################
+# algorithms
+##################################################
+
+# trivial: only support up/down/left/right
 
 gestrue_direction = ([x1, y1], [x2, y2]) ->
 	x = x2 - x1
@@ -12,7 +17,7 @@ gestrue_direction = ([x1, y1], [x2, y2]) ->
 	if y < -2 * Math.abs x
 		return 'up'
 
-simple_gesture =  (vector) ->
+trivial_gesture =  (vector) ->
 	if vector.length > 5
 		start = vector[0]
 		middle = vector[Math.floor vector.length/2]
@@ -22,6 +27,150 @@ simple_gesture =  (vector) ->
 		d3 = gestrue_direction middle, end
 		if d1? and d2? and d3? and d1 == d2 == d3
 			return d1
+
+# simple: only support up/down/left/right
+# http://doc.qt.digia.com/qq/qq18-mousegestures.html
+
+filter_and_limit = (vector) ->
+	minimum_movement = 5
+	minimum_movement2 = minimum_movement * minimum_movement
+	# filter and limit
+	directions = []
+	[x0, y0] = vector[0]
+	for i in [1...vector.length]
+		[x1, y1] = vector[i]
+		dx = x1 - x0
+		dy = y1 - y0
+		if dx*dx + dy*dy >= minimum_movement2
+			if dy > 0
+				if dx > dy or -dx > dy
+					dy = 0
+				else
+					dx = 0
+			else
+				if dx > -dy or -dx > -dy
+					dy = 0
+				else
+					dx = 0
+			directions.push [dx, dy]
+			x0 = x1
+			y0 = y1
+	return directions
+
+simplify = (vector) ->
+	if vector.length == 0
+		return vector
+	directions = []
+	[x0, y0] = vector[0]
+	for i in [1...vector.length]
+		[x1, y1] = vector[i]
+		if x0 * x1 + y0 * y1 > 0
+			x0 += x1
+			y0 += y1
+		else
+			directions.push [x0, y0]
+			x0 = x1
+			y0 = y1
+	directions.push [x0, y0]
+	return directions
+
+calculate_length = (directions) ->
+	total = 0
+	for [x, y] in directions
+		total += Math.abs(x) + Math.abs(y)
+	return total
+
+remove_shortest = (directions) ->
+	if directions.length <= 1
+		return []
+	shortest = 0
+	index = 0
+	for i in [0...directions.length]
+		[x, y] = directions[i]
+		n = Math.abs(x) + Math.abs(y)
+		if i == 0
+			shortest = n
+		else
+			if n < shortest
+				shortest = n
+				index = i
+	directions.splice index, 1
+	return directions
+
+match_gesture = (directions, gesture) ->
+	if directions.length == gesture.length
+		for i in [0...directions.length]
+			[x0, y0] = directions[i]
+			[x1, y1] = gesture[i]
+			if x0*x1 + y0*y1 <= 0
+				return false
+		return true
+
+find_matched_gesture = (directions, gestures) ->
+	for gesture in gestures
+		if match_gesture directions, gesture
+			return gesture
+
+match_and_reduce = (directions, gestures) ->
+	directions = simplify directions
+	minimum_match = 0.9
+	minimum_length = calculate_length(directions) * minimum_match
+	while directions.length and calculate_length(directions) > minimum_length
+		gesture = find_matched_gesture(directions, gestures)
+		if gesture
+			return gesture
+		directions = simplify remove_shortest directions
+
+parse_gesture_directions = (gesture) ->
+	directions = []
+	for direction in gesture.split ' '
+		if direction == 'left'
+			directions.push [-1, 0]
+		else if direction == 'right'
+			directions.push [1, 0]
+		else if direction == 'up'
+			directions.push [0, -1]
+		else if direction == 'down'
+			directions.push [0, 1]
+		else
+			throw Error("Invalid gesture direction: #{direction}")
+	return directions
+
+simple_gesture = (vector) ->
+	if vector.length <= 1
+		return
+	directions = filter_and_limit vector
+	if not directions?.length
+		return
+	directions = simplify directions
+	direction_text = ([x, y]) ->
+		if x == 0
+			if y > 0
+				'down'
+			else
+				'up'
+		else
+			if x > 0
+				'right'
+			else
+				'left'
+	(direction_text direction for direction in directions).join ' '
+
+simple_gesture_recognize = (vector, gestures) ->
+	if vector.length <= 1
+		return
+	directions = filter_and_limit vector
+	if not directions?.length
+		return
+	convert_gesture = (g) ->
+		gg = parse_gesture_directions(g)
+		gg.text = g
+		gg
+	match_and_reduce(directions, (convert_gesture g for g in gestures))?.text
+
+##################################################
+# front end
+##################################################
 
 class GestureCanvas
 	constructor: (@master) ->
@@ -61,8 +210,13 @@ class GestureCanvas
 	clear: ->
 		@context.clearRect(0, 0, @canvas.width, @canvas.height)
 
+class GestureEvent
+	constructor: (@vector) ->
+#		@direction = simple_gesture @vector
+	recognize_gesture: (gestures) ->
+		simple_gesture_recognize @vector, gestures
 
-class Gesture
+class GestureManager
 	constructor: (@at, @handler) ->
 		@vector = []
 		@gesture_at = new Date()
@@ -98,13 +252,11 @@ class Gesture
 		@canvas.clear()
 
 	process: ->
-		direction = simple_gesture @vector
-		if direction?
-			@handler? 'direction': direction
+		@handler new GestureEvent @vector
 
 $.fn.gesture = (handler) ->
 
-	gesture = new Gesture(@, handler)
+	gesture = new GestureManager(@, handler)
 
 	@mousedown (e) ->
 		if e.button != 2

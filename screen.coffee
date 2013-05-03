@@ -709,16 +709,26 @@ class Events
 				@send_key "down"
 
 		# mouse gestures!
+		@gestures_persisted = {}
 		@gestures = {}
 		$(@screen.selector).gesture (e) =>
-			gesture = e.direction
+			set = _.keys(@gestures_persisted).concat _.keys(@gestures)
+			if _.isEmpty set
+				return
+			gesture = e.recognize_gesture set
 			if gesture?
-				handler = @gestures[gesture]
-				if handler?
-					handler()
-				else
-					@send_key gesture
-
+				handler = @gestures[gesture] ? @gestures_persisted[gesture]
+				handler()
+			else
+				console.log 'gesture ignored'
+		@on_mouse_gesture_persisted 'up', =>
+			@send_key 'up'
+		@on_mouse_gesture_persisted 'down', =>
+			@send_key 'down'
+		@on_mouse_gesture_persisted 'left', =>
+			@send_key 'left'
+		@on_mouse_gesture_persisted 'right', =>
+			@send_key 'right'
 
 	clear: ->
 		@key_mappings = []
@@ -776,6 +786,9 @@ class Events
 
 	on_mouse_gesture: (gesture, callback) ->
 		@gestures[gesture] = callback
+
+	on_mouse_gesture_persisted: (gesture, callback) ->
+		@gestures_persisted[gesture] = callback
 
 ##################################################
 # Commands
