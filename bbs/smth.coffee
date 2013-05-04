@@ -1126,11 +1126,58 @@ modes = [
 	default_mode
 ]
 
+features = [
+	Clickable
+	MousePaging
+	MouseHomeEnd
+	MouseReadingHomeEnd
+	MouseEditingHomeEnd
+	Options
+	ClickWhitespace
+	ClickEnter
+	PressAnyKeyBottomBar
+	PressEnterKeyBottomBar
+	MenuClick
+	GotoDefaultBoard
+	RowClick
+	BoardToolbar
+	BoardTopNotification
+	BoardModeSwitch
+	BoardUserClick
+	BoardBMClick
+	BoardInfoClick
+	BottomUserClick
+	ArticleUser
+	ArticleBottom
+	ArticleURL
+	ArticleImagePreview
+	ArticleDownload
+	ReplyOptions
+	FavorateListToolbar
+	BoardListToolbar
+	Top10
+	XToolBar
+	XBottomBar
+	MailMenuToolbar
+	RowBoardClick
+	UserBottomBar
+	BoardInfoBottomBar
+	UserListToolbar
+	LogoutMenu
+]
+
+for m in modes
+	modes[m.name] = m
+for f in features
+	features[f.name] = f
+
 ##################################################
 # done!
 ##################################################
 
 smth = (screen) -> plugin screen, modes, global_mode
+smth.modes = modes
+smth.features = features
 
 ##################################################
 # exports
