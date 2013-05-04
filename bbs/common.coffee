@@ -31,7 +31,7 @@ class MouseGestureFeature extends Feature
 			else if _.isFunction v
 				screen.events.on_mouse_gesture k, v
 			else
-				consolo.error "Invalid mouse gesture handler: #{k} -> #{v}"
+				console.error "Invalid mouse gesture handler: #{k} -> #{v}"
 
 
 ##################################################
