@@ -5,10 +5,11 @@
 
 
 if module?.exports?
-	$ = require 'jQuery' # XXX: not working on windows?
+	$ = require 'jQuery'
 	_ = require 'underscore'
 	wcwidth = require 'wcwidth'
 	mode = require './mode'
+	common = require './common'
 else
 	$ = this.$
 	_ = this._
@@ -16,6 +17,9 @@ else
 	mode = bbs.mode
 	if not mode
 		throw Error("bbs.mode is not loaded")
+	common = bbs.common
+	if not common
+		throw Error("bbs.common is not loaded")
 
 plugin = mode.plugin
 Feature = mode.Feature
@@ -142,12 +146,29 @@ global_mode = featured_mode 'global', [
 	Clickable
 ]
 
-class MousePaging extends Feature
-	scan: (screen) ->
-		screen.events.on_mouse_gesture 'up', ->
-			screen.events.send_key 'pageup'
-		screen.events.on_mouse_gesture 'down', ->
-			screen.events.send_key 'pagedown'
+class MousePaging extends common.MouseGestureFeature
+	constructor: ->
+		super
+			'up': 'pageup'
+			'down': 'pagedown'
+
+class MouseHomeEnd extends common.MouseGestureFeature
+	constructor: ->
+		super
+			'right up': 'home'
+			'right down': 'end'
+
+class MouseReadingHomeEnd extends common.MouseGestureFeature
+	constructor: ->
+		super
+			'right up': 's'
+			'right down': 'e'
+
+class MouseEditingHomeEnd extends common.MouseGestureFeature
+	constructor: ->
+		super
+			'right up': 'ctrl-s'
+			'right down': 'ctrl-e'
 
 ##################################################
 # input options
@@ -896,6 +917,7 @@ board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主�
 	BoardInfoClick
 	BottomUserClick
 	MousePaging
+	MouseHomeEnd
 ]
 
 read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[阅读精华区资料\])\s/), 'read', [
@@ -906,6 +928,7 @@ read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \
 	ArticleDownload
 	ClickWhitespace
 	MousePaging
+	MouseReadingHomeEnd
 ]
 
 reply_mode = featured_mode_by test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/), 'reply', [
