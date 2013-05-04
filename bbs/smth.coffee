@@ -23,7 +23,8 @@ else
 
 plugin = mode.plugin
 Feature = mode.Feature
-{featured_mode, featured_mode_by, test_headline, test_footline} = mode.utils
+FeaturedMode = mode.FeaturedMode
+{test_headline, test_footline} = mode.utils
 
 ##################################################
 # helpers
@@ -141,10 +142,6 @@ class Clickable extends Feature
 					else
 						screen.events.put_key x
 					screen.events.send()
-
-global_mode = featured_mode 'global', [
-	Clickable
-]
 
 class MousePaging extends common.MouseGestureFeature
 	constructor: ->
@@ -870,167 +867,237 @@ class LogoutMenu extends Feature
 # summary
 ##################################################
 
-is_option_input = (screen) ->
-	if screen.cursor.row != screen.height
-		return
-	if screen.data.at(screen.height, 1).background
-		return
-	if screen.data.at(screen.height, 1).foreground
-		return
-	line = screen.view.text.foot().trim()
-	if not line
-		return
-	if line.indexOf(':') == -1
-		return
-	return true
-option_input_mode = featured_mode_by is_option_input, 'option_input', [
-	Options
-]
+class option_input_mode extends FeaturedMode
+	@check: (screen) ->
+		if screen.cursor.row != screen.height
+			return
+		if screen.data.at(screen.height, 1).background
+			return
+		if screen.data.at(screen.height, 1).foreground
+			return
+		line = screen.view.text.foot().trim()
+		if not line
+			return
+		if line.indexOf(':') == -1
+			return
+		return true
+	name: 'option_input'
+	features: [
+		Options
+	]
 
-anykey_mode = featured_mode_by test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.)\s*$/), 'anykey', [
-	ClickWhitespace
-	PressAnyKeyBottomBar
-]
+class anykey_mode extends FeaturedMode
+	@check: test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.)\s*$/)
+	name: 'anykey'
+	features: [
+		ClickWhitespace
+		PressAnyKeyBottomBar
+	]
 
-enterkey_mode = featured_mode_by test_footline(/^\s*(请按 ◆Enter◆ 继续|帮助信息显示完成, 按回车键继续\.\.\.|您不能给自己奖励个人积分, 按 <ENTER> 键继续\.\.\.|您不能给该用户奖励个人积分, 按 <ENTER> 键继续\.\.\.)\s*$/), 'enterkey', [
-	ClickEnter
-	PressEnterKeyBottomBar
-]
+class enterkey_mode extends FeaturedMode
+	@check: test_footline(/^\s*(请按 ◆Enter◆ 继续|帮助信息显示完成, 按回车键继续\.\.\.|您不能给自己奖励个人积分, 按 <ENTER> 键继续\.\.\.|您不能给该用户奖励个人积分, 按 <ENTER> 键继续\.\.\.)\s*$/)
+	name: 'enterkey'
+	features: [
+		ClickEnter
+		PressEnterKeyBottomBar
+	]
 
-main_menu_mode = featured_mode_by test_headline(/^主选单\s/), 'main_menu', [
-	MenuClick
-	GotoDefaultBoard
-	BottomUserClick
-]
+class main_menu_mode extends FeaturedMode
+	@check: test_headline(/^主选单\s/)
+	name: 'main_menu'
+	features: [
+		MenuClick
+		GotoDefaultBoard
+		BottomUserClick
+	]
 
-talk_menu_mode = featured_mode_by test_headline(/^聊天选单\s/), 'talk_menu', [
-	MenuClick
-]
+class talk_menu_mode extends FeaturedMode
+	@check: test_headline(/^聊天选单\s/)
+	name: 'talk_menu'
+	features: [
+		MenuClick
+	]
 
-board_mode = featured_mode_by test_headline(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/), 'board', [
-	RowClick
-	BoardToolbar
-	BoardTopNotification
-	BoardModeSwitch
-	BoardUserClick
-	BoardBMClick
-	BoardInfoClick
-	BottomUserClick
-	MousePaging
-	MouseHomeEnd
-]
+class board_mode extends FeaturedMode
+	@check: test_headline(/^(?:版主:(?: \w+)+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
+	name: 'board'
+	features: [
+		RowClick
+		BoardToolbar
+		BoardTopNotification
+		BoardModeSwitch
+		BoardUserClick
+		BoardBMClick
+		BoardInfoClick
+		BottomUserClick
+		MousePaging
+		MouseHomeEnd
+	]
 
-read_mode = featured_mode_by test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[阅读精华区资料\])\s/), 'read', [
-	ArticleUser
-	ArticleBottom
-	ArticleURL
-	ArticleImagePreview
-	ArticleDownload
-	ClickWhitespace
-	MousePaging
-	MouseReadingHomeEnd
-]
+class read_mode extends FeaturedMode
+	@check: test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[阅读精华区资料\])\s/)
+	name: 'read'
+	features: [
+		ArticleUser
+		ArticleBottom
+		ArticleURL
+		ArticleImagePreview
+		ArticleDownload
+		ClickWhitespace
+		MousePaging
+		MouseReadingHomeEnd
+	]
 
-reply_mode = featured_mode_by test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/), 'reply', [
-	ReplyOptions
-]
+class reply_mode extends FeaturedMode
+	@check: test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
+	name: 'reply'
+	features: [
+		ReplyOptions
+	]
 
-favorite_mode = featured_mode_by test_headline(/^\[个人定制区\]\s/), 'favorite', [
-	RowClick
-	FavorateListToolbar
-	BottomUserClick
-	MousePaging
-]
+class favorite_mode extends FeaturedMode
+	@check: test_headline(/^\[个人定制区\]\s/)
+	name: 'favorite'
+	features: [
+		RowClick
+		FavorateListToolbar
+		BottomUserClick
+		MousePaging
+	]
 
-board_list_mode = featured_mode_by test_headline(/^\[讨论区列表\]\s/), 'board_list', [
-	RowClick
-	BoardListToolbar
-	BottomUserClick
-	MousePaging
-]
+class board_list_mode extends FeaturedMode
+	@check: test_headline(/^\[讨论区列表\]\s/)
+	name: 'board_list'
+	features: [
+		RowClick
+		BoardListToolbar
+		BottomUserClick
+		MousePaging
+	]
 
-board_group_mode = featured_mode_by test_headline(/^分类讨论区选单\s/), 'board_group', [
-	MenuClick
-]
+class board_group_mode extends FeaturedMode
+	@check: test_headline(/^分类讨论区选单\s/)
+	name: 'board_group'
+	features: [
+		MenuClick
+	]
 
-is_top10_mode = (screen) ->
-	/^\s*-----===== 本日(\d+区)?十大热门话题 =====-----\s*$/.test(screen.view.text.head()) and
-	/<H>查阅帮助信息/.test(screen.view.text.foot())
-top10_mode = featured_mode_by is_top10_mode, 'top10', [
-	Top10
-]
+class top10_mode extends FeaturedMode
+	@check: (screen) ->
+		/^\s*-----===== 本日(\d+区)?十大热门话题 =====-----\s*$/.test(screen.view.text.head()) and /<H>查阅帮助信息/.test(screen.view.text.foot())
+	name: 'top10'
+	features: [
+		Top10
+	]
 
-x_list_mode = featured_mode_by test_footline(/读取资料|修改档案/), 'x', [
-	RowClick
-	XToolBar
-	XBottomBar
-	MousePaging
-]
+class x_list_mode extends FeaturedMode
+	@check: test_footline(/读取资料|修改档案/)
+	name: 'x'
+	features: [
+		RowClick
+		XToolBar
+		XBottomBar
+		MousePaging
+	]
 
-mail_menu_mode = featured_mode_by test_headline(/^\[处理信笺选单\]\s/), 'mail', [
-	MenuClick
-	MailMenuToolbar
-]
+class mail_menu_mode extends FeaturedMode
+	@check: test_headline(/^\[处理信笺选单\]\s/)
+	name: 'mail'
+	features: [
+		MenuClick
+		MailMenuToolbar
+	]
 
-mail_list_mode = featured_mode_by test_headline(/^邮件选单\s/), 'mail_list', [
-	RowClick
-	BoardUserClick
-	BottomUserClick
-]
+class mail_list_mode extends FeaturedMode
+	@check: test_headline(/^邮件选单\s/)
+	name: 'mail_list'
+	features: [
+		RowClick
+		BoardUserClick
+		BottomUserClick
+	]
 
-mail_replies_mode = featured_mode_by test_headline(/^\[回复我的文章\]\s/), 'mail_replies', [
-	RowClick
-	BoardUserClick
-	RowBoardClick
-	BottomUserClick
-	MousePaging
-]
+class mail_replies_mode extends FeaturedMode
+	@check: test_headline(/^\[回复我的文章\]\s/)
+	name: 'mail_replies'
+	features: [
+		RowClick
+		BoardUserClick
+		RowBoardClick
+		BottomUserClick
+		MousePaging
+	]
 
-mail_at_mode = featured_mode_by test_headline(/^\[@我的文章\]\s/), 'mail_at', [
-	RowClick
-	BoardUserClick
-	RowBoardClick
-	BottomUserClick
-	MousePaging
-]
+class mail_at_mode extends FeaturedMode
+	@check: test_headline(/^\[@我的文章\]\s/)
+	name: 'mail_at'
+	features: [
+		RowClick
+		BoardUserClick
+		RowBoardClick
+		BottomUserClick
+		MousePaging
+	]
 
-info_menu_mode = featured_mode_by test_headline(/^工具箱选单\s/), 'system', [
-	MenuClick
-]
+class info_menu_mode extends FeaturedMode
+	@check: test_headline(/^工具箱选单\s/)
+	name: 'system'
+	features: [
+		MenuClick
+	]
 
-system_menu_mode = featured_mode_by test_headline(/^系统资讯选单\s/), 'system', [
-	MenuClick
-]
+class system_menu_mode extends FeaturedMode
+	@check: test_headline(/^系统资讯选单\s/)
+	name: 'system'
+	features: [
+		MenuClick
+	]
 
-user_mode = featured_mode_by test_footline(/寄信/), 'user', [
-	UserBottomBar
-]
+class user_mode extends FeaturedMode
+	@check: test_footline(/寄信/)
+	name: 'user'
+	features: [
+		UserBottomBar
+	]
 
-board_info_mode = featured_mode_by test_footline(/^\s*添加到个人定制区\[a\]\s*$/), 'board_info', [
-	BoardInfoBottomBar
-	ClickWhitespace
-]
+class board_info_mode extends FeaturedMode
+	@check: test_footline(/^\s*添加到个人定制区\[a\]\s*$/)
+	name: 'board_info'
+	features: [
+		BoardInfoBottomBar
+		ClickWhitespace
+	]
 
-user_list_mode = featured_mode_by test_headline(/^\[使用者列表\]/), 'user_list', [
-	RowClick
-	UserListToolbar
-	MousePaging
-]
+class user_list_mode extends FeaturedMode
+	@check: test_headline(/^\[使用者列表\]/)
+	name: 'user_list'
+	features: [
+		RowClick
+		UserListToolbar
+		MousePaging
+	]
 
-press_any_key_mode = featured_mode_by test_footline(/^\s*按任何键继续 \.\.\s*$/), 'user', [
-]
 
-is_logout_mode = (screen) ->
-	screen.view.text.head().trim() == '' and
-	screen.view.text.row(9).trim() == '║     [1] 寄信给水木             ║' and
-	screen.view.text.row(15).trim() == '║            取消(ESC) ▃        ║'
-logout_mode = featured_mode_by is_logout_mode, 'logout', [
-	LogoutMenu
-]
+class logout_mode extends FeaturedMode
+	@check: (screen) ->
+		screen.view.text.head().trim() == '' and
+		screen.view.text.row(9).trim() == '║     [1] 寄信给水木             ║' and
+		screen.view.text.row(15).trim() == '║            取消(ESC) ▃        ║'
+	name: 'logout'
+	features: [
+		LogoutMenu
+	]
 
-default_mode = featured_mode_by (-> true), 'default', [
-	ClickWhitespace
-]
+class default_mode extends FeaturedMode
+	@check: -> true
+	name: 'default'
+	features: [
+		ClickWhitespace
+	]
+
+class global_mode extends FeaturedMode
+	name: 'global'
+	features: [Clickable]
 
 modes = [
 	option_input_mode
