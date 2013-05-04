@@ -155,20 +155,20 @@ class MousePaging extends common.MouseGestureFeature
 class MouseHomeEnd extends common.MouseGestureFeature
 	constructor: ->
 		super
-			'right up': 'home'
-			'right down': 'end'
+			'left up': 'home'
+			'left down': 'end'
 
 class MouseReadingHomeEnd extends common.MouseGestureFeature
 	constructor: ->
 		super
-			'right up': 's'
-			'right down': 'e'
+			'left up': 's'
+			'left down': 'e'
 
 class MouseEditingHomeEnd extends common.MouseGestureFeature
 	constructor: ->
 		super
-			'right up': 'ctrl-s'
-			'right down': 'ctrl-e'
+			'left up': 'ctrl-s'
+			'left down': 'ctrl-e'
 
 ##################################################
 # input options
