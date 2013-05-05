@@ -50,7 +50,7 @@ class Tabs
 			@registry[id]?.on_closing?()
 			li.remove()
 			$("#"+id).remove()
-			$('#new-tab').tabs "refresh"
+			$('#tabs').tabs "refresh"
 			@registry[id]?.on_closed?()
 			@registry[id] = undefined
 		on_close = @registry[id]?.on_close
