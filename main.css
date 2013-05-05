@@ -7,9 +7,12 @@ body {
 }
 
 /* tab bar */
-
+html {
+    -webkit-app-region: drag;
+}
 body {
     margin-top: 0;
+    -webkit-app-region: no-drag;
 }
 
 #title-bar {
