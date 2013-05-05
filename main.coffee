@@ -39,8 +39,8 @@ connect = (selector, host, port, mode) ->
 #resize()
 #$(window).resize ->
 #	resize()
-#$(window).resize ->
-#	$('.screen').css 'z-index': 1
+$(window).resize ->
+	$('.screen').css 'z-index': 1
 
 on_keyboard = (callback) ->
 	$('body').on 'keydown', (event) ->
