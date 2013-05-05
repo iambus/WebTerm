@@ -541,39 +541,6 @@ class AreaManager
 # Events
 ##################################################
 
-on_keyboard = (callback) ->
-	$('body').on 'keydown', (event) ->
-#		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
-#		console.log 'keydown', keymap.event_to_virtual_key event
-		key = keymap.event_to_virtual_key event
-		if key in ['ctrl', 'shift', 'alt', 'meta']
-			return
-		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert']
-			event.preventDefault()
-		$('#ime').focus()
-		if event.ctrlKey or event.altKey or event.metaKey
-			callback key: key
-		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
-		                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
-			callback key: key
-		else if key in ['shift-insert']
-			callback key: key
-
-	$('#ime').on 'keypress', (event) ->
-#		console.log 'keypress', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
-#		console.log 'keypress', keymap.event_to_virtual_key event
-		if not event.ctrlKey
-			# XXX: why ctrl-b, ctrl-f, ctrl-n, and may else, still trigger keypress events?
-			key = keymap.event_to_virtual_key event
-			callback key: key
-		event.preventDefault()
-
-	$('#ime').on 'textInput', (event) ->
-#		console.log 'textInput', event.originalEvent.data, event
-		callback
-			text: event.originalEvent.data
-			event: event
-
 escape_virtual_key_to_text = (key) ->
 	if key?
 		text = keymap.virtual_key_to_ascii key
@@ -611,20 +578,6 @@ class Events
 		# keyboard events
 		@key_mappings_persisted = []
 		@key_mappings = []
-		on_keyboard ({key, text}) =>
-			if key?
-				for [k, h] in @key_mappings
-					if is_key(k, key)
-						h(key)
-						return
-				for [k, h] in @key_mappings_persisted
-					if is_key(k, key)
-						h(key)
-						return
-				@put_key key
-			if text?
-				@put_text text
-			@send()
 
 		# mouse click events
 		@clickables = []
@@ -734,6 +687,21 @@ class Events
 		@key_mappings = []
 		@clickables = []
 		@gestures = {}
+
+	on_keyboard: ({key, text}) ->
+		if key?
+			for [k, h] in @key_mappings
+				if is_key(k, key)
+					h(key)
+					return
+			for [k, h] in @key_mappings_persisted
+				if is_key(k, key)
+					h(key)
+					return
+			@put_key key
+		if text?
+			@put_text text
+		@send()
 
 	on_key: (key, handler) ->
 		@key_mappings.push [key, handler]
@@ -1089,8 +1057,9 @@ class ASCIIBuilder
 ##################################################
 
 class Screen
-	constructor: (@width=80, @height=24) ->
-		@selector = '#screen'
+	constructor: (@selector, @width=80, @height=24) ->
+		if not @selector
+			throw Error("Screen must has a selector")
 
 		@term = new Term(@width, @height)
 		@data = @term.data
@@ -1174,13 +1143,19 @@ class Screen
 			id: 'paste'
 			contexts: ['all']
 			onclick: paste
-		@context_menus.refresh()
+#		@context_menus.refresh()
 
 		@expect = new Expect @
 
 		@on_screen_updated = null
 		@on_screen_rendered = null
 		@on_data = null
+
+	active: ->
+		@is_active = true
+#		@context_menus.update_menus()
+	inactive: ->
+		@is_active = false
 
 	update_area: ->
 		@area = new AreaManager(@width, @height)
@@ -1202,11 +1177,12 @@ class Screen
 		@on_screen_updated?()
 
 	screen_rendered: ->
-		@context_menus.refresh()
+#		if @is_active
+#			@context_menus.refresh()
 		@on_screen_rendered?()
 
 	render: ->
-		$('#screen').html @to_html()
+		$(@selector).html @to_html()
 		$('#ime').offset $('.cursor').offset()
 		@screen_rendered()
 
@@ -1302,8 +1278,6 @@ class Screen
 				selection.contains row, column
 			cells.addClass('selected')
 
-
-jQuery.expr[':'].area =
 
 ##################################################
 # exports

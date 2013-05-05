@@ -6,6 +6,58 @@ body {
     -webkit-user-select: text;
 }
 
+/* tab bar */
+
+body {
+    margin-top: 0;
+}
+
+#title-bar {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    display: -webkit-flex;
+}
+#title-bar * {
+    -webkit-app-region: no-drag;
+}
+#tab-bar {
+    display: inline-block;
+}
+#tab-bar li .ui-icon-close {
+    float: left;
+    margin: 0.4em 0.2em 0 0;
+}
+
+#new-tab {
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 4px;
+}
+#new-tab .icon {
+    width: 16px;
+    height: 16px;
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
+    background-position: -32px -128px;
+}
+
+#close-window {
+    margin-top: 1em;
+    margin-bottom: 4px;
+}
+#close-window .icon {
+    width: 16px;
+    height: 16px;
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
+    background-position: -80px -128px;
+}
+
+#title-bar > div:hover {
+    background: -webkit-linear-gradient(top, #f2f2f2 0%, #cccccc 99%);
+}
+
+
+/* main */
+
 textarea#ime {
     color:white;
     opacity:0.00;

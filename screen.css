@@ -1,4 +1,4 @@
-#screen {
+.screen {
     -webkit-user-select: none;
 
     /*padding-bottom: 30%;*/
@@ -13,7 +13,7 @@
     box-sizing: border-box;
     white-space: pre;
 }
-#screen div {
+.screen div {
     display: inline;
 }
 .cursor.highlight {

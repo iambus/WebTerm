@@ -14,7 +14,7 @@ load_json = (screen, file) ->
 	resources.get_text "test/" + file, (data) ->
 		screen.data.data = JSON.parse data
 		screen.cursor.row = screen.height
-		screen.cursor.height = screen.width
+		screen.cursor.column = screen.width
 		screen.screen_updated()
 		screen.render()
 
@@ -42,7 +42,7 @@ setup = (screen) ->
 	ctrl_s(screen)
 
 test = ->
-	screen = new Screen
+	screen = new Screen "##{webterm.tabs.nth_id(1)} .screen"
 	setup(screen)
 
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'
@@ -73,11 +73,13 @@ test = ->
 #	load_json screen, 'can_not_select.json'
 #	load_json screen, 'posting.json'
 #	load_json screen, 'posting1.json'
-	load_json screen, 'replying.json'
+#	load_json screen, 'replying.json'
 #	load_json screen, 'login.json'
 #	load_json screen, 'H.json'
+#	load_json screen, 'images.json'
+	load_json screen, 'images2.json'
 
-	window.screen = screen # XXX: for debugging
+	screen
 
 test.setup = setup
 
