@@ -1,3 +1,18 @@
+@font-face {
+    font-family: monospace;
+    src: local('SimSun');
+    unicode-range: U+2E80-FFFF;
+}
+@font-face {
+    font-family: monospace;
+    src: local('SimSun');
+    unicode-range: U+0000-2E7F;
+}
+@font-face {
+    font-family: monospace;
+    src: local('SimSun for BBS');
+    unicode-range: U+258e, U+258d, U+258c, U+258b, U+258a, U+2589, U+2581, U+2582, U+2583, U+2584, U+2585, U+2586, U+2587, U+2588, U+25e2, U+25e3, U+25e5, U+25e4, U+25b2, U+25bc, U+2595, U+ffe3;
+}
 .screen {
     -webkit-user-select: none;
 
