@@ -18,13 +18,12 @@ resize = ->
 		height: "${height}px"
 		'font-size': "#{px}px"
 
-connect = (selector, host, port, mode) ->
+connect = (selector, host, port, mode, on_connected) ->
 	connection = new telnet.Connection host, port
-	connection.connect()
-
 	screen = new Screen selector
-
 	mode?(screen)
+
+	connection.on_connected = on_connected
 
 	connection.on_data = (data) =>
 		screen.fill_ascii_raw data
@@ -33,7 +32,11 @@ connect = (selector, host, port, mode) ->
 	screen.on_data = (data) ->
 		connection.write_data data
 
-	screen
+	connection.connect()
+
+
+	connection: connection
+	screen: screen
 
 
 #resize()
@@ -90,7 +93,14 @@ setup_ui = ->
 				title: address.name
 				content: '<div class="screen"></div>'
 				on_open: (info) ->
-					info.screen = connect("##{info.id} .screen", address.host, address.port, address.module)
+					{connection, screen} = connect("##{info.id} .screen", address.host, address.port, address.module)
+					info.screen = screen
+					connection.on_connected = ->
+						info.li.addClass 'connected'
+						info.li.removeClass 'disconnected'
+					connection.on_disconnected = ->
+						info.li.addClass 'disconnected'
+						info.li.removeClass 'connected'
 	menu_show = -> $('#quick-connect').show()
 	menu_hide = -> $('#quick-connect').hide()
 	$('#new-menu').hover menu_show, menu_hide
@@ -116,7 +126,16 @@ setup = ->
 			icon: 'lib/smth.ico'
 			title: 'NEWSMTH'
 			content: '<div class="screen"></div>'
-			on_open: (info) -> info.screen = connect("##{info.id} .screen", 'bbs.newsmth.net', 23, test.setup)
+			on_open: (info) ->
+				{connection, screen} = connect("##{info.id} .screen", 'bbs.newsmth.net', 23, test.setup)
+				info.screen = screen
+				connection.on_connected = ->
+					info.li.addClass 'connected'
+					info.li.removeClass 'disconnected'
+				connection.on_disconnected = ->
+					info.li.addClass 'disconnected'
+					info.li.removeClass 'connected'
+
 
 	webterm.tabs.add
 		icon: 'lib/smth.ico'

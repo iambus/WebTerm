@@ -35,6 +35,7 @@ class Tabs
 		div = add_tab id, title, content
 		info =
 			id: id
+			li: $("#tabs ul#tab-bar li a[href=##{id}]").parent()
 			div: div
 			data: data
 			on_open: on_open

@@ -33,6 +33,7 @@ class Connection
 		@binary_mode = false
 		@out = []
 		@on_data = null
+		@on_connected = null
 		@on_disconnected = null
 
 		@heartbeat = 300
@@ -49,6 +50,7 @@ class Connection
 				logger.raise 'unable to create socket'
 
 	on_connect: ->
+		@on_connected?()
 		@read()
 
 	read: ->

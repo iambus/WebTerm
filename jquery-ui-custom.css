@@ -78,6 +78,7 @@ li.ui-state-hover .ui-icon-close:hover {
     -webkit-border-radius: 8px;
     border-radius: 8px;
     background-color: #f19c92;
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 #tabs .ui-widget-header li a {
