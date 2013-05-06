@@ -24,7 +24,9 @@ body {
     -webkit-app-region: no-drag;
 }
 #tab-bar {
-    display: inline-block;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #tab-bar li .ui-icon-close {
     float: left;
@@ -54,6 +56,7 @@ body {
 
 #title-panel {
     display: -webkit-flex;
+    height: 16px;
 }
 #title-panel div:hover {
     background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);

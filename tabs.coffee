@@ -96,6 +96,12 @@ $ ->
 	$('#min-window').click ->
 		chrome.app.window.current().minimize()
 
+	limit_bar_width = ->
+		max_width = $('#title-bar').width() - $('#title-panel').width() - $('#new-menu').width()
+		$('#tab-bar').css 'max-width', max_width + 'px'
+
+	limit_bar_width()
+	$(window).resize limit_bar_width
 
 webterm.tabs = new Tabs
 

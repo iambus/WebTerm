@@ -113,13 +113,10 @@ setup = ->
 			module: test.setup
 
 	add_tab_test()
+	webterm.keys.root.on_key 'ctrl-n', -> add_tab_test()
 
 
 
 storage.init ->
 	setup_address_book()
 	setup()
-#	test()
-#	connect('bbs.newsmth.net', 23, test.setup)
-#	connect('bbs.newsmth.net', 23, bbs.smth)
-#	connect('bbs.nju.edu.cn', 23, bbs.lily)

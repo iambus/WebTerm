@@ -42,6 +42,7 @@
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
     padding-bottom: 0;
+    margin-bottom: 0;
 }
 
 .ui-widget-header .ui-state-hover {
