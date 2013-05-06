@@ -24,7 +24,7 @@ connect = (selector, host, port, mode) ->
 
 	screen = new Screen selector
 
-	mode(screen)
+	mode?(screen)
 
 	connection.on_data = (data) =>
 		screen.fill_ascii_raw data
@@ -75,6 +75,25 @@ on_keyboard = (callback) ->
 			text: event.originalEvent.data
 			event: event
 
+setup_ui = ->
+	for {name, host, port, protocol, module, icon}, i in bbs.list
+		if icon
+			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'></img>#{name}</a></li>"
+		else
+			$('#quick-connect').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
+	$('#quick-connect').menu
+		select: (event, ui) ->
+			address_index = parseInt ui.item.attr('connect')
+			address = bbs.list[address_index]
+			webterm.tabs.add
+				title: address.name
+				content: '<div class="screen"></div>'
+				on_open: (info) ->
+					info.screen = connect("##{info.id} .screen", address.host, address.port, address.module)
+	menu_show = -> $('#quick-connect').show()
+	menu_hide = -> $('#quick-connect').hide()
+	$('#new-menu').hover menu_show, menu_hide
+
 setup = ->
 	id = null
 	screen = null
@@ -105,6 +124,7 @@ setup = ->
 
 
 storage.init ->
+	setup_ui()
 	setup()
 #	test()
 #	connect('bbs.newsmth.net', 23, test.setup)

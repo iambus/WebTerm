@@ -108,6 +108,16 @@ download_depends = ->
 	libs =
 		'http://code.jquery.com/jquery-1.9.1.js': 'lib/jquery-1.9.1.js'
 		'http://underscorejs.org/underscore.js': 'lib/underscore.js'
+		'http://www.newsmth.net/favicon.ico': 'lib/smth.ico'
+		'http://lilybbs.net/favicon.ico': 'lib/lily.ico'
+		'http://bbs.byr.cn/favicon.ico': 'lib/byr.ico'
+		'http://bbs.sjtu.edu.cn/favicon.ico': 'lib/sjtu.ico'
+		'http://bbs.fudan.edu.cn/favicon.ico': 'lib/fudan.ico'
+		'http://bbs.pku.edu.cn/favicon.ico': 'lib/pku.ico'
+		'http://bbs.seu.edu.cn/favicon.ico': 'lib/seu.ico'
+		'http://bbs.whnet.edu.cn/favicon.ico': 'lib/whnet.ico'
+		'http://bbs.whu.edu.cn/favicon.ico': 'lib/whu.ico'
+		'http://bbs.xjtu.edu.cn/favicon.ico': 'lib/xjtu.ico'
 	for url, file of libs
 		if not fs.existsSync file
 			download url, file

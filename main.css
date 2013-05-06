@@ -31,7 +31,7 @@ body {
     margin: 0.4em 0.2em 0 0;
 }
 
-#new-tab {
+#new-menu {
     margin-right: auto;
     margin-top: 1em;
     margin-bottom: 4px;
@@ -54,10 +54,22 @@ body {
     background-position: -80px -128px;
 }
 
-#title-bar > div:hover {
+#new-tab:hover, #close-window:hover {
     background: -webkit-linear-gradient(top, #f2f2f2 0%, #cccccc 99%);
 }
 
+#quick-connect {
+    display: none;
+    position: absolute;
+    margin-left: 16px;
+    margin-top: -16px;
+}
+#quick-connect li img {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
 
 /* main */
 
