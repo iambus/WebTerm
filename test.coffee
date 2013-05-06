@@ -41,8 +41,8 @@ setup = (screen) ->
 	bbs.smth(screen)
 	ctrl_s(screen)
 
-test = ->
-	screen = new Screen "##{webterm.tabs.nth_id(1)} .screen"
+test = (selector) ->
+	screen = new Screen selector ? "##{webterm.tabs.nth_id(1)} .screen"
 	setup(screen)
 
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'

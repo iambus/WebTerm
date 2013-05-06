@@ -78,29 +78,44 @@ on_keyboard = (callback) ->
 			text: event.originalEvent.data
 			event: event
 
-setup_ui = ->
+add_tab_by_address = (address) ->
+	webterm.tabs.add
+		icon: address.icon
+		title: address.name
+		content: '<div class="screen"></div>'
+		on_open: (info) ->
+			{connection, screen} = connect("##{info.id} .screen", address.host, address.port, address.module)
+			info.screen = screen
+			connection.on_connected = ->
+				info.li.addClass 'connected'
+				info.li.removeClass 'disconnected'
+			connection.on_disconnected = ->
+				info.li.addClass 'disconnected'
+				info.li.removeClass 'connected'
+
+add_tab_test = (address) ->
+	webterm.tabs.add
+		icon: 'lib/smth.ico'
+		title: 'Test'
+		content: '<div class="screen"></div>'
+		on_open: (info) -> info.screen = test("##{info.id} .screen")
+
+setup_address_book = ->
 	for {name, host, port, protocol, module, icon}, i in bbs.list
 		if icon
 			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
 		else
 			$('#quick-connect').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
+	$('#quick-connect').append "<li connect='test'><a href='#'>空白测试页面</a></li>"
 	$('#quick-connect').menu
 		select: (event, ui) ->
-			address_index = parseInt ui.item.attr('connect')
-			address = bbs.list[address_index]
-			webterm.tabs.add
-				icon: address.icon
-				title: address.name
-				content: '<div class="screen"></div>'
-				on_open: (info) ->
-					{connection, screen} = connect("##{info.id} .screen", address.host, address.port, address.module)
-					info.screen = screen
-					connection.on_connected = ->
-						info.li.addClass 'connected'
-						info.li.removeClass 'disconnected'
-					connection.on_disconnected = ->
-						info.li.addClass 'disconnected'
-						info.li.removeClass 'connected'
+			selected = ui.item.attr('connect')
+			if selected == 'test'
+				add_tab_test()
+			else
+				address_index = parseInt selected
+				address = bbs.list[address_index]
+				add_tab_by_address address
 	menu_show = -> $('#quick-connect').show()
 	menu_hide = -> $('#quick-connect').hide()
 	$('#new-menu').hover menu_show, menu_hide
@@ -122,31 +137,19 @@ setup = ->
 			webterm.tabs.registry[id]?.screen?.events.on_keyboard e
 
 	webterm.tabs.on 'new', ->
-		webterm.tabs.add
+		add_tab_by_address
 			icon: 'lib/smth.ico'
-			title: 'NEWSMTH'
-			content: '<div class="screen"></div>'
-			on_open: (info) ->
-				{connection, screen} = connect("##{info.id} .screen", 'bbs.newsmth.net', 23, test.setup)
-				info.screen = screen
-				connection.on_connected = ->
-					info.li.addClass 'connected'
-					info.li.removeClass 'disconnected'
-				connection.on_disconnected = ->
-					info.li.addClass 'disconnected'
-					info.li.removeClass 'connected'
+			name: 'NEWSMTH'
+			host: 'bbs.newsmth.net'
+			port: 23
+			module: test.setup
 
-
-	webterm.tabs.add
-		icon: 'lib/smth.ico'
-		title: 'Test'
-		content: '<div class="screen"></div>'
-		on_open: (info) -> info.screen = test()
+	add_tab_test()
 
 
 
 storage.init ->
-	setup_ui()
+	setup_address_book()
 	setup()
 #	test()
 #	connect('bbs.newsmth.net', 23, test.setup)
