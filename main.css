@@ -20,7 +20,7 @@ body {
     -webkit-app-region: drag;
     display: -webkit-flex;
 }
-#title-bar * {
+#title-bar ul, #title-bar #new-menu, #title-bar #title-panel {
     -webkit-app-region: no-drag;
 }
 #tab-bar {
