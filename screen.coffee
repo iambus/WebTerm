@@ -9,6 +9,7 @@
 wcwidth = this.wcwidth
 encoding = this.encoding
 keymap = this.keymap
+webterm = this.webterm
 
 ##################################################
 # animations
@@ -549,35 +550,14 @@ escape_virtual_key_to_text = (key) ->
 		else
 			console.log 'ignore key binding:', key
 
-normalize_key = (k) ->
-	if k.length == 1
-		return k
-	m = k.match /^((?:(?:ctrl|shift|alt|meta)[+-])*)(.+)$/
-	a = []
-	if m[1].indexOf('ctrl') != -1
-		a.push 'ctrl'
-	if m[1].indexOf('shift') != -1
-		a.push 'shift'
-	if m[1].indexOf('alt') != -1
-		a.push 'alt'
-	if m[1].indexOf('meta') != -1
-		a.push 'meta'
-	a.push m[2]
-	return a.join '-'
-
-is_key = (x, y) ->
-	if x == y
-		return true
-	return normalize_key(x) == normalize_key(y)
-
 class Events
 	constructor: (@screen) ->
 		# keyboard buffer
 		@buffer = []
 
 		# keyboard events
-		@key_mappings_persisted = []
-		@key_mappings = []
+		@key_mappings_persisted = new webterm.keys.KeyListener (e) => @on_keyboard_default(e)
+		@key_mappings = new webterm.keys.KeyListener @key_mappings_persisted
 
 		# mouse click events
 		@clickables = []
@@ -684,30 +664,25 @@ class Events
 			@send_key 'right'
 
 	clear: ->
-		@key_mappings = []
+		@key_mappings = new webterm.keys.KeyListener @key_mappings_persisted
 		@clickables = []
 		@gestures = {}
 
-	on_keyboard: ({key, text}) ->
+	on_keyboard: (e) ->
+		@key_mappings.dispatch e
+
+	on_keyboard_default: ({key, text}) ->
 		if key?
-			for [k, h] in @key_mappings
-				if is_key(k, key)
-					h(key)
-					return
-			for [k, h] in @key_mappings_persisted
-				if is_key(k, key)
-					h(key)
-					return
 			@put_key key
 		if text?
 			@put_text text
 		@send()
 
 	on_key: (key, handler) ->
-		@key_mappings.push [key, handler]
+		@key_mappings.on_key key, handler
 
 	on_key_persisted: (key, handler) ->
-		@key_mappings_persisted.push [key, handler]
+		@key_mappings_persisted.on_key key, handler
 
 	put_key: (keys...) ->
 #		console.log 'send key', keys
