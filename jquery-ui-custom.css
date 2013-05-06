@@ -79,3 +79,14 @@ li.ui-state-hover .ui-icon-close:hover {
     border-radius: 8px;
     background-color: #f19c92;
 }
+
+#tabs .ui-widget-header li a {
+    padding-right: 4px;
+}
+#tabs .ui-widget-header li a .ui-icon {
+    display: inline-block;
+    margin-top: -4px;
+    margin-left: -4px;
+    vertical-align: middle;
+    margin-right: 4px;
+}

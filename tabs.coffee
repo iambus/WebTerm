@@ -28,8 +28,10 @@ class Tabs
 		@counter++
 		"new-tab-#{@counter}"
 
-	add: ({id, title, content, data, on_open, on_close, on_closing, on_closed}) ->
+	add: ({id, title, icon, content, data, on_open, on_close, on_closing, on_closed}) ->
 		id = id ? @auto_id()
+		if icon?
+			title = "<img src='#{icon}' class='ui-icon ui-icon-blank'/>#{title}"
 		div = add_tab id, title, content
 		info =
 			id: id

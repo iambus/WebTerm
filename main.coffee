@@ -78,7 +78,7 @@ on_keyboard = (callback) ->
 setup_ui = ->
 	for {name, host, port, protocol, module, icon}, i in bbs.list
 		if icon
-			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'></img>#{name}</a></li>"
+			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
 		else
 			$('#quick-connect').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
 	$('#quick-connect').menu
@@ -86,6 +86,7 @@ setup_ui = ->
 			address_index = parseInt ui.item.attr('connect')
 			address = bbs.list[address_index]
 			webterm.tabs.add
+				icon: address.icon
 				title: address.name
 				content: '<div class="screen"></div>'
 				on_open: (info) ->
@@ -112,11 +113,13 @@ setup = ->
 
 	webterm.tabs.on 'new', ->
 		webterm.tabs.add
+			icon: 'lib/smth.ico'
 			title: 'NEWSMTH'
 			content: '<div class="screen"></div>'
 			on_open: (info) -> info.screen = connect("##{info.id} .screen", 'bbs.newsmth.net', 23, test.setup)
 
 	webterm.tabs.add
+		icon: 'lib/smth.ico'
 		title: 'Test'
 		content: '<div class="screen"></div>'
 		on_open: (info) -> info.screen = test()
