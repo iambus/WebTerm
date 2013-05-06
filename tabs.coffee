@@ -83,6 +83,17 @@ $ ->
 
 	$('#close-window').click ->
 		window.close()
+	$('#max-window').click ->
+		if chrome.app.window.current().isMaximized()
+			chrome.app.window.current().restore()
+		else
+			chrome.app.window.current().maximize()
+	chrome.app.window.current().onMaximized.addListener ->
+		$('#max-window').attr 'title', '恢复'
+	chrome.app.window.current().onRestored.addListener ->
+		$('#max-window').attr 'title', '最大化'
+	$('#min-window').click ->
+		chrome.app.window.current().minimize()
 
 
 webterm.tabs = new Tabs

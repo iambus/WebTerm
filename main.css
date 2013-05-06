@@ -42,20 +42,15 @@ body {
     background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
     background-position: -32px -128px;
 }
-
-#close-window {
-    margin-top: 1em;
-    margin-bottom: 4px;
-}
-#close-window .icon {
-    width: 16px;
-    height: 16px;
-    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
-    background-position: -80px -128px;
+#new-tab .icon:hover {
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
-#new-tab:hover, #close-window:hover {
-    background: -webkit-linear-gradient(top, #f2f2f2 0%, #cccccc 99%);
+#title-panel {
+    display: -webkit-flex;
+}
+#title-panel div:hover {
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 #quick-connect {
