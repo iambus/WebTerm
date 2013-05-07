@@ -77,9 +77,12 @@ test = (selector) ->
 #	load_json screen, 'login.json'
 #	load_json screen, 'H.json'
 #	load_json screen, 'images.json'
-	load_json screen, 'images2.json'
+#	load_json screen, 'images2.json'
+#	load_json screen, 'ascii_1.json'
+#	load_json screen, 'ascii_2.json'
+	load_json screen, 'ascii_3.json'
 
-	screen
+	screen: screen
 
 test.setup = setup
 

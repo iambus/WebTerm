@@ -30,6 +30,8 @@ class Connection
 #	term_type: 'vt100'
 
 	constructor: (@host, @port=23) ->
+		@disconnected = false
+
 		@binary_mode = false
 		@out = []
 		@on_data = null
@@ -53,11 +55,22 @@ class Connection
 		@on_connected?()
 		@read()
 
+	disconnect: ->
+		if not @disconnected
+			chrome.socket.disconnect @socketId
+			@disconnected = true
+			@on_disconnected?()
+
+	reconnect: ->
+		if @disconnected
+			@disconnected = false
+			@connect()
+
 	read: ->
 		callback = (info) =>
 			if info.resultCode < 0
 				console.error 'read error', info
-				@on_disconnected?() # XXX: any other possible reason?
+				@disconnect() # XXX: any other possible reason?
 				return
 			else if info.resultCode > 0
 				@reset_heartbeat()
@@ -82,7 +95,7 @@ class Connection
 		socket.write @socketId, buffer, (info) =>
 			if info.bytesWritten < 0
 				console.error 'write error', info
-				@on_disconnected?() # XXX: any other possible reason?
+				@disconnect() # XXX: any other possible reason?
 				return
 			else
 				@reset_heartbeat()

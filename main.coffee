@@ -52,12 +52,11 @@ add_tab_by_address = (address) ->
 		title: address.name
 		content: '<div class="screen"></div>'
 		on_open: (info) ->
-			{connection, screen} = connect("##{info.id} .screen", address.host, address.port, address.module)
-			info.screen = screen
-			connection.on_connected = ->
+			info.session = connect("##{info.id} .screen", address.host, address.port, address.module)
+			info.session.connection.on_connected = ->
 				info.li.addClass 'connected'
 				info.li.removeClass 'disconnected'
-			connection.on_disconnected = ->
+			info.session.connection.on_disconnected = ->
 				info.li.addClass 'disconnected'
 				info.li.removeClass 'connected'
 
@@ -66,7 +65,7 @@ add_tab_test = (address) ->
 		icon: 'lib/smth.ico'
 		title: 'Test'
 		content: '<div class="screen"></div>'
-		on_open: (info) -> info.screen = test("##{info.id} .screen")
+		on_open: (info) -> info.session = test("##{info.id} .screen")
 
 setup_address_book = ->
 	for {name, host, port, protocol, module, icon}, i in bbs.list
@@ -90,19 +89,26 @@ setup_address_book = ->
 
 setup = ->
 	id = null
-	screen = null
+	session = null
 	webterm.tabs.on 'active', (info) ->
 		id = info.id
-		screen?.inactive()
-		screen = webterm.tabs.registry[id]?.screen
-		screen?.active()
+		session?.screen.inactive()
+		session = webterm.tabs.registry[id]?.session
+		session?.screen.active()
+	Object.defineProperty webterm, 'active',
+		get: ->
+			session
 	Object.defineProperty webterm, 'screen',
 		get: ->
-			if id?
-				webterm.tabs.registry[id]?.screen
+			session?.screen
 	webterm.keys.root.chain = (e) ->
 		if id?
-			webterm.tabs.registry[id]?.screen?.events.on_keyboard e
+			if session?.connection?.disconnected
+				if e.key == '\r'
+					console.log 'reconnecting...'
+					session.connection.reconnect()
+			else
+				session?.screen.events.on_keyboard e
 
 	webterm.tabs.on 'new', ->
 		add_tab_by_address
