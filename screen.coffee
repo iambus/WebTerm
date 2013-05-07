@@ -279,10 +279,10 @@ class Term
 		char = @new_styled_char c
 		@cursor.put char
 		@cursor.inc()
-		if char.width == 2 and @cursor.column < @width
+		if char.width == 2 and @cursor.column <= @width
 			@cursor.put @fill_char_style @dummy_char()
 			@cursor.inc()
-		else if char.width == 1 and @cursor.column < @width and @cursor.get().width == 0
+		else if char.width == 1 and @cursor.column <= @width and @cursor.get().width == 0
 #			erasing a wide char
 			@cursor.clear()
 
