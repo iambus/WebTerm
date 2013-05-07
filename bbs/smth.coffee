@@ -335,7 +335,26 @@ class BoardModeSwitch extends Feature
 		if /\[..模式\] $/.test screen.view.text.row 3
 			screen.area.define_area 'menu board-mode-switch', 3, 70, 3, 79
 	render: (screen) ->
-		# TODO
+		menus = [['文摘区', '1']
+						 ['同主题', '2']
+						 ['保留区', '3']
+						 ['原作',   '4']
+						 ['同作者', '5']
+						 ['标题搜索', '6']
+						 ['超级文章', '7']
+						 ['精华区搜索', '8']
+						 ['自删文章', '9']
+						 ['积分变更', 'a']]
+		ul = """<ul>#{("<li key='#{k}'><a href='#'>#{m}</a></li>" for [m, k] in menus).join ''}</ul>"""
+		div = $(screen.selector).find('.menu.board-mode-switch').append(ul)
+		div.find('ul').hide().css('position', 'absolute').menu
+			select: (event, ui) ->
+				screen.events.send_key 'ctrl-g', ui.item.attr('key'), 'enter'
+				ui.item.parent().hide()
+		menu_show = (e) -> $(e.currentTarget).find('ul').show()
+		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
+		div.hover menu_show, menu_hide
+
 
 class BoardUserClick extends Feature
 	scan: (screen) ->

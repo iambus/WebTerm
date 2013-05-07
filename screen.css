@@ -29,7 +29,7 @@
     white-space: pre;
 }
 .screen div {
-    display: inline;
+    display: inline-block;
 }
 .cursor.highlight {
     color: black;

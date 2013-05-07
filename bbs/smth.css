@@ -14,9 +14,16 @@
     color: yellow;
     cursor: pointer;
 }
-div.menu {
+.screen div.menu {
     cursor:pointer;
 }
-a:hover {
+.screen div.menu ul.ui-widget-content {
+    border: none;
+}
+.screen div.menu ul li {
+    background-color: black;
+    color: white;
+}
+.screen a:hover {
     background-color: rgba(128, 128, 128, 0.5);
 }
