@@ -243,7 +243,12 @@ class GestureManager
 		@vector.push [x, y]
 
 	update_event: (e) ->
-		@update e.offsetX, e.offsetY
+		if e.currentTarget == e.target
+			@update e.offsetX, e.offsetY
+		else
+			inner = $(e.target).offset()
+			outer = $(e.currentTarget).offset()
+			@update e.offsetX + inner.left - outer.left, e.offsetY + inner.top - outer.top
 
 	end: ->
 		@canvas.hide()
