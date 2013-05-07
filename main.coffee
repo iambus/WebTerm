@@ -59,6 +59,10 @@ add_tab_by_address = (address) ->
 			info.session.connection.on_disconnected = ->
 				info.li.addClass 'disconnected'
 				info.li.removeClass 'connected'
+#				info.session.screen.painter.clear().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
+				info.session.screen.painter.scollup().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
+				$(info.session.screen.selector).find('.cursor').removeClass('cursor')
+				$(info.session.screen.selector).find('.blink').removeClass('blink')
 
 add_tab_test = (address) ->
 	webterm.tabs.add
@@ -103,10 +107,9 @@ setup = ->
 			session?.screen
 	webterm.keys.root.chain = (e) ->
 		if id?
-			if session?.connection?.disconnected
-				if e.key == '\r'
-					console.log 'reconnecting...'
-					session.connection.reconnect()
+			if session?.connection?.disconnected and e.key == '\r'
+				console.log 'reconnecting...'
+				session.connection.reconnect()
 			else
 				session?.screen.events.on_keyboard e
 

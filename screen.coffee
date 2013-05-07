@@ -509,6 +509,38 @@ class Term
 
 
 ##################################################
+# Painter
+##################################################
+
+class Painter
+	constructor: (@screen) ->
+	clear: ->
+		@screen.data.erase_all()
+		@
+	move_to: (row, column) ->
+		@screen.cursor.row = row
+		@screen.cursor.column = column
+		@
+	scollup: (n=1) ->
+		for [1..n]
+			@screen.data.shift()
+		@
+	fill_text: (text) ->
+		for i in [0...text.length]
+			@screen.term.echo text[i]
+		@
+	foreground: (color) ->
+		if color == 'red'
+			@screen.term.foreground = 31
+			@screen.term.bright = true
+		else
+			throw Error("Not Implemented: #{color}")
+		@
+	flush: ->
+		@screen.render()
+		@
+
+##################################################
 # Area
 ##################################################
 
@@ -1039,6 +1071,7 @@ class Screen
 		@term = new Term(@width, @height)
 		@data = @term.data
 		@cursor = @term.cursor
+		@painter = new Painter @
 
 		@events = new Events @
 
