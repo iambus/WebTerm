@@ -49,14 +49,15 @@ class Tabs
 	on_close: (element) ->
 		li = $(element).closest("li")
 		id = li.attr('aria-controls')
+		info = @registry[id]
 		todo = =>
-			@registry[id]?.on_closing?()
+			@registry[id]?.on_closing?(info)
 			li.remove()
 			$("#"+id).remove()
 			$('#tabs').tabs "refresh"
-			@registry[id]?.on_closed?()
+			@registry[id]?.on_closed?(info)
 			@registry[id] = undefined
-		on_close = @registry[id]?.on_close
+		on_close = info.on_close
 		if on_close
 			on_close todo
 		else

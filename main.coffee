@@ -63,6 +63,8 @@ add_tab_by_address = (address) ->
 				info.session.screen.painter.scollup().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
 				$(info.session.screen.selector).find('.cursor').removeClass('cursor')
 				$(info.session.screen.selector).find('.blink').removeClass('blink')
+		on_closed: (info) ->
+			info.session.connection.disconnect()
 
 add_tab_test = (address) ->
 	webterm.tabs.add
