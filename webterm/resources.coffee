@@ -31,4 +31,4 @@ exports =
 if module?.exports?
 	module.exports = exports
 else
-	this.resources = exports
+	webterm.resources = exports

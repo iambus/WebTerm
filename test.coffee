@@ -3,7 +3,7 @@
 load_ascii = (screen, files...) ->
 	load_ascii_at = (i) ->
 		if i < files.length
-			resources.get_raw "test/" + files[i], (data) ->
+			webterm.resources.get_raw "test/" + files[i], (data) ->
 				screen.fill_ascii_raw new Uint8Array data
 				load_ascii_at i+1
 		else
@@ -11,7 +11,7 @@ load_ascii = (screen, files...) ->
 	load_ascii_at 0
 
 load_json = (screen, file) ->
-	resources.get_text "test/" + file, (data) ->
+	webterm.resources.get_text "test/" + file, (data) ->
 		screen.data.data = JSON.parse data
 		screen.cursor.row = screen.height
 		screen.cursor.column = screen.width
@@ -42,7 +42,7 @@ setup = (screen) ->
 	ctrl_s(screen)
 
 test = (selector) ->
-	screen = new Screen selector ? "##{webterm.tabs.nth_id(1)} .screen"
+	screen = new webterm.Screen selector ? "##{webterm.tabs.nth_id(1)} .screen"
 	setup(screen)
 
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'
@@ -80,7 +80,8 @@ test = (selector) ->
 #	load_json screen, 'images2.json'
 #	load_json screen, 'ascii_1.json'
 #	load_json screen, 'ascii_2.json'
-	load_json screen, 'ascii_3.json'
+#	load_json screen, 'ascii_3.json'
+	load_json screen, 'gesture_bug.json'
 
 	screen: screen
 

@@ -1286,5 +1286,4 @@ class Screen
 # exports
 ##################################################
 
-exports = this
-exports.Screen = Screen
+webterm.Screen = Screen

@@ -20,7 +20,7 @@ resize = ->
 
 connect = (selector, host, port, mode, on_connected) ->
 	connection = new telnet.Connection host, port
-	screen = new Screen selector
+	screen = new webterm.Screen selector
 	mode?(screen)
 
 	connection.on_connected = on_connected
@@ -120,6 +120,6 @@ setup = ->
 
 
 
-storage.init ->
+webterm.storage.init ->
 	setup_address_book()
 	setup()

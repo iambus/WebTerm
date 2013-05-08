@@ -8,7 +8,7 @@ if module?.exports?
 	throw Error("Not Implemented")
 else
 	chrome = this.chrome
-	resources = this.resources
+	resources = webterm.resources
 
 ##################################################
 # APIs
@@ -40,5 +40,5 @@ exports =
 if module?.exports?
 	exports = exports
 else
-	this.storage = exports
+	webterm.storage = exports
 
