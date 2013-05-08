@@ -9,15 +9,27 @@ add_tab = (id, label, content) ->
 	$('#'+id)[0]
 
 class Tabs
-	constructor: ->
+	constructor: (@selector) ->
 		@counter = 0
 		@registry = {}
+
+		Object.defineProperty @, 'active',
+			get: ->
+				@get_active_tab()
+
+	init: ->
+		@tabs = $(@selector)
+		tabs = @tabs.tabs()
+		tabs.find(".ui-tabs-nav").sortable
+			axis: "x"
+			stop: ->
+				tabs.tabs "refresh"
 
 	on: (event, callback) ->
 		if event == 'new'
 			$('#new-tab').click callback
 		else if event == 'active'
-			$('#tabs').on 'tabsactivate', (event, ui) ->
+			@tabs.on 'tabsactivate', (event, ui) ->
 				callback
 					event: event
 					ui: ui
@@ -35,7 +47,7 @@ class Tabs
 		div = add_tab id, title, content
 		info =
 			id: id
-			li: $("#tabs ul#tab-bar li a[href=##{id}]").parent()
+			li: @tabs.find("ul#tab-bar li a[href=##{id}]").parent()
 			div: div
 			data: data
 			on_open: on_open
@@ -44,7 +56,7 @@ class Tabs
 			on_closed: on_closed
 		@registry[id] = info
 		on_open?(info)
-		$('#tabs').tabs 'option', 'active', $("#tabs ul#tab-bar li").length - 1
+		@tabs.tabs 'option', 'active', @tabs.find("ul#tab-bar li").length - 1
 
 	on_close: (element) ->
 		li = $(element).closest("li")
@@ -54,7 +66,7 @@ class Tabs
 			@registry[id]?.on_closing?(info)
 			li.remove()
 			$("#"+id).remove()
-			$('#tabs').tabs "refresh"
+			@tabs.tabs "refresh"
 			@registry[id]?.on_closed?(info)
 			@registry[id] = undefined
 		on_close = info.on_close
@@ -67,20 +79,23 @@ class Tabs
 		###
 		# Note: n start from 0
 		###
-		$("#tabs ul#tab-bar li:nth-child(#{n})").attr('aria-controls')
+		@tabs.find("ul#tab-bar li:nth-child(#{n+1})").attr('aria-controls')
 
 	nth_div_selector: (n) ->
 		"##{@nth_id n}"
 
+	nth: (n) ->
+		@registry[@nth_id(n)]
+
+	get_active_tab: ->
+		n = @tabs.tabs 'option', 'active'
+		@nth n
 
 $ ->
-	tabs = $('#tabs').tabs()
-	tabs.find(".ui-tabs-nav").sortable
-		axis: "x"
-		stop: ->
-			tabs.tabs "refresh"
+	webterm.tabs = new Tabs('#tabs')
+	webterm.tabs.init()
 
-	$('#tabs #tab-bar').on 'click', 'li .ui-icon-close', ->
+	$('#tab-bar').on 'click', 'li .ui-icon-close', ->
 		webterm.tabs.on_close @
 
 	$('#close-window').click ->
@@ -103,6 +118,4 @@ $ ->
 
 	limit_bar_width()
 	$(window).resize limit_bar_width
-
-webterm.tabs = new Tabs
 

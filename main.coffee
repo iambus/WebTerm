@@ -94,26 +94,18 @@ setup_address_book = ->
 	$('#new-menu').hover menu_show, menu_hide
 
 setup = ->
-	id = null
-	session = null
-	webterm.tabs.on 'active', (info) ->
-		id = info.id
-		session?.screen.inactive()
-		session = webterm.tabs.registry[id]?.session
-		session?.screen.active()
 	Object.defineProperty webterm, 'active',
 		get: ->
-			session
+			webterm.tabs.active?.session
 	Object.defineProperty webterm, 'screen',
 		get: ->
-			session?.screen
+			webterm.active?.screen
 	webterm.keys.root.chain = (e) ->
-		if id?
-			if session?.connection?.disconnected and e.key == '\r'
-				console.log 'reconnecting...'
-				session.connection.reconnect()
-			else
-				session?.screen.events.on_keyboard e
+		if webterm.active?.connection?.disconnected and e.key == '\r'
+			console.log 'reconnecting...'
+			webterm.active.connection.reconnect()
+		else
+			webterm.active?.screen.events.on_keyboard e
 
 	webterm.tabs.on 'new', ->
 		add_tab_by_address

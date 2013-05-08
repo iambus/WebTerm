@@ -1159,11 +1159,6 @@ class Screen
 		@on_screen_rendered = null
 		@on_data = null
 
-	active: ->
-		@is_active = true
-#		@context_menus.update_menus()
-	inactive: ->
-		@is_active = false
 
 	update_area: ->
 		@area = new AreaManager(@width, @height)
