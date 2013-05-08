@@ -886,6 +886,14 @@ class LogoutMenu extends Feature
 # summary
 ##################################################
 
+class login_mode extends FeaturedMode
+	@check: (screen) ->
+		foot = screen.view.text.foot().trim()
+		foot.match(/^请输入代号:/) or (foot == '' and screen.view.text.row(23).match /^请输入代号:/)
+	name: 'login'
+	features: [
+	]
+
 class option_input_mode extends FeaturedMode
 	@check: (screen) ->
 		if screen.cursor.row != screen.height
@@ -1119,6 +1127,7 @@ class global_mode extends FeaturedMode
 	features: [Clickable]
 
 modes = [
+	login_mode
 	option_input_mode
 	anykey_mode
 	enterkey_mode
