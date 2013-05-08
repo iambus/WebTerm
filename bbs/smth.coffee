@@ -72,7 +72,7 @@ map_areas_on_line = (screen, row, areas, bindings) ->
 	for i in [0...areas.length]
 		[left, right] = areas[i]
 		key = bindings[i]
-		attrs = if _.isObject(key) then key else class: 'clickable', key: key
+		attrs = if _.isObject(key) then key else class: 'bbs-clickable', key: key
 		screen.area.define_area attrs,
 			row, left, row, right
 
@@ -130,18 +130,6 @@ map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
 # global
 ##################################################
 
-
-class Clickable extends Feature
-	render: (screen) ->
-		screen.events.on_click_div 'div.clickable', (div) ->
-			k = div.getAttribute('key')
-			if k
-				for x in k.split(' ')
-					if /^\[.+\]$/.test x
-						screen.events.put_text x.substring 1, x.length - 1
-					else
-						screen.events.put_key x
-					screen.events.send()
 
 class MousePaging extends common.MouseGestureFeature
 	constructor: ->
@@ -233,10 +221,10 @@ class MenuClick extends Feature
 			@fix_menus_with_whitespaces view, menus
 			for [k, row, column_start, column_end] in menus
 				if view.at(row, column_start-2) == '◆'
-					screen.area.define_area class:'clickable menu-option current', key:'enter'
+					screen.area.define_area class:'bbs-clickable menu-option current', key:'enter'
 						row, column_start, row, column_end
 				else
-					screen.area.define_area class:'clickable menu-option', key: k + ' enter'
+					screen.area.define_area class:'bbs-clickable menu-option', key: k + ' enter'
 						row, column_start, row, column_end
 
 	is_menu: (view, row, column) ->
@@ -270,7 +258,7 @@ class GotoDefaultBoard extends Feature
 		if m
 			board = m[1]
 			key = "s enter enter" # XXX: only for main menu?
-			screen.area.define_area class: 'clickable inner-clickable', key: key,
+			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
 				1, 80-board.length-1, 1, 80
 
 ##################################################
@@ -294,7 +282,7 @@ class RowClick extends Feature
 		for row in [top..bottom]
 			line = view.row(row)
 			if /^-?>\s+(\d+|\[提示\])/.test line
-				screen.area.define_area class:'clickable', key:'enter',
+				screen.area.define_area class:'bbs-clickable', key:'enter',
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
 				if current < row
@@ -303,7 +291,7 @@ class RowClick extends Feature
 					key = ('up' for [1..current-row]).join(' ') + ' enter'
 				else
 					key = 'enter'
-				screen.area.define_area class:'clickable', key: key,
+				screen.area.define_area class:'bbs-clickable', key: key,
 					row, 1, row, view.width
 
 class BoardToolbar extends Feature
@@ -333,7 +321,7 @@ class BoardTopNotification extends Feature
 class BoardModeSwitch extends Feature
 	scan: (screen) ->
 		if /\[..模式\] $/.test screen.view.text.row 3
-			screen.area.define_area 'menu board-mode-switch', 3, 70, 3, 79
+			screen.area.define_area 'bbs-menu board-mode-switch', 3, 70, 3, 79
 	render: (screen) ->
 		menus = [['文摘区', '1']
 						 ['同主题', '2']
@@ -346,7 +334,7 @@ class BoardModeSwitch extends Feature
 						 ['自删文章', '9']
 						 ['积分变更', 'a']]
 		ul = """<ul>#{("<li key='#{k}'><a href='#'>#{m}</a></li>" for [m, k] in menus).join ''}</ul>"""
-		div = $(screen.selector).find('.menu.board-mode-switch').append(ul)
+		div = $(screen.selector).find('.bbs-menu.board-mode-switch').append(ul)
 		div.find('ul').hide().css('position', 'absolute').menu
 			select: (event, ui) ->
 				screen.events.send_key 'ctrl-g', ui.item.attr('key'), 'enter'
@@ -378,7 +366,7 @@ class BoardUserClick extends Feature
 				key = 'ctrl+a'
 			else
 				key = "u [#{user}] enter"
-			screen.area.define_area class: 'clickable inner-clickable', key: key,
+			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
 				row, left, row, right
 
 class BoardBMClick extends Feature
@@ -392,7 +380,7 @@ class BoardBMClick extends Feature
 			for name in names
 				key = "u [#{name}] enter"
 				right = left + name.length - 1
-				screen.area.define_area class: 'clickable inner-clickable board-bm', key: key,
+				screen.area.define_area class: 'bbs-clickable bbs-inner-clickable board-bm', key: key,
 					1, left, 1, right
 				left = right + 2
 
@@ -419,7 +407,7 @@ class BottomUserClick extends Feature
 			left = 51
 			right = left + user.length - 1
 			key = "u [#{user}] enter"
-			screen.area.define_area class: 'clickable inner-clickable board-info', key: key,
+			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable board-info', key: key,
 				screen.height, left, screen.height, right
 
 
@@ -435,7 +423,7 @@ class ArticleUser extends Feature
 			user = m[2]
 			left = 9
 			right = left + wcwidth(m[1]) - 1
-			screen.area.define_area class: 'clickable', key: "u [#{user}] enter",
+			screen.area.define_area class: 'bbs-clickable', key: "u [#{user}] enter",
 				1, left, 1, right
 
 class ArticleBottom extends Feature
@@ -558,11 +546,11 @@ class ReplyOptions extends Feature
 		map_areas_by_regexp_on_line screen, screen.height,
 			/(S)\/(Y)\/(N)\/(R)\/(A) 改引言模式，(b回复到信箱)，(T改标题)，(u传附件), (Q放弃), (Enter继续):/
 			[
-				{class: 'clickable', key: 'S enter', title: '引用前三行（默认）'}
-				{class: 'clickable', key: 'Y enter', title: '完整引用原文'}
-				{class: 'clickable', key: 'N enter', title: '不引用原文'}
-				{class: 'clickable', key: 'R enter', title: '完整引用原文及回复，不加引用:，不包含签名档'}
-				{class: 'clickable', key: 'A enter', title: '完整引用原文及回复，加引用:，包括签名档'}
+				{class: 'bbs-clickable', key: 'S enter', title: '引用前三行（默认）'}
+				{class: 'bbs-clickable', key: 'Y enter', title: '完整引用原文'}
+				{class: 'bbs-clickable', key: 'N enter', title: '不引用原文'}
+				{class: 'bbs-clickable', key: 'R enter', title: '完整引用原文及回复，不加引用:，不包含签名档'}
+				{class: 'bbs-clickable', key: 'A enter', title: '完整引用原文及回复，加引用:，包括签名档'}
 				'b enter'
 				'T enter'
 				'u enter'
@@ -645,9 +633,9 @@ class Top10 extends Feature
 					return
 				board = m[2]
 				if a[2] == '◆'
-					screen.area.define_area class: 'clickable inner-clickable', key: 's',
+					screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: 's',
 						r1, 17, r1, 17 + board.length - 1
-					screen.area.define_area class: 'clickable', key: 'enter',
+					screen.area.define_area class: 'bbs-clickable', key: 'enter',
 						r2, 1, r2, screen.width
 				else
 					k = i % 10
@@ -656,9 +644,9 @@ class Top10 extends Feature
 							k = 'enter'
 						else
 							k = 'enter ' + k
-					screen.area.define_area class: 'clickable inner-clickable', key: k + ' s',
+					screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: k + ' s',
 						r1, 17, r1, 17 + board.length - 1
-					screen.area.define_area class: 'clickable', key: k + ' enter',
+					screen.area.define_area class: 'bbs-clickable', key: k + ' enter',
 						r2, 1, r2, screen.width
 
 		if head == '-----===== 本日十大热门话题 =====-----'
@@ -782,7 +770,7 @@ class RowBoardClick extends Feature
 					key = ('up' for [1..current-row]).join(' ') + ' s'
 				else
 					key = 's'
-				screen.area.define_area class: 'clickable inner-clickable', key: key,
+				screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
 					row, left, row, right
 
 
@@ -877,10 +865,10 @@ class LogoutMenu extends Feature
 			k = screen.view.text.at row, left + 1
 			right = left + wcwidth(screen.view.text.row_range(row, left, left+26).trim()) - 1
 			if screen.view.text.at(row, left-2) == '◆'
-				screen.area.define_area class:'clickable', key:'enter', row, left, row, right
+				screen.area.define_area class:'bbs-clickable', key:'enter', row, left, row, right
 			else
-				screen.area.define_area class:'clickable', key:k+' enter', row, left, row, right
-		screen.area.define_area class:'clickable', key:'esc', 15, 35, 15, 46
+				screen.area.define_area class:'bbs-clickable', key:k+' enter', row, left, row, right
+		screen.area.define_area class:'bbs-clickable', key:'esc', 15, 35, 15, 46
 
 ##################################################
 # summary
@@ -1124,7 +1112,9 @@ class default_mode extends FeaturedMode
 
 class global_mode extends FeaturedMode
 	name: 'global'
-	features: [Clickable]
+	features: [
+		common.Clickable
+	]
 
 modes = [
 	login_mode
@@ -1155,7 +1145,6 @@ modes = [
 ]
 
 features = [
-	Clickable
 	MousePaging
 	MouseHomeEnd
 	MouseReadingHomeEnd

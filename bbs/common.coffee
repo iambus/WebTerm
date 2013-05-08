@@ -34,12 +34,26 @@ class MouseGestureFeature extends Feature
 				console.error "Invalid mouse gesture handler: #{k} -> #{v}"
 
 
+class Clickable extends Feature
+	render: (screen) ->
+		screen.events.on_click_div 'div.bbs-clickable', (div) ->
+			k = div.getAttribute('key')
+			if k
+				for x in k.split(' ')
+					if /^\[.+\]$/.test x
+						screen.events.put_text x.substring 1, x.length - 1
+					else
+						screen.events.put_key x
+					screen.events.send()
+
+
 ##################################################
 # exports
 ##################################################
 
 exports =
 	MouseGestureFeature: MouseGestureFeature
+	Clickable: Clickable
 
 if module?.exports?
 	module.exports = exports
