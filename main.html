@@ -31,12 +31,43 @@
             <div id='close-window' class='ui-icon ui-icon-close' title='关闭'></div>
         </div>
     </div>
+    <div id="main">
+    </div>
 </div>
 
 <textarea id="ime"></textarea>
 <textarea id="clipboard"></textarea>
 
 <div id="logger" style="display: none;"></div>
+<div id="connect" title="连接到" style="display: none">
+    <form>
+        <fieldset>
+            <div>
+                <label for="connect-host">主机</label>
+                <input name="host" id="connect-host" value="bbs.newsmth.net" class="text ui-widget-content"/>
+                <label for="connect-port">端口</label>
+                <input name="port" id="connect-port" value="23" type="number" min="1" max="65535" class="number ui-widget-content"/>
+            </div>
+            <div>
+                <label for="connect-protocol">协议</label>
+                <select name="protocol" id="connect-protocol" class="ui-widget-content">
+                    <option selected="selected">TELNET</option>
+                    <option>SSH</option>
+                </select>
+                <label for="connect-encoding">编码</label>
+                <select name="encoding" id="connect-encoding" class="ui-widget-content">
+                    <option selected="selected">GBK</option>
+                </select>
+                <label for="connect-type">类型</label>
+                <select name="type" id="connect-type" class="ui-widget-content">
+                    <option selected="selected">SMTH</option>
+                    <option>LILY</option>
+                    <option>Firebird</option>
+                </select>
+            </div>
+        </fieldset>
+    </form>
+</div>
 
 <script src="lib/jquery-1.9.1.js"></script>
 <script src="lib/underscore.js"></script>

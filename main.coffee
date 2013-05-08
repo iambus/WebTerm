@@ -46,7 +46,7 @@ $(window).resize ->
 	$('.screen').css 'z-index': 1
 
 
-add_tab_by_address = (address) ->
+new_bbs_tab = (address) ->
 	webterm.tabs.add
 		icon: address.icon
 		title: address.name
@@ -66,7 +66,7 @@ add_tab_by_address = (address) ->
 		on_closed: (info) ->
 			info.session.connection.disconnect()
 
-add_tab_test = (address) ->
+new_test_tab = (address) ->
 	webterm.tabs.add
 		icon: 'lib/smth.ico'
 		title: 'Test'
@@ -84,14 +84,37 @@ setup_address_book = ->
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
 			if selected == 'test'
-				add_tab_test()
+				new_test_tab()
 			else
 				address_index = parseInt selected
 				address = bbs.list[address_index]
-				add_tab_by_address address
+				new_bbs_tab address
 	menu_show = -> $('#quick-connect').show()
 	menu_hide = -> $('#quick-connect').hide()
 	$('#new-menu').hover menu_show, menu_hide
+
+setup_connect_dialog = ->
+	$( "#connect" ).dialog
+		autoOpen: false
+#		height: 300
+		width: 380
+		modal: true
+		buttons: [
+			text: '连接'
+			click: ->
+				new_bbs_tab
+					# TODO: set icon
+					name: $('#connect-host').val()
+					host: $('#connect-host').val()
+					port: parseInt $('#connect-port').val()
+					module: bbs[$('#connect-host').val().toLowerCase()]
+				$(@).dialog 'close'
+		,
+			text: '取消'
+			click: ->
+				$(@).dialog 'close'
+		]
+		close: ->
 
 setup = ->
 	Object.defineProperty webterm, 'active',
@@ -108,18 +131,16 @@ setup = ->
 			webterm.active?.screen.events.on_keyboard e
 
 	webterm.tabs.on 'new', ->
-		add_tab_by_address
-			icon: 'lib/smth.ico'
-			name: 'NEWSMTH'
-			host: 'bbs.newsmth.net'
-			port: 23
-			module: test.setup
+		# TODO: customize behavior
+		$("#connect").dialog 'open'
 
-	add_tab_test()
-	webterm.keys.root.on_key 'ctrl-n', -> add_tab_test()
+	new_test_tab() # for testing
+	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
+#	$("#connect").dialog 'open' # for testing
 
 
 
 webterm.storage.init ->
 	setup_address_book()
+	setup_connect_dialog()
 	setup()

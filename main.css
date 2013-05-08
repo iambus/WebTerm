@@ -7,6 +7,7 @@ body {
 }
 
 /* tab bar */
+
 html {
     -webkit-app-region: drag;
 }
@@ -74,6 +75,25 @@ body {
     margin-right: 4px;
     vertical-align: middle;
 }
+
+/* connect dialog */
+
+#connect {
+    display: none;
+}
+#connect form {
+    margin-bottom: 4px;
+}
+#connect fieldset > div {
+}
+#connect fieldset .ui-dialog .ui-dialog-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+.ui-dialog .ui-dialog-buttonpane {
+    padding-bottom: 4px;
+}
+
 
 /* main */
 

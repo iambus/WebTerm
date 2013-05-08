@@ -4,7 +4,7 @@ add_tab = (id, label, content) ->
 	li = """<li><a href="##{id}">#{label}</a><span class="ui-icon ui-icon-close" role="presentation">Remove Tab</span></li>"""
 	tabs = $('#tabs')
 	tabs.find(".ui-tabs-nav").append(li)
-	tabs.append "<div id='#{id}'>#{content}</div>"
+	tabs.find('#main').append "<div id='#{id}'>#{content}</div>"
 	tabs.tabs "refresh"
 	$('#'+id)[0]
 
