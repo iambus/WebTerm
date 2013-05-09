@@ -14,8 +14,16 @@ else
 # APIs
 ##################################################
 
-storage_get = (key, callback) ->
-	chrome.storage.local.get key, callback
+if webterm.platform == 'chrome'
+	storage_get = (key, callback) ->
+		chrome.storage.local.get key, callback
+else
+	storage_get = (key, callback) ->
+		value = localStorage[key]
+		data = {}
+		if value
+			data[key] = JSON.parse value
+		callback data
 
 
 init = (callback) ->

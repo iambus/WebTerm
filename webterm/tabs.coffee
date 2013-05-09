@@ -100,17 +100,36 @@ $ ->
 
 	$('#close-window').click ->
 		window.close()
-	$('#max-window').click ->
-		if chrome.app.window.current().isMaximized()
-			chrome.app.window.current().restore()
-		else
-			chrome.app.window.current().maximize()
-	chrome.app.window.current().onMaximized.addListener ->
-		$('#max-window').attr 'title', '恢复'
-	chrome.app.window.current().onRestored.addListener ->
-		$('#max-window').attr 'title', '最大化'
-	$('#min-window').click ->
-		chrome.app.window.current().minimize()
+	if webterm.platform == 'chrome'
+		$('#max-window').click ->
+			if chrome.app.window.current().isMaximized()
+				chrome.app.window.current().restore()
+			else
+				chrome.app.window.current().maximize()
+		chrome.app.window.current().onMaximized.addListener ->
+			$('#max-window').attr 'title', '恢复'
+		chrome.app.window.current().onRestored.addListener ->
+			$('#max-window').attr 'title', '最大化'
+		$('#min-window').click ->
+			chrome.app.window.current().minimize()
+	else if webterm.platform == 'node-webkit'
+		gui = require 'nw.gui'
+		win = gui.Window.get()
+		isMaximized = false
+		$('#max-window').click ->
+			if isMaximized
+				win.restore()
+			else
+				win.maximize()
+		win.on 'maximize', ->
+			$('#max-window').attr 'title', '恢复'
+			isMaximized = true
+		win.on 'restore', ->
+			$('#max-window').attr 'title', '最大化'
+			isMaximized = false
+		$('#min-window').click ->
+			win.minimize()
+
 
 	limit_bar_width = ->
 		max_width = $('#title-bar').width() - $('#title-panel').width() - $('#new-menu').width()
