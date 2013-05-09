@@ -1,5 +1,8 @@
 
-socket = chrome.socket
+if chrome?
+	socket = chrome.socket
+else
+	socket = require './socket'
 
 assert = (expr, message) ->
 	if not expr
@@ -57,7 +60,7 @@ class Connection
 
 	disconnect: ->
 		if not @disconnected
-			chrome.socket.disconnect @socketId
+			socket.disconnect @socketId
 			@disconnected = true
 			@on_disconnected?()
 
