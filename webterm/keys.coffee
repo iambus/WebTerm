@@ -10,7 +10,7 @@ on_keyboard = (callback) ->
 		key = keymap.event_to_virtual_key event
 		if key in ['ctrl', 'shift', 'alt', 'meta']
 			return
-		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert']
+		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert', 'tab']
 			event.preventDefault()
 		$('#ime').focus()
 		if event.ctrlKey or event.altKey or event.metaKey
