@@ -95,6 +95,50 @@ body {
     padding-bottom: 4px;
 }
 
+#connect fieldset > div:first-child {
+    margin-bottom: 6px;
+}
+#connect div.icon-input {
+    display: inline-block;
+    height: 22px;
+    border: 1px solid rgb(170, 170, 170);
+}
+#connect div.icon-input div.icon {
+    display: inline-block;
+    height: 22px;
+}
+#connect div.icon-input div.icon > img {
+    margin-bottom: -4px;
+    margin-left: 4px;
+    width: 16px;
+    height: 16px;
+}
+#connect .icon-input input {
+    outline: none;
+    border-style: none;
+}
+#connect-book {
+    display: none;
+    position: fixed;
+}
+#connect-book li img {
+    width: 16px;
+    height: 16px;
+    margin-left: -4px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+#connect input {
+    height: 22px;
+}
+#connect input, #connect select {
+    outline: none;
+}
+#connect-host {
+    /*background: url("lib/smth.ico") no-repeat 4px;*/
+    /*padding-left: 22px;*/
+}
+
 
 /* main */
 

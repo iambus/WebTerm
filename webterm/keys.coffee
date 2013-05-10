@@ -3,7 +3,7 @@
 on_keyboard = (callback) ->
 	$('body').on 'keydown', (event) ->
 		if not ($('body').is(event.target) or $('#ime').is(event.target) or $(event.target).closest($('#tabs')).length > 0)
-			console.log event, document.activeElement
+#			console.log event, document.activeElement
 			return
 #		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keydown', keymap.event_to_virtual_key event

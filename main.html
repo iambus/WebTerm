@@ -44,7 +44,14 @@
         <fieldset>
             <div>
                 <label for="connect-host">主机</label>
-                <input name="host" id="connect-host" value="bbs.newsmth.net" class="text ui-widget-content"/>
+                <div class="icon-input">
+                    <div class="icon" id="connect-icon">
+                        <img src="lib/smth.ico"/>
+                        <ul id="connect-book">
+                        </ul>
+                    </div>
+                    <input name="host" id="connect-host" value="bbs.newsmth.net" class="text ui-widget-content"/>
+                </div>
                 <label for="connect-port">端口</label>
                 <input name="port" id="connect-port" value="23" type="number" min="1" max="65535" class="number ui-widget-content"/>
             </div>
