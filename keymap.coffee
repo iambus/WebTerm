@@ -161,7 +161,10 @@ event_to_virtual_key = (event) ->
 		charCode = event.charCode
 		keyCode = null
 		k = String.fromCharCode(charCode)
-		return k
+		if k == '\r'
+			return 'enter'
+		else
+			return k
 	else
 		throw Error("Not Implemented charCode: #{event.charCode}, keyCode: #{event.keyCode}")
 
