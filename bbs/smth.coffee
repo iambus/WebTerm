@@ -204,6 +204,19 @@ class PressEnterKeyBottomBar extends Feature
 			'按 <ENTER> 键继续...': 'enter'
 
 ##################################################
+# login
+##################################################
+
+class LoginGuest extends Feature
+	scan: (screen) ->
+		for row in [screen.height..1]
+			line = screen.view.text.row(row).trim()
+			if line
+				if line == '请输入代号:'
+					screen.events.on_key 'enter', -> screen.events.send_text 'guest\n'
+				break
+
+##################################################
 # main menu
 ##################################################
 
@@ -880,6 +893,7 @@ class login_mode extends FeaturedMode
 		foot.match(/^请输入代号:/) or (foot == '' and screen.view.text.row(23).match /^请输入代号:/)
 	name: 'login'
 	features: [
+		LoginGuest
 	]
 
 class option_input_mode extends FeaturedMode
