@@ -160,6 +160,16 @@ setup_connect_dialog = ->
 	menu_hide = -> $('#connect-book').hide()
 	$('#connect-icon').hover menu_show, menu_hide
 
+setup_settings_dialog = ->
+	$('#settings').click ->
+		$('#settings-dialog').dialog 'open'
+	$("#settings-dialog").dialog
+		autoOpen: false
+		modal: true
+		width: 400
+		height: 200
+	$('#settings-tabs').tabs()
+
 setup = ->
 	Object.defineProperty webterm, 'active',
 		get: ->
@@ -180,7 +190,8 @@ setup = ->
 
 	new_test_tab() # for testing
 	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
-	$("#connect").dialog 'open' # for testing
+#	$("#connect").dialog 'open' # for testing
+#	$("#settings-dialog").dialog 'open' # for testing
 
 
 
@@ -188,4 +199,5 @@ webterm.storage.init ->
 	setup_address_book()
 	setup_quick_connect()
 	setup_connect_dialog()
+	setup_settings_dialog()
 	setup()

@@ -39,7 +39,7 @@
 <textarea id="clipboard"></textarea>
 
 <div id="logger" style="display: none;"></div>
-<div id="connect" title="连接到" style="display: none">
+<div id="connect" class='dialog' title="连接到">
     <form>
         <fieldset>
             <div>
@@ -74,6 +74,20 @@
             </div>
         </fieldset>
     </form>
+</div>
+<div id="settings-dialog" class='dialog' title="设置">
+    <div id='settings-tabs'>
+        <ul>
+            <li><a href='#settings-init-script'>启动脚本</a></li>
+            <li><a href='#settings-session-script'>连接脚本</a></li>
+        </ul>
+        <div id='settings-init-script'>
+            <textarea></textarea>
+        </div>
+        <div id='settings-session-script'>
+            <textarea></textarea>
+        </div>
+    </div>
 </div>
 
 <script src="lib/jquery-1.9.1.js"></script>

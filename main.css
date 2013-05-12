@@ -79,7 +79,7 @@ body {
 
 /* connect dialog */
 
-#connect {
+.dialog {
     display: none;
 }
 #connect form {
@@ -137,6 +137,17 @@ body {
 #connect-host {
     /*background: url("lib/smth.ico") no-repeat 4px;*/
     /*padding-left: 22px;*/
+}
+
+
+/* settings dialog */
+
+#settings-dialog {
+    padding-top: 0;
+}
+#settings-dialog textarea {
+    width: 100%;
+    height: 75%;
 }
 
 

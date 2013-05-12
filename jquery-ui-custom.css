@@ -1,6 +1,10 @@
 
 /* common */
 
+*:focus {
+    outline: none;
+}
+
 .ui-widget {
     font-size: 12px;
 }
@@ -59,18 +63,15 @@
 
 /* main tabs */
 
-#tabs.ui-tabs .ui-tabs-panel {
-    padding: 0;
-}
-
-#tabs {
+.ui-tabs {
     border: none;
 }
 
-#tabs ul.ui-widget-header > li.ui-state-focus > a {
-    outline: none;
+.ui-tabs .ui-tabs-panel {
+    padding: 0;
 }
-#tabs .ui-state-active.ui-state-hover a:hover {
+
+.ui-state-active.ui-state-hover a:hover {
     background: inherit;
 }
 
