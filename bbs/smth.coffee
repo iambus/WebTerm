@@ -221,10 +221,10 @@ class MenuClick extends Feature
 			@fix_menus_with_whitespaces view, menus
 			for [k, row, column_start, column_end] in menus
 				if view.at(row, column_start-2) == '◆'
-					screen.area.define_area class:'bbs-clickable menu-option current', key:'enter'
+					screen.area.define_area class:'bbs-clickable menu-option current', key:'enter',
 						row, column_start, row, column_end
 				else
-					screen.area.define_area class:'bbs-clickable menu-option', key: k + ' enter'
+					screen.area.define_area class:'bbs-clickable menu-option', key: k + ' enter',
 						row, column_start, row, column_end
 
 	is_menu: (view, row, column) ->
