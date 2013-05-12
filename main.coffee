@@ -105,6 +105,7 @@ setup_connect_dialog = ->
 		modal: true
 		resizable: false
 		buttons: [
+			id: 'connect-ok'
 			text: '连接'
 			click: ->
 				new_bbs_tab
@@ -115,6 +116,7 @@ setup_connect_dialog = ->
 					module: bbs[$('#connect-type').val().toLowerCase()]
 				$(@).dialog 'close'
 		,
+			id: 'connect-cancel'
 			text: '取消'
 			click: ->
 				$(@).dialog 'close'
@@ -144,6 +146,8 @@ setup_connect_dialog = ->
 		else if k == 'down'
 			switch_address 1
 			e.preventDefault()
+		else if k == 'enter'
+			$('#connect-ok').click()
 
 	$('#connect-book').menu
 		select: (event, ui) ->
