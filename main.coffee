@@ -93,6 +93,7 @@ setup_quick_connect = ->
 				address_index = parseInt selected
 				address = bbs.list[address_index]
 				new_bbs_tab address
+				$('#quick-connect').hide()
 	menu_show = -> $('#quick-connect').show()
 	menu_hide = -> $('#quick-connect').hide()
 	$('#new-menu').hover menu_show, menu_hide
