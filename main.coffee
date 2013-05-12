@@ -179,7 +179,7 @@ setup = ->
 		get: ->
 			webterm.active?.screen
 	webterm.keys.root.chain = (e) ->
-		if webterm.active?.connection?.disconnected and e.key == '\r'
+		if webterm.active?.connection?.disconnected and e.key == 'enter'
 			console.log 'reconnecting...'
 			webterm.active.connection.reconnect()
 		else
