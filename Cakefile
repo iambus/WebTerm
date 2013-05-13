@@ -108,6 +108,7 @@ download_depends = ->
 	libs =
 		'http://code.jquery.com/jquery-1.9.1.js': 'lib/jquery-1.9.1.js'
 		'http://underscorejs.org/underscore.js': 'lib/underscore.js'
+		'http://coffeescript.org/extras/coffee-script.js': 'lib/coffee-script.js'
 		'http://www.newsmth.net/favicon.ico': 'lib/smth.ico'
 		'http://lilybbs.net/favicon.ico': 'lib/lily.ico'
 		'http://bbs.byr.cn/favicon.ico': 'lib/byr.ico'
