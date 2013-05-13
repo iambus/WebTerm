@@ -8,7 +8,6 @@ if module?.exports?
 	throw Error("Not Implemented")
 else
 	chrome = this.chrome
-	resources = webterm.resources
 
 ##################################################
 # APIs
@@ -16,7 +15,11 @@ else
 
 if webterm.platform == 'chrome'
 	storage_get = (key, callback) ->
-		chrome.storage.local.get key, callback
+		chrome.storage.local.get key, (o) -> callback o[key]
+	storage_set = (key, value) ->
+		o = {}
+		o[key] = value
+		chrome.storage.local.set o
 else
 	storage_get = (key, callback) ->
 		value = localStorage[key]
@@ -24,18 +27,8 @@ else
 		if value
 			data[key] = JSON.parse value
 		callback data
-
-
-init = (callback) ->
-	storage_get 'settings', (v) ->
-		if v.settings?
-			exports.settings = v
-			callback()
-		else
-			resources.get_text "settings.json", (v) ->
-				exports.settings = JSON.parse v
-				# TODO: set settings
-				callback()
+	storage_set = (key, value) ->
+		localStorage[key] = JSON.stringify value
 
 
 ##################################################
@@ -43,7 +36,8 @@ init = (callback) ->
 ##################################################
 
 exports =
-	init: init
+	storage_get: storage_get
+	storage_set: storage_set
 
 if module?.exports?
 	exports = exports

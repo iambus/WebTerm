@@ -196,7 +196,7 @@ setup = ->
 
 
 
-webterm.storage.init ->
+webterm.settings.init ->
 	setup_address_book()
 	setup_quick_connect()
 	setup_connect_dialog()
