@@ -170,6 +170,22 @@ setup_settings_dialog = ->
 		width: 400
 		height: 200
 	$('#settings-tabs').tabs()
+	# init
+	init = webterm.settings.get("scripts.init")
+	if init?
+		# TODO: send init.javascript to sandbox
+		$('#settings-init-script textarea').val init.coffeescript
+	$('#settings-init-script textarea').on 'input', (e) ->
+		coffeescript = $(@).val()
+		try
+			javascript = CoffeeScript.compile coffeescript
+			webterm.settings.set "scripts.init",
+				coffeescript: coffeescript
+				javascript: javascript
+		catch {location, message}
+			if location?
+				message = "##{location.first_line + 1}: #{message}"
+			console.err message # TODO: print in status bar
 
 setup = ->
 	Object.defineProperty webterm, 'active',
