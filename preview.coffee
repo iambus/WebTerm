@@ -46,6 +46,7 @@ $.fn.preview = ->
 	if container.length == 0
 		container = $('<div/>')
 			.attr('id', 'preview')
+			.append('<p>loading...</p>').hide()
 			.append('<img/>').hide()
 			.css('position', 'absolute')
 			.appendTo('body')

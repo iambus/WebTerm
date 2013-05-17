@@ -171,3 +171,15 @@ textarea#clipboard {
     width: 0;
     height: 0;
 }
+
+/* preview */
+
+#preview p {
+    display: none;
+}
+#preview.preview-loading p {
+    display: block;
+    color: white;
+    font-size: 20px;
+}
+
