@@ -487,7 +487,7 @@ class ArticleBottom extends Feature
 class ArticleURL extends Feature
 	scan: (screen) ->
 		text = screen.view.text.full()
-		url_regexp = /http:\/\/[\w:\/?&=%+@$;._-]+/g
+		url_regexp = /http:\/\/[\w:\/?&=%+(@)$;._-]+/g
 		while m = url_regexp.exec text
 			start = wcwidth(text.substring(0, m.index))
 			end = start + m[0].length - 1
