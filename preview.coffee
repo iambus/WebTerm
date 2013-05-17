@@ -1,10 +1,10 @@
 
-load_image = (img, url) ->
+load_image = (url, callback) ->
 	xhr = new XMLHttpRequest()
 	xhr.open('GET', url, true)
 	xhr.responseType = 'blob'
 	xhr.onload = ->
-		img.src = window.webkitURL.createObjectURL @response
+		callback window.webkitURL.createObjectURL @response
 	xhr.send()
 
 
@@ -67,7 +67,11 @@ $.fn.preview = ->
 			mousemove(e)
 			img.show()
 #		img.attr 'src', link
-		load_image img[0], link
+		img.attr 'loading', link
+		load_image link, (data) =>
+#			if $(@).is ':visible'
+			if img.attr('loading') == link
+				img.attr 'src', data
 	hover_out = ->
 		container.hide()
 		img.unbind('load').attr('src', '').css(width:'', height:'').hide()
