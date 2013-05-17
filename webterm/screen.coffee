@@ -1186,7 +1186,8 @@ class Screen
 
 	render: ->
 		$(@selector).html @to_html()
-		$('#ime').offset $('.cursor').offset()
+		if $(@selector).is ":visible"
+			$('#ime').offset $(@selector).find('.cursor').offset()
 		@screen_rendered()
 
 	fill_ascii_raw: (a) ->
