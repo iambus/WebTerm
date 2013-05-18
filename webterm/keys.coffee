@@ -63,7 +63,7 @@ class KeyListener
 		@text_handler = null
 
 	on_key: (key, handler) ->
-		@mappings.push [key, handler]
+		@mappings.unshift [key, handler]
 
 	on_text: (handler) ->
 		@text_handler = handler
