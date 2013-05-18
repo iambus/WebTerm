@@ -172,6 +172,10 @@ div[aria-describedby="input-dialog"] .ui-dialog-buttonpane {
     margin: 0;
 }
 
+#about a {
+    text-decoration: underline;
+}
+
 /* main */
 
 textarea#ime {

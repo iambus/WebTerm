@@ -189,6 +189,8 @@ setup_menu = ->
 			id = ui.item.find('a').attr('href')
 			if id == '#input-dialog'
 				$('#input-dialog').dialog 'open'
+			else if id == '#about'
+				$('#about').dialog 'open'
 			menu_hide()
 	menu_show = -> $('#menu ul').show()
 	menu_hide = -> $('#menu ul').hide()
@@ -218,6 +220,12 @@ setup_input_dialog = ->
 		else if k == 'ctrl-w'
 			post()
 			$('#input-dialog').dialog 'close'
+
+setup_about = ->
+	$('#about').dialog
+		autoOpen: false
+		modal: true
+		width: 400
 
 setup = ->
 	Object.defineProperty webterm, 'active',
@@ -257,5 +265,6 @@ webterm.settings.init ->
 	setup_settings_dialog()
 	setup_menu()
 	setup_input_dialog()
+	setup_about()
 	setup()
 	init()
