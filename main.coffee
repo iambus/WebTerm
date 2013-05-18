@@ -171,10 +171,6 @@ setup_settings_dialog = ->
 		height: 200
 	$('#settings-tabs').tabs()
 	# init
-	init = webterm.settings.get("scripts.init")
-	if init?
-		webterm.eval init.coffeescript
-		$('#settings-init-script textarea').val init.coffeescript
 	$('#settings-init-script textarea').on 'input', (e) ->
 		coffeescript = $(@).val()
 		try
@@ -186,6 +182,34 @@ setup_settings_dialog = ->
 			if location?
 				message = "##{location.first_line + 1}: #{message}"
 			console.err message # TODO: print in status bar
+
+setup_menu = ->
+	$('#menu ul').menu
+		select: (event, ui) ->
+			id = ui.item.find('a').attr('href')
+			if id == '#input-dialog'
+				$('#input-dialog').dialog 'open'
+			menu_hide()
+	menu_show = -> $('#menu ul').show()
+	menu_hide = -> $('#menu ul').hide()
+	$('#menu').hover menu_show, menu_hide
+
+setup_input_dialog = ->
+	$("#input-dialog").dialog
+		autoOpen: false
+		modal: false
+		width: 400
+		height: 200
+		buttons: [
+			text: '插入'
+			click: ->
+				text = $(@).find('textarea').val()
+				webterm.active?.screen?.events.send_text text
+		,
+			text: '关闭'
+			click: ->
+				$(@).dialog 'close'
+		]
 
 setup = ->
 	Object.defineProperty webterm, 'active',
@@ -205,16 +229,25 @@ setup = ->
 		# TODO: customize behavior
 		$("#connect").dialog 'open'
 
+	webterm.keys.root.on_key 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
+
 	new_test_tab() # for testing
 	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
 #	$("#connect").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 
-
+init = ->
+	init = webterm.settings.get("scripts.init")
+	if init?
+		webterm.eval init.coffeescript
+		$('#settings-init-script textarea').val init.coffeescript
 
 webterm.settings.init ->
 	setup_address_book()
 	setup_quick_connect()
 	setup_connect_dialog()
 	setup_settings_dialog()
+	setup_menu()
+	setup_input_dialog()
 	setup()
+	init()

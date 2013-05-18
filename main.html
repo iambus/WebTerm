@@ -24,7 +24,15 @@
             </ul>
         </div>
         <div id='title-panel'>
-            <div id='menu' class='ui-icon ui-icon-carat-1-s' title='主菜单'></div>
+            <div id='menu'>
+                <div class='ui-icon ui-icon-carat-1-s' title='主菜单'></div>
+                <ul>
+                    <li><a href="#input-dialog">文本输入框</a></li>
+                    <li><a href="#run-dialog">运行脚本</a></li>
+                    <li><a href="#help">帮助</a></li>
+                    <li><a href="#about">关于</a></li>
+                </ul>
+            </div>
             <div id='settings' class='ui-icon ui-icon-gear' title='设置'></div>
             <div id='min-window' class='ui-icon ui-icon-minus' title='最小化'></div>
             <div id='max-window' class='ui-icon ui-icon-newwin' title='最大化'></div>
@@ -39,6 +47,11 @@
 <textarea id="clipboard"></textarea>
 
 <div id="logger" style="display: none;"></div>
+
+<div id="input-dialog" class="dialog" title="文本输入框">
+    <textarea></textarea>
+</div>
+
 <div id="connect" class='dialog' title="连接到">
     <form>
         <fieldset>
@@ -75,6 +88,7 @@
         </fieldset>
     </form>
 </div>
+
 <div id="settings-dialog" class='dialog' title="设置">
     <div id='settings-tabs'>
         <ul>
