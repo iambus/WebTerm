@@ -10,9 +10,9 @@ if module?.exports?
 else
 	$ = this.$
 	_ = this._
-	mode = bbs.mode
+	mode = webterm.bbs.mode
 	if not mode
-		throw Error("bbs.mode is not loaded")
+		throw Error("webterm.bbs.mode is not loaded")
 
 Feature = mode.Feature
 
@@ -58,6 +58,5 @@ exports =
 if module?.exports?
 	module.exports = exports
 else
-	this.bbs = this.bbs ? {}
-	this.bbs.common = exports
+	this.webterm.bbs.common = exports
 

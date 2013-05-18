@@ -71,7 +71,7 @@ new_bbs_tab = (address) ->
 					.key('enter', reconnect)
 					.area('bbs-clickable bbs-reconnect', 24, 28, 24, 53)
 					.flush()
-					.render(new bbs.common.Clickable)
+					.render(new webterm.bbs.common.Clickable)
 				$(info.session.screen.selector).find('.bbs-reconnect').click reconnect
 				$(info.session.screen.selector).find('.cursor').removeClass('cursor')
 				$(info.session.screen.selector).find('.blink').removeClass('blink')
@@ -86,7 +86,7 @@ new_test_tab = (address) ->
 		on_open: (info) -> info.session = test("##{info.id} .screen")
 
 setup_address_book = ->
-	for {name, host, port, protocol, module, icon}, i in bbs.list
+	for {name, host, port, protocol, module, icon}, i in webterm.bbs.list
 		if icon
 			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
 			$('#connect-book').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
@@ -103,7 +103,7 @@ setup_quick_connect = ->
 				new_test_tab()
 			else
 				address_index = parseInt selected
-				address = bbs.list[address_index]
+				address = webterm.bbs.list[address_index]
 				new_bbs_tab address
 				$('#quick-connect').hide()
 	menu_show = -> $('#quick-connect').show()
@@ -126,7 +126,7 @@ setup_connect_dialog = ->
 					name: $('#connect-host').val()
 					host: $('#connect-host').val()
 					port: parseInt $('#connect-port').val()
-					module: bbs[$('#connect-type').val().toLowerCase()]
+					module: webterm.bbs[$('#connect-type').val().toLowerCase()]
 				$(@).dialog 'close'
 		,
 			id: 'connect-cancel'
@@ -141,14 +141,14 @@ setup_connect_dialog = ->
 		$('#connect-port').val address.port
 		$('#connect-icon > img').attr 'src', address.icon
 		$('#connect-type').val switch address.module
-			when bbs.smth then 'SMTH'
-			when bbs.lily then 'LILY'
-			when bbs.firebird then 'Firebird'
+			when webterm.bbs.smth then 'SMTH'
+			when webterm.bbs.lily then 'LILY'
+			when webterm.bbs.firebird then 'Firebird'
 
 	switch_address = (n) ->
 		current = parseInt $('#connect-host').attr('connect') ? 0
-		selected = (current + n + bbs.list.length) % bbs.list.length
-		apply_addres bbs.list[selected]
+		selected = (current + n + webterm.bbs.list.length) % webterm.bbs.list.length
+		apply_addres webterm.bbs.list[selected]
 		$('#connect-host').attr 'connect', selected
 
 	$('#connect-host').keydown (e) ->
@@ -166,7 +166,7 @@ setup_connect_dialog = ->
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
 			address_index = parseInt selected
-			address = bbs.list[address_index]
+			address = webterm.bbs.list[address_index]
 			apply_addres address
 			$('#connect-book').hide()
 	menu_show = -> $('#connect-book').show()

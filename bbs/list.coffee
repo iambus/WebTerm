@@ -7,15 +7,15 @@ if module?.exports?
 	smth = require './smth'
 	lily = require './lily'
 else
-	smth = bbs.smth
-	lily = bbs.lily
-	firebird = bbs.firebird
+	smth = webterm.bbs.smth
+	lily = webterm.bbs.lily
+	firebird = webterm.bbs.firebird
 	if not smth
-		throw Error("bbs.smth is not loaded")
+		throw Error("webterm.bbs.smth is not loaded")
 	if not lily
-		throw Error("bbs.lily is not loaded")
+		throw Error("webterm.bbs.lily is not loaded")
 	if not firebird
-		throw Error("bbs.firebird is not loaded")
+		throw Error("webterm.bbs.firebird is not loaded")
 
 ##################################################
 # address book
@@ -105,5 +105,4 @@ exports = list
 if module?.exports?
 	module.exports = exports
 else
-	this.bbs = this.bbs ? {}
-	this.bbs.list = exports
+	this.webterm.bbs.list = exports

@@ -95,6 +95,6 @@ exports =
 if module?.exports?
 	module.exports = exports
 else
-	this.bbs = this.bbs ? {}
-	this.bbs.mode = exports
+	this.webterm.bbs = this.webterm.bbs ? {}
+	this.webterm.bbs.mode = exports
 

@@ -14,12 +14,12 @@ else
 	$ = this.$
 	_ = this._
 	wcwidth = this.wcwidth
-	mode = bbs.mode
+	mode = webterm.bbs.mode
 	if not mode
-		throw Error("bbs.mode is not loaded")
-	common = bbs.common
+		throw Error("webterm.bbs.mode is not loaded")
+	common = webterm.bbs.common
 	if not common
-		throw Error("bbs.common is not loaded")
+		throw Error("webterm.bbs.common is not loaded")
 
 plugin = mode.plugin
 Feature = mode.Feature
@@ -1219,6 +1219,5 @@ exports = smth
 if module?.exports?
 	module.exports = exports
 else
-	this.bbs = this.bbs ? {}
-	this.bbs.smth = exports
+	this.webterm.bbs.smth = exports
 

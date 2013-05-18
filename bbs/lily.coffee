@@ -6,9 +6,9 @@
 if module?.exports?
 	mode = require './mode'
 else
-	mode = bbs.mode
+	mode = webterm.bbs.mode
 	if not mode
-		throw Error("bbs.mode is not loaded")
+		throw Error("webterm.bbs.mode is not loaded")
 
 plugin = mode.plugin
 
@@ -23,6 +23,5 @@ exports = ->
 if module?.exports?
 	module.exports = exports
 else
-	this.bbs = this.bbs ? {}
-	this.bbs.lily = exports
+	this.webterm.bbs.lily = exports
 
