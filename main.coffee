@@ -173,7 +173,7 @@ setup_settings_dialog = ->
 	# init
 	init = webterm.settings.get("scripts.init")
 	if init?
-		# TODO: send init.javascript to sandbox
+		webterm.eval init.coffeescript
 		$('#settings-init-script textarea').val init.coffeescript
 	$('#settings-init-script textarea').on 'input', (e) ->
 		coffeescript = $(@).val()
