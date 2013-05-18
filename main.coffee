@@ -195,6 +195,9 @@ setup_menu = ->
 	$('#menu').hover menu_show, menu_hide
 
 setup_input_dialog = ->
+	post = ->
+		text = $('#input-dialog textarea').val()
+		webterm.active?.screen?.events.send_text text
 	$("#input-dialog").dialog
 		autoOpen: false
 		modal: false
@@ -202,14 +205,19 @@ setup_input_dialog = ->
 		height: 200
 		buttons: [
 			text: '插入'
-			click: ->
-				text = $(@).find('textarea').val()
-				webterm.active?.screen?.events.send_text text
+			click: post
 		,
 			text: '关闭'
 			click: ->
 				$(@).dialog 'close'
 		]
+	$('#input-dialog textarea').keydown (e) ->
+		k = keymap.event_to_virtual_key e
+		if k == 'ctrl-enter'
+			post()
+		else if k == 'ctrl-w'
+			post()
+			$('#input-dialog').dialog 'close'
 
 setup = ->
 	Object.defineProperty webterm, 'active',
