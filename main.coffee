@@ -207,7 +207,14 @@ setup_input_dialog = ->
 		height: 200
 		buttons: [
 			text: '插入'
-			click: post
+			click: ->
+				post()
+				$(@).find('textarea').focus()
+		,
+			text: '清除'
+			click: ->
+				$(@).find('textarea').val('')
+				$(@).find('textarea').focus()
 		,
 			text: '关闭'
 			click: ->
