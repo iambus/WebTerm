@@ -20,16 +20,19 @@ class Tabs
 	init: ->
 		@tabs = $(@selector)
 		tabs = @tabs.tabs()
-		tabs.find(".ui-tabs-nav").sortable
+		@bar = tabs.find(".ui-tabs-nav :first")
+		@bar.sortable
 			axis: "x"
 			stop: ->
 				tabs.tabs "refresh"
-		tabs.find(".ui-tabs-nav").on 'click', 'li .ui-icon-close', (e) =>
+		@bar.on 'click', 'li .ui-icon-close', (e) =>
 			@on_close e.target
+		$('#new-tab').click =>
+			@on_new?()
 
 	on: (event, callback) ->
 		if event == 'new'
-			$('#new-tab').click callback
+			@on_new = callback
 		else if event == 'active'
 			@tabs.on 'tabsactivate', (event, ui) ->
 				callback
@@ -49,7 +52,7 @@ class Tabs
 		div = add_tab id, title, content
 		info =
 			id: id
-			li: @tabs.find("ul#tab-bar li a[href=##{id}]").parent()
+			li: @bar.find("li a[href=##{id}]").parent()
 			div: div
 			data: data
 			on_open: on_open
@@ -58,7 +61,7 @@ class Tabs
 			on_closed: on_closed
 		@registry[id] = info
 		on_open?(info)
-		@tabs.tabs 'option', 'active', @tabs.find("ul#tab-bar li").length - 1
+		@tabs.tabs 'option', 'active', @bar.find("li").length - 1
 
 	on_close: (element) ->
 		li = $(element).closest("li")
@@ -81,7 +84,7 @@ class Tabs
 		###
 		# Note: n start from 0
 		###
-		@tabs.find("ul#tab-bar li:nth-child(#{n+1})").attr('aria-controls')
+		@bar.find("li:nth-child(#{n+1})").attr('aria-controls')
 
 	nth_div_selector: (n) ->
 		"##{@nth_id n}"
