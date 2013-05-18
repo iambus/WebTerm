@@ -1098,6 +1098,7 @@ class Screen
 			$('#clipboard').val(selected).select()
 			document.execCommand('copy')
 			$('#clipboard').val('')
+			$('#ime').focus()
 
 		copy_ascii = =>
 			selected = @selection?.get_selected_ascii()
@@ -1109,6 +1110,7 @@ class Screen
 			$('#clipboard').val(selected).select()
 			document.execCommand('copy')
 			$('#clipboard').val('')
+			$('#ime').focus()
 
 		copy_if = =>
 			selected = @selection?.get_selected_text()
@@ -1116,6 +1118,7 @@ class Screen
 				$('#clipboard').val(selected).select()
 				document.execCommand('copy')
 				$('#clipboard').val('')
+				$('#ime').focus()
 				@selection = null
 				@render()
 			else
@@ -1127,6 +1130,7 @@ class Screen
 			document.execCommand('paste')
 			data = $('#clipboard').val()
 			$('#clipboard').val('')
+			$('#ime').focus()
 			data = data.replace /\x1b/g, '\x1b\x1b'
 			@events.send_text data
 
