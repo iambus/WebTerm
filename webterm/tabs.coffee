@@ -24,6 +24,8 @@ class Tabs
 			axis: "x"
 			stop: ->
 				tabs.tabs "refresh"
+		tabs.find(".ui-tabs-nav").on 'click', 'li .ui-icon-close', (e) =>
+			@on_close e.target
 
 	on: (event, callback) ->
 		if event == 'new'
@@ -94,9 +96,6 @@ class Tabs
 $ ->
 	webterm.tabs = new Tabs('#tabs')
 	webterm.tabs.init()
-
-	$('#tab-bar').on 'click', 'li .ui-icon-close', ->
-		webterm.tabs.on_close @
 
 	$('#close-window').click ->
 		window.close()
