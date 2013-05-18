@@ -1095,10 +1095,7 @@ class Screen
 				@render()
 			else
 				selected = new Selection(@).select_all().get_selected_text()
-			$('#clipboard').val(selected).select()
-			document.execCommand('copy')
-			$('#clipboard').val('')
-			$('#ime').focus()
+			webterm.clipboard.put selected
 
 		copy_ascii = =>
 			selected = @selection?.get_selected_ascii()
@@ -1107,18 +1104,12 @@ class Screen
 				@render()
 			else
 				selected = new Selection(@).select_all().get_selected_ascii()
-			$('#clipboard').val(selected).select()
-			document.execCommand('copy')
-			$('#clipboard').val('')
-			$('#ime').focus()
+			webterm.clipboard.put selected
 
 		copy_if = =>
 			selected = @selection?.get_selected_text()
 			if selected
-				$('#clipboard').val(selected).select()
-				document.execCommand('copy')
-				$('#clipboard').val('')
-				$('#ime').focus()
+				webterm.clipboard.put selected
 				@selection = null
 				@render()
 			else
@@ -1126,11 +1117,7 @@ class Screen
 
 
 		paste = =>
-			$('#clipboard').val('').select()
-			document.execCommand('paste')
-			data = $('#clipboard').val()
-			$('#clipboard').val('')
-			$('#ime').focus()
+			data = webterm.clipboard.get()
 			data = data.replace /\x1b/g, '\x1b\x1b'
 			@events.send_text data
 
