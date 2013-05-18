@@ -50,6 +50,9 @@ $.fn.preview = ->
 			.append('<img/>').hide()
 			.css('position', 'absolute')
 			.appendTo('body')
+		container.mouseleave ->
+			hover_out()
+
 	img = $ 'img', container
 
 	images = @filter -> @getAttribute('href').match /\.(jpg|jpeg|png|gif|bmp)$/i
