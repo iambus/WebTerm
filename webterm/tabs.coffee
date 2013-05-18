@@ -1,15 +1,7 @@
 
 
-add_tab = (id, label, content) ->
-	li = """<li><a href="##{id}">#{label}</a><span class="ui-icon ui-icon-close" role="presentation">Remove Tab</span></li>"""
-	tabs = $('#tabs')
-	tabs.find(".ui-tabs-nav").append(li)
-	tabs.find('#main').append "<div id='#{id}'>#{content}</div>"
-	tabs.tabs "refresh"
-	$('#'+id)[0]
-
 class Tabs
-	constructor: (@selector) ->
+	constructor: (@selector, @new_selector, @body_selector) ->
 		@counter = 0
 		@registry = {}
 
@@ -27,7 +19,7 @@ class Tabs
 				tabs.tabs "refresh"
 		@bar.on 'click', 'li .ui-icon-close', (e) =>
 			@on_close e.target
-		$('#new-tab').click =>
+		$(@new_selector).click =>
 			@on_new?()
 
 	on: (event, callback) ->
@@ -49,7 +41,14 @@ class Tabs
 		id = id ? @auto_id()
 		if icon?
 			title = "<img src='#{icon}' class='ui-icon ui-icon-blank'/>#{title}"
-		div = add_tab id, title, content
+
+		li = """<li><a href="##{id}">#{title}</a><span class="ui-icon ui-icon-close" role="presentation">Remove Tab</span></li>"""
+		@bar.append(li)
+		@tabs.find(@body_selector).append "<div id='#{id}'>#{content}</div>"
+		@tabs.tabs "refresh"
+
+		div = $('#'+id)[0]
+
 		info =
 			id: id
 			li: @bar.find("li a[href=##{id}]").parent()
@@ -97,7 +96,7 @@ class Tabs
 		@nth n
 
 $ ->
-	webterm.tabs = new Tabs('#tabs')
+	webterm.tabs = new Tabs('#tabs', '#new-tab', '#main')
 	webterm.tabs.init()
 
 	$('#close-window').click ->
