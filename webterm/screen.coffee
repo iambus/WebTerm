@@ -536,8 +536,17 @@ class Painter
 		else
 			throw Error("Not Implemented: #{color}")
 		@
+	key: (k, h) ->
+		@screen.events.on_key k, h
+		@
+	area: (attrs, top, left, bottom, right) ->
+		@screen.area.define_area attrs, top, left, bottom, right
+		@
 	flush: ->
 		@screen.render()
+		@
+	render: (render) ->
+		render.render @screen
 		@
 
 ##################################################

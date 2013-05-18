@@ -59,8 +59,20 @@ new_bbs_tab = (address) ->
 			info.session.connection.on_disconnected = ->
 				info.li.addClass 'disconnected'
 				info.li.removeClass 'connected'
+				reconnect = ->
+					console.log 'reconnecting...'
+					info.session.connection.reconnect()
 #				info.session.screen.painter.clear().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
-				info.session.screen.painter.scollup().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
+				info.session.screen.painter
+					.scollup()
+					.foreground('red')
+					.move_to(24, 28)
+					.fill_text('连接已断开，按回车键重连。')
+					.key('enter', reconnect)
+					.area('bbs-clickable bbs-reconnect', 24, 28, 24, 53)
+					.flush()
+					.render(new bbs.common.Clickable)
+				$(info.session.screen.selector).find('.bbs-reconnect').click reconnect
 				$(info.session.screen.selector).find('.cursor').removeClass('cursor')
 				$(info.session.screen.selector).find('.blink').removeClass('blink')
 		on_closed: (info) ->
@@ -242,11 +254,7 @@ setup = ->
 		get: ->
 			webterm.active?.screen
 	webterm.keys.root.chain = (e) ->
-		if webterm.active?.connection?.disconnected and e.key == 'enter'
-			console.log 'reconnecting...'
-			webterm.active.connection.reconnect()
-		else
-			webterm.active?.screen.events.on_keyboard e
+		webterm.active?.screen.events.on_keyboard e
 
 	webterm.tabs.on 'new', ->
 		# TODO: customize behavior
