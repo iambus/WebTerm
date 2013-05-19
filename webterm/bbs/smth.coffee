@@ -333,8 +333,12 @@ class BoardTopNotification extends Feature
 
 class BoardModeSwitch extends Feature
 	scan: (screen) ->
-		if /\[..模式\] $/.test screen.view.text.row 3
-			screen.area.define_area 'bbs-menu board-mode-switch', 3, 70, 3, 79
+		m = screen.view.text.row(3).match /\[(..模式)\] $/
+		if not m
+			return
+		if m[1] == '十大模式'
+			return
+		screen.area.define_area 'bbs-menu board-mode-switch', 3, 70, 3, 79
 	render: (screen) ->
 		menus = [['文摘区', '1']
 						 ['同主题', '2']
