@@ -15,6 +15,12 @@ footline = (screen) ->
 	screen.view.text.foot()
 
 class Feature
+	@disable: ->
+		@prototype.disabled = true
+	@enable: ->
+		@prototype.disabled = undefined
+	@is_enabled: ->
+		not @prototype.disabled
 	constructor: ->
 		if not @name
 			@name = @constructor.name
@@ -22,6 +28,12 @@ class Feature
 	render: (screen) ->
 
 class Mode
+	@disable: ->
+		@prototype.disabled = true
+	@enable: ->
+		@prototype.disabled = undefined
+	@is_enabled: ->
+		not @prototype.disabled
 	constructor: ->
 		if not @name
 			@name = @constructor.name
@@ -36,10 +48,12 @@ class FeaturedMode extends Mode
 		@features = (new feature for feature in @features)
 	scan: (screen) ->
 		for feature in @features
-			feature.scan screen
+			if not feature.disabled
+				feature.scan screen
 	render: (screen) ->
 		for feature in @features
-			feature.render screen
+			if not feature.disabled
+				feature.render screen
 
 class CompositeMode extends Mode
 	constructor: (@name, @modes) ->
@@ -64,7 +78,7 @@ test_footline = (regexp) ->
 
 load_mode = (screen, modes, global_mode) ->
 	for mode in modes
-		if mode.check?(screen)
+		if mode.is_enabled() and mode.check?(screen)
 			m = new mode()
 			return new CompositeMode m.name, [ m, new global_mode]
 	return new global_mode

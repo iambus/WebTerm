@@ -1172,6 +1172,7 @@ features = [
 	ClickEnter
 	PressAnyKeyBottomBar
 	PressEnterKeyBottomBar
+	LoginGuest
 	MenuClick
 	GotoDefaultBoard
 	RowClick
