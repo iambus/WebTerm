@@ -304,6 +304,7 @@ setup = ->
 
 	webterm.keys.root.on_key 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
 	webterm.keys.root.on_key 'f5', -> $('#script-dialog').dialog 'open'
+	webterm.keys.root.on_key 'f8', -> $('#settings-dialog').dialog 'open'
 
 	new_test_tab() # for testing
 	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
