@@ -1,14 +1,17 @@
 
 
-task 'build', 'compile source', ->
+task 'build', 'Compile source', ->
 	coffee ['-c', '.']
 
-task 'watch', 'compile source and watch', ->
+task 'watch', 'Compile source and watch', ->
 	coffee ['-w', '-c', '.'], (s) ->
 		console.log s.replace /^In .*, Parse error on line \d+.+$/m, red s
 
 task 'deps', 'Install dependencies', ->
 	download_depends()
+
+task 'out', 'Build release to out dir', ->
+	build_out()
 
 ##################################################
 # dirty implementation
@@ -43,10 +46,15 @@ coffee = (args, on_stdout, on_stderr) ->
 		if code != 0
 			console.error red "something wrong! coffee: #{args}"
 
-download = (url, file) ->
-	dir = path.dirname file
+mkdir = (dir) ->
 	if not fs.existsSync dir
+		parent = path.dirname dir
+		if not fs.existsSync parent
+			mkdir parent
 		fs.mkdirSync dir
+
+download = (url, file) ->
+	mkdir path.dirname file
 	console.log green('http'), url, '->', file
 	request = http.get url, (response) ->
 		response.pipe fs.createWriteStream file
@@ -124,3 +132,83 @@ download_depends = ->
 		if not fs.existsSync file
 			download url, file
 	download_jquery_ui()
+
+copy_file = (src, target) ->
+	mkdir path.dirname target
+	fs.createReadStream(src).pipe fs.createWriteStream(target)
+
+build_out = ->
+	if fs.existsSync 'out'
+		fs.renameSync 'out', 'out-' + new Date().getTime()
+	mkdir 'out'
+	files = [
+		'manifest.json'
+		'settings.json'
+		'main.html'
+		'jquery-ui-custom.css'
+		'main.css'
+		'encoding-indexes.js'
+		'encoding.js'
+		'gesture.js'
+		'keymap.js'
+		'launch.js'
+		'logger.js'
+		'main.js'
+		'preview.js'
+		'telnet.js'
+		'test.js'
+		'wcwidth.js'
+		'webterm.js'
+		'webterm/bbs/common.css'
+		'webterm/bbs/common.js'
+		'webterm/bbs/firebird.js'
+		'webterm/bbs/lily.js'
+		'webterm/bbs/list.js'
+		'webterm/bbs/mode.js'
+		'webterm/bbs/smth.css'
+		'webterm/bbs/smth.js'
+		'webterm/clipboard.js'
+		'webterm/eval.js'
+		'webterm/keys.js'
+		'webterm/resources.js'
+		'webterm/screen.css'
+		'webterm/screen.js'
+		'webterm/settings.js'
+		'webterm/storage.js'
+		'webterm/tabs.js'
+
+		'lib/byr.ico'
+		'lib/fudan.ico'
+		'lib/lily.ico'
+		'lib/pku.ico'
+		'lib/seu.ico'
+		'lib/sjtu.ico'
+		'lib/smth.ico'
+		'lib/whnet.ico'
+		'lib/whu.ico'
+		'lib/xjtu.ico'
+
+		'lib/CoffeeScriptEval.js'
+		'lib/coffee-script.js'
+		'lib/underscore.js'
+		'lib/jquery-1.9.1.js'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/animated-overlay.gif'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_flat_0_aaaaaa_40x100.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_flat_75_ffffff_40x100.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_glass_55_fbf9ee_1x400.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_glass_75_dadada_1x400.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_glass_75_e6e6e6_1x400.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_glass_95_fef1ec_1x400.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_highlight-soft_75_cccccc_1x100.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_2e83ff_256x240.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_454545_256x240.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_cd0a0a_256x240.png'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.css'
+		'lib/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js'
+
+	]
+	for f in files
+		copy_file f, 'out/' + f
