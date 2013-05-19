@@ -262,17 +262,17 @@ setup_script_dialog = ->
 			text: '打开'
 			click: ->
 				webterm.dialogs.file_open accepts: [extensions: ['coffee']], (script) ->
-					editor.setValue script
+					editor.getSession().setValue script
 					editor.focus()
 		,
 			text: '运行'
 			click: ->
-				webterm.eval editor.getValue()
+				webterm.eval editor.getSession().getValue()
 				editor.focus()
 		,
 			text: '清除'
 			click: ->
-				editor.setValue()
+				editor.getSession().setValue()
 				editor.focus()
 		,
 			text: '关闭'

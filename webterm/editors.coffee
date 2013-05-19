@@ -20,10 +20,9 @@ ace_coffee_editor = ({id, code, listener}) ->
 	editor.getSession().setTabSize(2)
 #	editor.renderer.setShowGutter(false)
 	if code?
-		editor.setValue code
-		editor.navigateFileStart()
+		editor.getSession().setValue code
 	editor.getSession().on 'change', (e) ->
-		coffeescript = editor.getValue()
+		coffeescript = editor.getSession().getValue()
 		try
 			javascript = CoffeeScript.compile coffeescript
 			listener? coffeescript: coffeescript, javascript: javascript
@@ -35,7 +34,7 @@ ace_coffee_editor = ({id, code, listener}) ->
 		name: 'eval',
 		bindKey: 'Ctrl-Enter'
 		exec: (editor) ->
-			webterm.eval editor.getValue()
+			webterm.eval editor.getSession().getValue()
 	return editor
 
 webterm.editors =
