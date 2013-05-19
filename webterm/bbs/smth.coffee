@@ -187,7 +187,7 @@ class ClickEnter extends Feature
 		screen.area.define_area class:'click-enter', style:'cursor: pointer',
 			1, 1, screen.height, screen.width
 	render: (screen) ->
-		screen.events.on_click '.click-whitespace', -> screen.events.send_key 'enter'
+		screen.events.on_click '.click-enter', -> screen.events.send_key 'enter'
 
 class PressAnyKeyBottomBar extends Feature
 	scan: (screen) ->
