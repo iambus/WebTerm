@@ -1,3 +1,3 @@
 
 webterm.eval = (code) ->
-	CoffeeScriptEval code, $: $, webterm: webterm
+	CoffeeScriptEval code, webterm: webterm, $: $, console: console
