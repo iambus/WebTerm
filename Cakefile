@@ -21,6 +21,7 @@ fs = require 'fs'
 path = require 'path'
 {spawn} = require 'child_process'
 http = require 'http'
+https = require 'https'
 
 coffee_bin = ->
 	if process.platform =='win32' then 'coffee.cmd' else 'coffee'
@@ -55,9 +56,14 @@ mkdir = (dir) ->
 
 download = (url, file) ->
 	mkdir path.dirname file
-	console.log green('http'), url, '->', file
-	request = http.get url, (response) ->
-		response.pipe fs.createWriteStream file
+	if url.match /^https:/
+		console.log green('https'), url, '->', file
+		request = https.get url, (response) ->
+			response.pipe fs.createWriteStream file
+	else
+		console.log green('http'), url, '->', file
+		request = http.get url, (response) ->
+			response.pipe fs.createWriteStream file
 	request.on 'error', (e) ->
 		console.error red e
 
@@ -118,6 +124,10 @@ download_depends = ->
 		'http://underscorejs.org/underscore.js': 'lib/underscore.js'
 		'http://coffeescript.org/extras/coffee-script.js': 'lib/coffee-script.js'
 		'http://iambus.github.io/static/CoffeeScriptEval.js': 'lib/CoffeeScriptEval.js'
+		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js': 'lib/ace/ace.js'
+		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/mode-coffee.js': 'lib/ace/mode-coffee.js'
+		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/worker-coffee.js': 'lib/ace/worker-coffee.js'
+		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/theme-merbivore_soft.js': 'lib/ace/theme-merbivore_soft.js'
 		'http://www.newsmth.net/favicon.ico': 'lib/smth.ico'
 		'http://lilybbs.net/favicon.ico': 'lib/lily.ico'
 		'http://bbs.byr.cn/favicon.ico': 'lib/byr.ico'

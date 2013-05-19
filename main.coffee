@@ -181,19 +181,23 @@ setup_settings_dialog = ->
 		modal: true
 		width: 400
 		height: 200
-	$('#settings-tabs').tabs()
+	$('#settings-tabs').tabs
+		activate: (event, ui) ->
+			id = $(ui.newPanel.selector + '.ace_editor').attr 'id'
+			if id?
+				editor = ace.edit id
+				editor.focus()
 	# init
-	$('#settings-init-script textarea').on 'input', (e) ->
-		coffeescript = $(@).val()
-		try
-			javascript = CoffeeScript.compile coffeescript
-			webterm.settings.set "scripts.init",
-				coffeescript: coffeescript
-				javascript: javascript
-		catch {location, message}
-			if location?
-				message = "##{location.first_line + 1}: #{message}"
-			console.err message # TODO: print in status bar
+	init_editor = webterm.editors.ace_coffee_editor
+		id: 'settings-init-script'
+		code: webterm.settings.get("scripts.init")?.coffeescript
+		listener: (code) -> webterm.settings.set "scripts.init", code
+	# init
+	session_editor = webterm.editors.ace_coffee_editor
+		id: 'settings-session-script'
+		code: webterm.settings.get("scripts.session")?.coffeescript
+		listener: (code) -> webterm.settings.set "scripts.session", code
+
 
 setup_menu = ->
 	$('#menu ul').menu
@@ -271,7 +275,6 @@ init = ->
 	init = webterm.settings.get("scripts.init")
 	if init?
 		webterm.eval init.coffeescript
-		$('#settings-init-script textarea').val init.coffeescript
 
 webterm.settings.init ->
 	setup_address_book()

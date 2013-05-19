@@ -149,6 +149,10 @@ body {
     width: 100%;
     height: 75%;
 }
+#settings-dialog div.ace_editor {
+    width: 100%;
+    height: 75%;
+}
 
 /* menu */
 
