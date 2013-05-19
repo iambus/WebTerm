@@ -4,8 +4,10 @@ task 'build', 'Compile source', ->
 	coffee ['-c', '.']
 
 task 'watch', 'Compile source and watch', ->
-	coffee ['-w', '-c', '.'], (s) ->
-		console.log s.replace /^In .*, Parse error on line \d+.+$/m, red s
+	coffee ['-w', '-c', '.'],
+		on_stdout: (s) ->
+			console.log s.replace /^In .*, Parse error on line \d+.+$/m, red s
+		auto_recover: true
 
 task 'deps', 'Install dependencies', ->
 	download_depends()
@@ -29,8 +31,9 @@ coffee_bin = ->
 green = (m) -> "\x1b[0;32m#{m}\x1b[m"
 red = (m) -> "\x1b[1;31m#{m}\x1b[m"
 
-coffee = (args, on_stdout, on_stderr) ->
-	app = spawn coffee_bin(), args
+spawn_with_auto_recover = (command, args, on_stdout, on_stderr, auto_recover) ->
+	start = new Date
+	app = spawn command, args
 	app.stdout.on 'data', (data) ->
 		s = data.toString().trim()
 		if on_stdout?
@@ -45,7 +48,16 @@ coffee = (args, on_stdout, on_stderr) ->
 			console.error red s
 	app.on 'close', (code) ->
 		if code != 0
-			console.error red "something wrong! coffee: #{args}"
+			console.error red "something wrong! #{command}: #{args}"
+			end = new Date
+			if auto_recover and end - start > 5000
+				console.error green "restarting..."
+				spawn_with_auto_recover command, args
+			else
+				console.error red "abort!"
+
+coffee = (args, {on_stdout, on_stderr, auto_recover}) ->
+	spawn_with_auto_recover coffee_bin(), args, on_stdout, on_stderr, auto_recover
 
 mkdir = (dir) ->
 	if not fs.existsSync dir
