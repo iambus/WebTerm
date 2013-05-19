@@ -1,0 +1,29 @@
+.screen .bbs-clickable:hover {
+    background-color: rgba(128, 128, 128, 0.5);
+    cursor: pointer;
+}
+.screen .bbs-clickable:hover span {
+    background-color: rgba(128, 128, 128, 0.5);
+    cursor: pointer;
+}
+.screen .bbs-clickable:hover span.selected {
+    background-color: #972F2C;
+}
+.screen .bbs-inner-clickable:hover {
+    /*background-color: yellow;*/
+    color: yellow;
+    cursor: pointer;
+}
+.screen div.bbs-menu {
+    cursor:pointer;
+}
+.screen div.bbs-menu ul.ui-widget-content {
+    border: none;
+}
+.screen div.bbs-menu ul li {
+    background-color: black;
+    color: white;
+}
+.screen a:hover {
+    background-color: rgba(128, 128, 128, 0.5);
+}
