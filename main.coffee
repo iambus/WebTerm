@@ -282,6 +282,31 @@ setup_script_dialog = ->
 		resizeStop: ->
 			editor.resize()
 
+	$('#script-dialog').on 'drop', (e) ->
+		e.originalEvent.stopPropagation()
+		e.originalEvent.preventDefault()
+		data = e.originalEvent.dataTransfer
+		items = _.filter data.items, (item) -> item.kind == 'file'
+		if items.length == 0
+			return
+		if items.length > 1
+			console.log 'too many files'
+		item = items[0]
+		chosenFileEntry = item.webkitGetAsEntry()
+		chrome.fileSystem.getDisplayPath chosenFileEntry, (path) ->
+			if not path.match /\.coffee$/
+				console.log 'not a .coffee file'
+				return
+			chosenFileEntry.file (file) ->
+				reader = new FileReader()
+				reader.onerror = (e) ->
+					console.log 'open file error!', arguments
+				reader.onload = (e) ->
+					editor.getSession().setValue e.target.result
+				reader.readAsText file
+	$('#script-dialog').on 'dragover', (e) ->
+		e.originalEvent.preventDefault()
+
 setup_about = ->
 	$('#about').dialog
 		autoOpen: false
