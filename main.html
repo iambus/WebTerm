@@ -28,7 +28,7 @@
                 <div class='ui-icon ui-icon-carat-1-s' title='主菜单'></div>
                 <ul>
                     <li><a href="#input-dialog">文本输入框</a></li>
-                    <li><a href="#run-dialog">运行脚本</a></li>
+                    <li><a href="#script-dialog">运行脚本</a></li>
                     <li><a href="https://github.com/iambus/WebTerm" target="_blank">项目主页</a></li>
                     <li><a href="#help">帮助</a></li>
                     <li><a href="#about">关于</a></li>
@@ -51,6 +51,10 @@
 
 <div id="input-dialog" class="dialog" title="文本输入框">
     <textarea></textarea>
+</div>
+
+<div id="script-dialog" class="dialog" title="运行脚本">
+    <div id="script-editor"></div>
 </div>
 
 <div id="connect" class='dialog' title="连接到">
@@ -93,13 +97,13 @@
 <div id="settings-dialog" class='dialog' title="设置">
     <div id='settings-tabs'>
         <ul>
-            <li><a href='#settings-init-script'>启动脚本</a></li>
-            <li><a href='#settings-session-script'>连接脚本</a></li>
+            <li><a href='#settings-init-script-editor'>启动脚本</a></li>
+            <li><a href='#settings-session-script-editor'>连接脚本</a></li>
         </ul>
-        <div id='settings-init-script'>
+        <div id='settings-init-script-editor'>
             <textarea></textarea>
         </div>
-        <div id='settings-session-script'>
+        <div id='settings-session-script-editor'>
             <textarea></textarea>
         </div>
     </div>
@@ -135,6 +139,7 @@
 <script src="webterm/storage.js"></script>
 <script src="webterm/settings.js"></script>
 <script src="webterm/editors.js"></script>
+<script src="webterm/dialogs.js"></script>
 <script src="webterm/bbs/mode.js"></script>
 <script src="webterm/bbs/common.js"></script>
 <script src="webterm/bbs/smth.js"></script>

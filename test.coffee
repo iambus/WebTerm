@@ -20,18 +20,9 @@ load_json = (screen, file) ->
 
 ctrl_s = (screen) ->
 	screen.commands.register_persisted 'ctrl-s', ->
-		chrome.fileSystem.chooseEntry type: 'saveFile', accepts: [extensions: ['json']], (writableFileEntry) ->
-			if not writableFileEntry
-				console.log 'save file canceled?'
-				return
-			error_handler = (e) ->
-				console.log 'save file error!', arguments
-			writer_callback = (writer) ->
-				writer.onerror = error_handler
-				writer.onwriteend = (e) ->
-					console.log 'save file good!', arguments
-				writer.write new Blob [JSON.stringify(screen.data.data)], type: 'text/plain'
-			writableFileEntry.createWriter writer_callback, error_handler
+		webterm.dialogs.file_save
+			text: JSON.stringify(screen.data.data)
+			accepts: [extensions: ['json']]
 	screen.events.on_key_persisted 'ctrl-s', ->
 		screen.commands.execute('ctrl-s')
 	screen.events.on_key_persisted 'ctrl-shift-s', ->

@@ -181,6 +181,9 @@ setup_settings_dialog = ->
 		modal: true
 		width: 400
 		height: 200
+		resizeStop: ->
+			init_editor.resize()
+			session_editor.resize()
 	$('#settings-tabs').tabs
 		activate: (event, ui) ->
 			id = $(ui.newPanel.selector + '.ace_editor').attr 'id'
@@ -189,12 +192,12 @@ setup_settings_dialog = ->
 				editor.focus()
 	# init
 	init_editor = webterm.editors.ace_coffee_editor
-		id: 'settings-init-script'
+		id: 'settings-init-script-editor'
 		code: webterm.settings.get("scripts.init")?.coffeescript
 		listener: (code) -> webterm.settings.set "scripts.init", code
-	# init
+	# session init
 	session_editor = webterm.editors.ace_coffee_editor
-		id: 'settings-session-script'
+		id: 'settings-session-script-editor'
 		code: webterm.settings.get("scripts.session")?.coffeescript
 		listener: (code) -> webterm.settings.set "scripts.session", code
 
@@ -205,6 +208,8 @@ setup_menu = ->
 			id = ui.item.find('a').attr('href')
 			if id == '#input-dialog'
 				$('#input-dialog').dialog 'open'
+			else if id == '#script-dialog'
+				$('#script-dialog').dialog 'open'
 			else if id == '#about'
 				$('#about').dialog 'open'
 			menu_hide()
@@ -244,6 +249,39 @@ setup_input_dialog = ->
 			post()
 			$('#input-dialog').dialog 'close'
 
+setup_script_dialog = ->
+	editor = webterm.editors.ace_coffee_editor
+		id: 'script-editor'
+
+	$("#script-dialog").dialog
+		autoOpen: false
+		modal: false
+		width: 400
+		height: 200
+		buttons: [
+			text: '打开'
+			click: ->
+				webterm.dialogs.file_open accepts: [extensions: ['coffee']], (script) ->
+					editor.setValue script
+					editor.focus()
+		,
+			text: '运行'
+			click: ->
+				webterm.eval editor.getValue()
+				editor.focus()
+		,
+			text: '清除'
+			click: ->
+				editor.setValue()
+				editor.focus()
+		,
+			text: '关闭'
+			click: ->
+				$(@).dialog 'close'
+		]
+		resizeStop: ->
+			editor.resize()
+
 setup_about = ->
 	$('#about').dialog
 		autoOpen: false
@@ -265,6 +303,7 @@ setup = ->
 		$("#connect").dialog 'open'
 
 	webterm.keys.root.on_key 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
+	webterm.keys.root.on_key 'f5', -> $('#script-dialog').dialog 'open'
 
 	new_test_tab() # for testing
 	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
@@ -283,6 +322,7 @@ webterm.settings.init ->
 	setup_settings_dialog()
 	setup_menu()
 	setup_input_dialog()
+	setup_script_dialog()
 	setup_about()
 	setup()
 	init()
