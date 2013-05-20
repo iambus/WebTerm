@@ -133,7 +133,9 @@ download_jquery_ui = ->
 download_depends = ->
 	libs =
 		'http://code.jquery.com/jquery-1.9.1.js': 'lib/jquery-1.9.1.js'
+		'http://code.jquery.com/jquery-1.9.1.min.js': 'lib/jquery-1.9.1.min.js'
 		'http://underscorejs.org/underscore.js': 'lib/underscore.js'
+		'http://documentcloud.github.io/underscore/underscore-min.js': 'lib/underscore-min.js'
 		'http://coffeescript.org/extras/coffee-script.js': 'lib/coffee-script.js'
 		'http://iambus.github.io/static/CoffeeScriptEval.js': 'lib/CoffeeScriptEval.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js': 'lib/ace/ace.js'
@@ -215,8 +217,8 @@ build_out = ->
 
 		'lib/CoffeeScriptEval.js'
 		'lib/coffee-script.js'
-		'lib/underscore.js'
-		'lib/jquery-1.9.1.js'
+		'lib/underscore-min.js'
+		'lib/jquery-1.9.1.min.js'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/animated-overlay.gif'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_flat_0_aaaaaa_40x100.png'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-bg_flat_75_ffffff_40x100.png'
@@ -231,8 +233,8 @@ build_out = ->
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_454545_256x240.png'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_cd0a0a_256x240.png'
-		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.css'
-		'lib/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js'
+		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.min.css'
+		'lib/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.min.js'
 
 	]
 	for f in files
