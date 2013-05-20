@@ -337,6 +337,9 @@ setup = ->
 #	$("#connect").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 
+	webterm.windows.on_closed ->
+		webterm.cache.save()
+
 init = ->
 	init = webterm.settings.get("scripts.init")
 	if init?

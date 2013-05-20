@@ -48,6 +48,7 @@ exports =
 	init: init
 	set: set
 	get: get
+	cached: -> cache
 
 if module?.exports?
 	exports = exports

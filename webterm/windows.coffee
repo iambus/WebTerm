@@ -37,6 +37,9 @@ is_maximized = ->
 	else if webterm.platform == 'node-webkit'
 		maximized
 
+on_closed = (callback) ->
+	if webterm.platform == 'chrome'
+		chrome.app.window.current().onClosed.addListener callback
 
 $ ->
 	$('#close-window-confirm-dialog').dialog
@@ -85,3 +88,4 @@ webterm.windows =
 	maximize: maximize
 	restore: restore
 	is_maximized: is_maximized
+	on_closed: on_closed
