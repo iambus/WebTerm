@@ -31,7 +31,7 @@ init = (callback) ->
 	load_default (default_settings) ->
 		default_cache = default_settings
 		storage_get 'settings', (local_settings) ->
-			cache = local_settings
+			cache = local_settings ? {}
 			callback()
 
 get = (k) ->
