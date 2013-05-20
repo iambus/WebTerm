@@ -79,6 +79,9 @@ class Tabs
 		else
 			todo()
 
+	count: ->
+		@bar.find('li').length
+
 	nth_id: (n) ->
 		###
 		# Note: n start from 0
@@ -98,38 +101,6 @@ class Tabs
 $ ->
 	webterm.tabs = new Tabs('#tabs', '#new-tab', '#main')
 	webterm.tabs.init()
-
-	$('#close-window').click ->
-		window.close()
-	if webterm.platform == 'chrome'
-		$('#max-window').click ->
-			if chrome.app.window.current().isMaximized()
-				chrome.app.window.current().restore()
-			else
-				chrome.app.window.current().maximize()
-		chrome.app.window.current().onMaximized.addListener ->
-			$('#max-window').attr 'title', '恢复'
-		chrome.app.window.current().onRestored.addListener ->
-			$('#max-window').attr 'title', '最大化'
-		$('#min-window').click ->
-			chrome.app.window.current().minimize()
-	else if webterm.platform == 'node-webkit'
-		gui = require 'nw.gui'
-		win = gui.Window.get()
-		isMaximized = false
-		$('#max-window').click ->
-			if isMaximized
-				win.restore()
-			else
-				win.maximize()
-		win.on 'maximize', ->
-			$('#max-window').attr 'title', '恢复'
-			isMaximized = true
-		win.on 'restore', ->
-			$('#max-window').attr 'title', '最大化'
-			isMaximized = false
-		$('#min-window').click ->
-			win.minimize()
 
 
 	limit_bar_width = ->

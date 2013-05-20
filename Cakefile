@@ -190,6 +190,8 @@ build_out = ->
 		'webterm/bbs/smth.css'
 		'webterm/bbs/smth.js'
 		'webterm/clipboard.js'
+		'webterm/dialogs.js'
+		'webterm/editors.js'
 		'webterm/eval.js'
 		'webterm/keys.js'
 		'webterm/resources.js'
@@ -198,6 +200,7 @@ build_out = ->
 		'webterm/settings.js'
 		'webterm/storage.js'
 		'webterm/tabs.js'
+		'webterm/windows.js'
 
 		'lib/byr.ico'
 		'lib/fudan.ico'
