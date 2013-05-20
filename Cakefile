@@ -235,6 +235,10 @@ build_out = ->
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_cd0a0a_256x240.png'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/jquery-ui-1.10.2.custom.min.css'
 		'lib/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.min.js'
+		'lib/ace/ace.js'
+		'lib/ace/mode-coffee.js'
+		'lib/ace/theme-merbivore_soft.js'
+		'lib/ace/worker-coffee.js'
 
 	]
 	for f in files
