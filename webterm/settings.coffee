@@ -6,23 +6,22 @@
 if module?.exports?
 	throw Error("Not Implemented")
 else
-	resources = webterm.resources
-	{storage_get, storage_set} = webterm.storage
+	webterm = this.webterm
 
 ##################################################
 # APIs
 ##################################################
 
 load_default = (callback) ->
-	resources.get_text "settings.json", (v) ->
+	webterm.resources.get_text "settings.json", (v) ->
 		callback JSON.parse v
 
 load = (callback) ->
-	storage_get 'settings', (v) ->
+	webterm.storage.get 'settings', (v) ->
 		callback v
 
 save = (settings) ->
-	storage_set 'settings', settings
+	webterm.storage.set 'settings', settings
 
 default_cache = null
 cache = null
@@ -30,7 +29,7 @@ cache = null
 init = (callback) ->
 	load_default (default_settings) ->
 		default_cache = default_settings
-		storage_get 'settings', (local_settings) ->
+		webterm.storage.get 'settings', (local_settings) ->
 			cache = local_settings ? {}
 			callback()
 

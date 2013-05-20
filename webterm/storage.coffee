@@ -42,11 +42,11 @@ storage_print = (key) ->
 ##################################################
 
 exports =
-	storage_get: storage_get
-	storage_set: storage_set
-	storage_remove: storage_remove
-	sotarge_clear: sotarge_clear
-	storage_print: storage_print
+	get: storage_get
+	set: storage_set
+	remove: storage_remove
+	clear: sotarge_clear
+	print: storage_print
 
 if module?.exports?
 	exports = exports
