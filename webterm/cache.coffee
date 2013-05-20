@@ -24,9 +24,6 @@ load = (callback) ->
 save = ->
 	webterm.storage.set 'cache', cache
 
-remove = (key) ->
-	delete cache[key]
-
 class MRUCache
 	constructor: (@key, @size=10) ->
 		if not cache[@key]?
@@ -58,6 +55,9 @@ mru = (key, size) ->
 webterm.cache =
 	load: load
 	save: save
-	remove: remove
+	set: (key, value) -> cache[key] = value
+	get: (key) -> cache[key]
+	remove: (key) -> delete cache[key]
+	clear: -> cache = {}
 	cached: -> cache
 	mru: mru
