@@ -20,6 +20,10 @@ if webterm.platform == 'chrome'
 		o = {}
 		o[key] = value
 		chrome.storage.local.set o
+	storage_remove = (key) ->
+		chrome.storage.local.remove key
+	sotarge_clear = ->
+		chrome.storage.local.clear()
 else
 	storage_get = (key, callback) ->
 		value = localStorage[key]
@@ -30,6 +34,8 @@ else
 	storage_set = (key, value) ->
 		localStorage[key] = JSON.stringify value
 
+storage_print = (key) ->
+	storage_get key, (x) -> console.log x
 
 ##################################################
 # exports
@@ -38,6 +44,9 @@ else
 exports =
 	storage_get: storage_get
 	storage_set: storage_set
+	storage_remove: storage_remove
+	sotarge_clear: sotarge_clear
+	storage_print: storage_print
 
 if module?.exports?
 	exports = exports
