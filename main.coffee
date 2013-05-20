@@ -338,7 +338,10 @@ setup = ->
 #	$("#settings-dialog").dialog 'open' # for testing
 
 	webterm.windows.on_closed ->
+		# FIXME: XXX: this doesn't work?
 		webterm.cache.save()
+	setInterval webterm.cache.save, 30000 # XXX: auto save every 30s -- just a workaround to above
+
 
 init = ->
 	init = webterm.settings.get("scripts.init")
