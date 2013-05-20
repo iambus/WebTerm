@@ -36,7 +36,7 @@ class MouseGestureFeature extends Feature
 
 class Clickable extends Feature
 	render: (screen) ->
-		screen.events.on_click_div 'div.bbs-clickable', (div) ->
+		screen.events.on_click_div 'div.bbs-clickable:not(.bbs-menu), div.bbs-clickable.bbs-menu > span', (div) ->
 			k = div.getAttribute('key')
 			if k
 				for x in k.split(' ')

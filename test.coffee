@@ -37,7 +37,7 @@ test = (selector) ->
 	setup(screen)
 
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'
-#	load_ascii screen, 'smth_list_1', 'smth_list_2'
+	load_ascii screen, 'smth_list_1', 'smth_list_2'
 #	load_ascii screen, 'list_bug_a_1', 'list_bug_a_2'
 #	load_ascii screen, 'smth_read_a_1', 'smth_read_a_2', 'smth_read_a_3'
 #	load_ascii screen, 'smth_long_url'
@@ -67,7 +67,7 @@ test = (selector) ->
 #	load_json screen, 'replying.json'
 #	load_json screen, 'login.json'
 #	load_json screen, 'H.json'
-	load_json screen, 'images.json'
+#	load_json screen, 'images.json'
 #	load_json screen, 'images2.json'
 #	load_json screen, 'ascii_1.json'
 #	load_json screen, 'ascii_2.json'

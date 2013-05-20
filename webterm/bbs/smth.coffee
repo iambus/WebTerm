@@ -271,7 +271,7 @@ class GotoDefaultBoard extends Feature
 		if m
 			board = m[1]
 			key = "s enter enter" # XXX: only for main menu?
-			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
+			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable bbs-menu bbs-board-jump', key: key,
 				1, 80-board.length-1, 1, 80
 
 ##################################################
@@ -338,7 +338,7 @@ class BoardModeSwitch extends Feature
 			return
 		if m[1] == '十大模式'
 			return
-		screen.area.define_area 'bbs-menu board-mode-switch', 3, 70, 3, 79
+		screen.area.define_area 'bbs-menu bbs-board-mode-switch', 3, 70, 3, 79
 	render: (screen) ->
 		menus = [['文摘区', '1']
 						 ['同主题', '2']
@@ -351,7 +351,7 @@ class BoardModeSwitch extends Feature
 						 ['自删文章', '9']
 						 ['积分变更', 'a']]
 		ul = """<ul>#{("<li key='#{k}'><a href='#'>#{m}</a></li>" for [m, k] in menus).join ''}</ul>"""
-		div = $(screen.selector).find('.bbs-menu.board-mode-switch').append(ul)
+		div = $(screen.selector).find('.bbs-menu.bbs-board-mode-switch').append(ul)
 		div.find('ul').hide().css('position', 'absolute').menu
 			select: (event, ui) ->
 				screen.events.send_key 'ctrl-g', ui.item.attr('key'), 'enter'
@@ -412,8 +412,61 @@ class BoardInfoClick extends Feature
 			mappings = {}
 			if not /^\[.+\]|投票中，按 V 进入投票$/.test cn_board
 				mappings[cn_board] = key
-			mappings["[#{board}]"] = key
+			mappings["[#{board}]"] = class: 'bbs-clickable bbs-menu bbs-board-jump', key: key
 			map_areas_by_words_on_line screen, 1, mappings
+
+class BoardJumpList extends Feature
+
+class BoardJumpListCache extends BoardJumpList
+	scan: (screen) ->
+		board = screen.view.text.head().match(/\[(\w+)\]$/)?[1]
+		webterm.cache.mru("bbs.smth.boards:#{screen.name}", 10).put board
+
+class BoardJumpListRender extends BoardJumpList
+	render: (screen) ->
+		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
+		if not menus
+			return
+		ul = """<ul>#{("<li key='#{board}'><a href='#'>#{board}</a></li>" for board in menus).join ''}</ul>"""
+		div = $(screen.selector).find('.bbs-menu.bbs-board-jump').append(ul)
+		div.find('ul').hide().css('position', 'fixed').menu
+			select: (event, ui) ->
+				screen.events.put_key 's'
+				screen.events.put_text ui.item.attr('key')
+				screen.events.put_key 'enter'
+				screen.events.send()
+				ui.item.parent().hide()
+		{top, left} = div.offset()
+		top += div.height()
+		left -= div.find('ul').width() - div.find('span').width()
+		div.find('ul').offset top: top, left: left
+		menu_show = (e) -> $(e.currentTarget).find('ul').show()
+		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
+		div.hover menu_show, menu_hide
+
+class BoardJumpListRenderInMainMenu extends BoardJumpList
+	render: (screen) ->
+		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
+		if not menus
+			return
+		ul = """<ul>#{("<li key='#{board}'><a href='#'>#{board}</a></li>" for board in menus).join ''}</ul>"""
+		div = $(screen.selector).find('.bbs-menu.bbs-board-jump').append(ul)
+		div.find('ul').hide().css('position', 'fixed').menu
+			select: (event, ui) ->
+				screen.events.put_key 's'
+				screen.events.put_key 'enter'
+				screen.events.put_text ui.item.attr('key')
+				screen.events.put_key 'enter'
+				screen.events.send()
+				ui.item.parent().hide()
+		{top, left} = div.offset()
+		top += div.height()
+		left -= div.find('ul').width() - div.find('span').width()
+		div.find('ul').offset top: top, left: left
+		menu_show = (e) -> $(e.currentTarget).find('ul').show()
+		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
+		div.hover menu_show, menu_hide
+
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
@@ -941,6 +994,7 @@ class main_menu_mode extends FeaturedMode
 	features: [
 		MenuClick
 		GotoDefaultBoard
+		BoardJumpListRenderInMainMenu
 		BottomUserClick
 	]
 
@@ -962,6 +1016,8 @@ class board_mode extends FeaturedMode
 		BoardUserClick
 		BoardBMClick
 		BoardInfoClick
+		BoardJumpListCache
+		BoardJumpListRender
 		BottomUserClick
 		MousePaging
 		MouseHomeEnd
@@ -1182,6 +1238,9 @@ features = [
 	BoardUserClick
 	BoardBMClick
 	BoardInfoClick
+	BoardJumpList
+	BoardJumpListRender
+	BoardJumpListRenderInMainMenu
 	BottomUserClick
 	ArticleUser
 	ArticleBottom

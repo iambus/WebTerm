@@ -21,6 +21,7 @@ resize = ->
 connect = (selector, host, port, mode, on_connected) ->
 	connection = new telnet.Connection host, port
 	screen = new webterm.Screen selector
+	screen.name = host
 	mode?(screen)
 
 	connection.on_connected = on_connected
