@@ -342,7 +342,7 @@ init = ->
 	if init?
 		webterm.eval init.coffeescript
 
-webterm.settings.init ->
+webterm.init ->
 	setup_address_book()
 	setup_quick_connect()
 	setup_connect_dialog()
