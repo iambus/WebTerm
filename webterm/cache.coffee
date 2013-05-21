@@ -29,7 +29,7 @@ class MRUCache
 		if not cache[@key]?
 			cache[@key] = []
 		if cache[@key].length > @size
-			cache.splice @size
+			cache[@key].splice @size
 	put: (v) ->
 		i = cache[@key].indexOf v
 		if i != -1
@@ -39,7 +39,7 @@ class MRUCache
 		else
 			cache[@key].unshift v
 			if cache[@key].length > @size
-				cache.splice @size
+				cache[@key].splice @size
 		return
 	get: ->
 		cache[@key]
