@@ -267,10 +267,13 @@ class MenuClick extends Feature
 class GotoDefaultBoard extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match(/\[(\w+)\]$/)
+		m = head.match /\[(\w+)\]$/
 		if m
 			board = m[1]
-			key = "s enter enter" # XXX: only for main menu?
+			if head.match /^主选单\s/
+				key = "s enter enter" # XXX: only for main menu?
+			else
+				key = "s [#{board}] enter" # XXX: only for main menu?
 			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable bbs-menu bbs-board-jump', key: key,
 				1, 80-board.length-1, 1, 80
 
@@ -1013,6 +1016,8 @@ class favorite_mode extends FeaturedMode
 	features: [
 		RowClick
 		FavorateListToolbar
+		GotoDefaultBoard
+		BoardJumpListRender
 		BottomUserClick
 		MousePaging
 	]
@@ -1023,6 +1028,8 @@ class board_list_mode extends FeaturedMode
 	features: [
 		RowClick
 		BoardListToolbar
+		GotoDefaultBoard
+		BoardJumpListRender
 		BottomUserClick
 		MousePaging
 	]
