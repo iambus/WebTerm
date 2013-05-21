@@ -321,15 +321,15 @@ setup = ->
 		# TODO: customize behavior
 		$("#connect").dialog 'open'
 
-	webterm.keys.root.on_key 'alt-f4', -> webterm.windows.safe_close()
-	webterm.keys.root.on_key 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
-	webterm.keys.root.on_key 'f5', -> $('#script-dialog').dialog 'open'
-	webterm.keys.root.on_key 'f8', -> $('#settings-dialog').dialog 'open'
+	webterm.keys.on 'alt-f4', -> webterm.windows.safe_close()
+	webterm.keys.on 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
+	webterm.keys.on 'f5', -> $('#script-dialog').dialog 'open'
+	webterm.keys.on 'f8', -> $('#settings-dialog').dialog 'open'
 
 	webterm.test.new_tab() # for testing
-	webterm.keys.root.on_key 'ctrl-n', webterm.test.new_tab # for testing
-	webterm.keys.root.on_key 'ctrl-shift-s', webterm.test.save_current_screen # for testing
-	webterm.keys.root.on_key 'ctrl-shift-l', webterm.test.load # for testing
+	webterm.keys.on 'ctrl-n', webterm.test.new_tab # for testing
+	webterm.keys.on 'ctrl-shift-s', webterm.test.save_current_screen # for testing
+	webterm.keys.on 'ctrl-shift-l', webterm.test.load # for testing
 #	$("#connect").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 

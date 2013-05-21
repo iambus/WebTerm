@@ -101,6 +101,9 @@ on_keyboard (e) ->
 	root_keys.dispatch e
 
 webterm.keys =
+	# TODO: webterm.keys.on 'text', -> ...
+	# TODO: webterm.keys.on '中文命令', -> ...
+	on: (key, handler) -> root_keys.on_key key, handler
 	root: root_keys
 	KeyListener: KeyListener
 

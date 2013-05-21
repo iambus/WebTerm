@@ -90,25 +90,25 @@ setup_tab = (id) ->
 	setup screen
 	return screen
 
-new_tab = (callback) ->
+new_tab_and_do = (callback) ->
 	webterm.tabs.add
 		icon: 'lib/smth.ico'
 		title: 'Test'
 		content: '<div class="screen"></div>'
 		on_open: (info) ->
 			screen = setup_tab info.id
-			if callback?
-				callback screen
-			else
-				load_test screen
+			callback screen
 			info.session = screen: screen
+
+new_tab = ->
+	new_tab_and_do load_test
 
 load = ->
 	webterm.dialogs.file_open accepts: [extensions: ['json']], (data) ->
-		new_tab (screen) -> load_json_content screen, data
+		new_tab_and_do (screen) -> load_json_content screen, data
 
 load_new_tab = (json) ->
-	new_tab (screen) -> load_json screen, json
+	new_tab_and_do (screen) -> load_json screen, json
 
 webterm.test =
 	save_screen: save_screen
