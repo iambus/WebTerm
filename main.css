@@ -223,9 +223,15 @@ textarea#clipboard {
 #preview p {
     display: none;
 }
-#preview.preview-loading p {
+#preview.preview-loading:not(.preview-loading-error) p.preview-loading-message {
     display: block;
     color: white;
     font-size: 20px;
+}
+#preview.preview-loading.preview-loading-error p.preview-loading-error-message {
+    display: block;
+    color: white;
+    font-size: 20px;
+    color: red;
 }
 

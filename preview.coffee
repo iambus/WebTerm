@@ -4,7 +4,10 @@ load_image = (url, callback) ->
 	xhr.open('GET', url, true)
 	xhr.responseType = 'blob'
 	xhr.onload = ->
-		callback window.webkitURL.createObjectURL @response
+		if @response.size > 0
+			callback window.webkitURL.createObjectURL @response
+		else
+			callback()
 	xhr.send()
 
 
@@ -46,7 +49,8 @@ $.fn.preview = ->
 	if container.length == 0
 		container = $('<div/>')
 			.attr('id', 'preview')
-			.append('<p>loading...</p>').hide()
+			.append('<p class="preview-loading-message">loading...</p>').hide()
+			.append('<p class="preview-loading-error-message">loading error</p>').hide()
 			.append('<img/>').hide()
 			.css('position', 'absolute')
 			.appendTo('body')
@@ -65,7 +69,7 @@ $.fn.preview = ->
 		link = @getAttribute('href')
 		container.addClass('preview-loading').show()
 		img.load ->
-			container.removeClass('preview-loading')
+			container.removeClass('preview-loading').removeClass('preview-loading-error')
 			resize(img)
 			mousemove(e)
 			img.show()
@@ -74,7 +78,10 @@ $.fn.preview = ->
 		load_image link, (data) =>
 #			if $(@).is ':visible'
 			if img.attr('loading') == link
-				img.attr 'src', data
+				if data
+					img.attr 'src', data
+				else
+					container.addClass('preview-loading-error')
 	hover_out = ->
 		container.hide()
 		img.unbind('load').attr('src', '').css(width:'', height:'').hide()
