@@ -28,6 +28,10 @@ save_screen = (screen) ->
 		text: JSON.stringify(screen.data.data)
 		accepts: [extensions: ['json']]
 
+save_current_screen = ->
+	if webterm.screen?
+		webterm.test.save_screen webterm.screen
+
 mapping_keys = (screen) ->
 	screen.commands.register_persisted 'save-screen', -> save_screen screen
 	screen.events.on_key_persisted 'ctrl-s', ->
@@ -107,6 +111,8 @@ load_new_tab = (json) ->
 	new_tab (screen) -> load_json screen, json
 
 webterm.test =
+	save_screen: save_screen
+	save_current_screen: save_current_screen
 	load_ascii: load_ascii
 	load_json: load_json
 	setup: setup

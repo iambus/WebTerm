@@ -327,7 +327,9 @@ setup = ->
 	webterm.keys.root.on_key 'f8', -> $('#settings-dialog').dialog 'open'
 
 	webterm.test.new_tab() # for testing
-	webterm.keys.root.on_key 'ctrl-n', -> webterm.test.new_tab() # for testing
+	webterm.keys.root.on_key 'ctrl-n', webterm.test.new_tab # for testing
+	webterm.keys.root.on_key 'ctrl-shift-s', webterm.test.save_current_screen # for testing
+	webterm.keys.root.on_key 'ctrl-shift-l', webterm.test.load # for testing
 #	$("#connect").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 
