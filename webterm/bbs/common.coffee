@@ -54,6 +54,9 @@ class Clickable extends Feature
 
 class BBSMenu extends Feature
 	render_menu: (screen, selector, menus, callback) ->
+		div = $(screen.selector).find(selector)
+		if div.length == 0
+			return
 		# generate menu html
 		html = ['<ul>']
 		for menu in menus
@@ -72,7 +75,7 @@ class BBSMenu extends Feature
 #		menus = ((if _.isString menu then text: menu else menu) for menu in menus)
 #		ul = """<ul>#{("<li #{("#{k}='#{v}'" for k, v of menu).join('')}><a href='#'>#{menu.text}</a></li>" for menu in menus).join ''}</ul>"""
 		# create menu
-		div = $(screen.selector).find(selector).append(ul)
+		div.append(ul)
 		ul = div.find('ul')
 		ul.hide().css('position', 'fixed').menu
 			select: (event, ui) ->
