@@ -35,16 +35,22 @@ class MouseGestureFeature extends Feature
 
 
 class Clickable extends Feature
+	send_key: (screen, k) ->
+		for x in k.split(' ')
+			if /^\[.+\]$/.test x
+				screen.events.put_text x.substring 1, x.length - 1
+			else
+				screen.events.put_key x
+			screen.events.send()
+	click: (screen, div) ->
+		k = div.getAttribute('key')
+		if k
+			@send_key screen, k
 	render: (screen) ->
-		screen.events.on_click_div 'div.bbs-clickable:not(.bbs-menu), div.bbs-clickable.bbs-menu > span', (div) ->
-			k = div.getAttribute('key')
-			if k
-				for x in k.split(' ')
-					if /^\[.+\]$/.test x
-						screen.events.put_text x.substring 1, x.length - 1
-					else
-						screen.events.put_key x
-					screen.events.send()
+		screen.events.on_click_div 'div.bbs-clickable:not(.bbs-menu), div.bbs-clickable.bbs-menu > span', (div) =>
+			@click screen, div
+		screen.events.on_click '.bbs-menu ul li.bbs-clickable', (li) =>
+			@click screen, li
 
 class BBSMenu extends Feature
 	render_menu: (screen, selector, menus, callback) ->

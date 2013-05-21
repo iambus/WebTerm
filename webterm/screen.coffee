@@ -636,7 +636,7 @@ class Events
 					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
 						target = $(e.target).closest(@clickables)
 						if target.length > 0
-							target.data('handler')?(e.target) # XXX: when there are multiple targets?
+							target.data('handler')?(target[0]) # XXX: when there are multiple targets?
 							window.getSelection().removeAllRanges() # clear annoying double clicking selections
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>

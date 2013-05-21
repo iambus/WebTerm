@@ -350,8 +350,8 @@ class BoardModeSwitch extends common.BBSMenu
 						 ['精华区搜索', '8']
 						 ['自删文章', '9']
 						 ['积分变更', 'a']]
-		@render_menu screen, ".bbs-menu.bbs-board-mode-switch", (text: menu[0], key: menu[1] for menu in menus), (li) ->
-			screen.events.send_key 'ctrl-g', li.attr('key'), 'enter'
+		menus = (text: menu[0], class: 'bbs-clickable', key: "ctrl-g #{menu[1]} enter" for menu in menus)
+		@render_menu screen, ".bbs-menu.bbs-board-mode-switch", menus
 
 
 class BoardUserClick extends Feature
@@ -420,24 +420,16 @@ class BoardJumpListRender extends BoardJumpList
 		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
 		if not menus
 			return
-		@render_menu screen, ".bbs-menu.bbs-board-jump", (menu for menu in menus), (li) ->
-			screen.events.put_key 's'
-			screen.events.put_text li.text()
-			screen.events.put_key 'enter'
-			screen.events.send()
+		menus = (text: menu, class: 'bbs-clickable', key: "s [#{menu}] enter" for menu in menus)
+		@render_menu screen, ".bbs-menu.bbs-board-jump", menus
 
 class BoardJumpListRenderInMainMenu extends BoardJumpList
 	render: (screen) ->
 		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
 		if not menus
 			return
-		@render_menu screen, ".bbs-menu.bbs-board-jump", (menu for menu in menus), (li) ->
-			screen.events.put_key 's'
-			screen.events.put_key 'enter'
-			screen.events.put_text li.text()
-			screen.events.put_key 'enter'
-			screen.events.send()
-
+		menus = (text: menu, class: 'bbs-clickable', key: "s enter [#{menu}] enter" for menu in menus)
+		@render_menu screen, ".bbs-menu.bbs-board-jump", menus
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
