@@ -331,7 +331,7 @@ class BoardTopNotification extends Feature
 			'[您有回复提醒]': 'left left left left m enter l enter'
 
 
-class BoardModeSwitch extends Feature
+class BoardModeSwitch extends common.BBSMenu
 	scan: (screen) ->
 		m = screen.view.text.row(3).match /\[(..模式)\] $/
 		if not m
@@ -350,15 +350,8 @@ class BoardModeSwitch extends Feature
 						 ['精华区搜索', '8']
 						 ['自删文章', '9']
 						 ['积分变更', 'a']]
-		ul = """<ul>#{("<li key='#{k}'><a href='#'>#{m}</a></li>" for [m, k] in menus).join ''}</ul>"""
-		div = $(screen.selector).find('.bbs-menu.bbs-board-mode-switch').append(ul)
-		div.find('ul').hide().css('position', 'absolute').menu
-			select: (event, ui) ->
-				screen.events.send_key 'ctrl-g', ui.item.attr('key'), 'enter'
-				ui.item.parent().hide()
-		menu_show = (e) -> $(e.currentTarget).find('ul').show()
-		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
-		div.hover menu_show, menu_hide
+		@render_menu screen, ".bbs-menu.bbs-board-mode-switch", (text: menu[0], key: menu[1] for menu in menus), (li) ->
+			screen.events.send_key 'ctrl-g', li.attr('key'), 'enter'
 
 
 class BoardUserClick extends Feature
@@ -415,7 +408,7 @@ class BoardInfoClick extends Feature
 			mappings["[#{board}]"] = class: 'bbs-clickable bbs-menu bbs-board-jump', key: key
 			map_areas_by_words_on_line screen, 1, mappings
 
-class BoardJumpList extends Feature
+class BoardJumpList extends common.BBSMenu
 
 class BoardJumpListCache extends BoardJumpList
 	scan: (screen) ->
@@ -427,47 +420,23 @@ class BoardJumpListRender extends BoardJumpList
 		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
 		if not menus
 			return
-		ul = """<ul>#{("<li key='#{board}'><a href='#'>#{board}</a></li>" for board in menus).join ''}</ul>"""
-		div = $(screen.selector).find('.bbs-menu.bbs-board-jump').append(ul)
-		div.find('ul').hide().css('position', 'fixed').menu
-			select: (event, ui) ->
-				screen.events.put_key 's'
-				screen.events.put_text ui.item.attr('key')
-				screen.events.put_key 'enter'
-				screen.events.send()
-				ui.item.parent().hide()
-		{top, left} = div.offset()
-		top += div.height()
-		if div.find('ul').width() > div.find('span').width()
-			left -= div.find('ul').width() - div.find('span').width()
-		div.find('ul').offset top: top, left: left
-		menu_show = (e) -> $(e.currentTarget).find('ul').show()
-		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
-		div.hover menu_show, menu_hide
+		@render_menu screen, ".bbs-menu.bbs-board-jump", (menu for menu in menus), (li) ->
+			screen.events.put_key 's'
+			screen.events.put_text li.text()
+			screen.events.put_key 'enter'
+			screen.events.send()
 
 class BoardJumpListRenderInMainMenu extends BoardJumpList
 	render: (screen) ->
 		menus = webterm.cache.get "bbs.smth.boards:#{screen.name}"
 		if not menus
 			return
-		ul = """<ul>#{("<li key='#{board}'><a href='#'>#{board}</a></li>" for board in menus).join ''}</ul>"""
-		div = $(screen.selector).find('.bbs-menu.bbs-board-jump').append(ul)
-		div.find('ul').hide().css('position', 'fixed').menu
-			select: (event, ui) ->
-				screen.events.put_key 's'
-				screen.events.put_key 'enter'
-				screen.events.put_text ui.item.attr('key')
-				screen.events.put_key 'enter'
-				screen.events.send()
-				ui.item.parent().hide()
-		{top, left} = div.offset()
-		top += div.height()
-		if div.find('ul').width() > div.find('span').width()
-			left -= div.find('ul').width() - div.find('span').width()
-		div.find('ul').offset top: top, left: left
-		menu_show = (e) -> $(e.currentTarget).find('ul').show()
-		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
-		div.hover menu_show, menu_hide
+		@render_menu screen, ".bbs-menu.bbs-board-jump", (menu for menu in menus), (li) ->
+			screen.events.put_key 's'
+			screen.events.put_key 'enter'
+			screen.events.put_text li.text()
+			screen.events.put_key 'enter'
+			screen.events.send()
 
 
 class BottomUserClick extends Feature

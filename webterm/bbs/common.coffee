@@ -46,6 +46,42 @@ class Clickable extends Feature
 						screen.events.put_key x
 					screen.events.send()
 
+class BBSMenu extends Feature
+	render_menu: (screen, selector, menus, callback) ->
+		# generate menu html
+		html = ['<ul>']
+		for menu in menus
+			if _.isString menu
+				html.push "<li><a href='#'>#{menu}</a>"
+			else
+				html.push "<li"
+				for k, v of menu
+					if k != 'text'
+						html.push " #{k}='#{v}'"
+				html.push "><a href='#'>"
+				html.push menu.text
+				html.push "</a></li>"
+		html.push "</ul>"
+		ul = html.join ''
+#		menus = ((if _.isString menu then text: menu else menu) for menu in menus)
+#		ul = """<ul>#{("<li #{("#{k}='#{v}'" for k, v of menu).join('')}><a href='#'>#{menu.text}</a></li>" for menu in menus).join ''}</ul>"""
+		# create menu
+		div = $(screen.selector).find(selector).append(ul)
+		ul = div.find('ul')
+		ul.hide().css('position', 'fixed').menu
+			select: (event, ui) ->
+				callback? ui.item
+				ui.item.parent().hide()
+		# fix menu position
+		{top, left} = div.offset()
+		if $(screen.selector).width() < left - $(screen.selector).offset().left + ul.width()
+			top += div.height()
+			left -= ul.width() - div.find('span').width() + 3
+			ul.offset top: top, left: left
+		# done!
+		menu_show = (e) -> $(e.currentTarget).find('ul').show()
+		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
+		div.hover menu_show, menu_hide
 
 ##################################################
 # exports
@@ -54,6 +90,7 @@ class Clickable extends Feature
 exports =
 	MouseGestureFeature: MouseGestureFeature
 	Clickable: Clickable
+	BBSMenu: BBSMenu
 
 if module?.exports?
 	module.exports = exports
