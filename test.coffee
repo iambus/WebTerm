@@ -10,34 +10,38 @@ load_ascii = (screen, files...) ->
 			screen.render()
 	load_ascii_at 0
 
+load_json_content = (screen, data) ->
+	if not data?
+		throw new Error("No data to load")
+	screen.data.data = JSON.parse data
+	screen.cursor.row = screen.height
+	screen.cursor.column = screen.width
+	screen.screen_updated()
+	screen.render()
+
 load_json = (screen, file) ->
 	webterm.resources.get_text "test/" + file, (data) ->
-		screen.data.data = JSON.parse data
-		screen.cursor.row = screen.height
-		screen.cursor.column = screen.width
-		screen.screen_updated()
-		screen.render()
+		load_json_content screen, data
 
-ctrl_s = (screen) ->
-	screen.commands.register_persisted 'ctrl-s', ->
-		webterm.dialogs.file_save
-			text: JSON.stringify(screen.data.data)
-			accepts: [extensions: ['json']]
+save_screen = (screen) ->
+	webterm.dialogs.file_save
+		text: JSON.stringify(screen.data.data)
+		accepts: [extensions: ['json']]
+
+mapping_keys = (screen) ->
+	screen.commands.register_persisted 'save-screen', -> save_screen screen
 	screen.events.on_key_persisted 'ctrl-s', ->
-		screen.commands.execute('ctrl-s')
+		screen.commands.execute('save-screen')
 	screen.events.on_key_persisted 'ctrl-shift-s', ->
 		screen.events.send_key('ctrl-s')
 
 setup = (screen) ->
 	webterm.bbs.smth(screen)
-	ctrl_s(screen)
+	mapping_keys(screen)
 
-test = (selector) ->
-	screen = new webterm.Screen selector ? "##{webterm.tabs.nth_id(1)} .screen"
-	setup(screen)
-
+load_test = (screen) ->
 #	load_ascii screen, 'smth_menu_main_1', 'smth_menu_main_2'
-	load_ascii screen, 'smth_list_1', 'smth_list_2'
+#	load_ascii screen, 'smth_list_1', 'smth_list_2'
 #	load_ascii screen, 'list_bug_a_1', 'list_bug_a_2'
 #	load_ascii screen, 'smth_read_a_1', 'smth_read_a_2', 'smth_read_a_3'
 #	load_ascii screen, 'smth_long_url'
@@ -54,7 +58,7 @@ test = (selector) ->
 #	load_ascii screen, 'shida_sub_on_1', 'shida_sub_on_2', 'shida_sub_on_3'
 #	load_ascii screen, 'netnovel_1', 'netnovel_2', 'netnovel_3'
 #	load_ascii screen, 'any_key_2'
-#	load_json screen, 'a.json'
+	load_json screen, 'a.json'
 #	load_json screen, 'fav.json'
 #	load_json screen, 'mail_menu.json'
 #	load_json screen, 'reply_me.json'
@@ -74,8 +78,39 @@ test = (selector) ->
 #	load_json screen, 'ascii_3.json'
 #	load_json screen, 'gesture_bug.json'
 
-	screen: screen
+setup_tab = (id) ->
+	if _.isNumber id
+		id = webterm.tabs.nth_id(1)
+	selector = "##{id} .screen"
+	screen = new webterm.Screen selector
+	setup screen
+	return screen
 
-test.setup = setup
+new_tab = (callback) ->
+	webterm.tabs.add
+		icon: 'lib/smth.ico'
+		title: 'Test'
+		content: '<div class="screen"></div>'
+		on_open: (info) ->
+			screen = setup_tab info.id
+			if callback?
+				callback screen
+			else
+				load_test screen
+			info.session = screen: screen
 
-this.test = test
+load = ->
+	webterm.dialogs.file_open accepts: [extensions: ['json']], (data) ->
+		new_tab (screen) -> load_json_content screen, data
+
+load_new_tab = (json) ->
+	new_tab (screen) -> load_json screen, json
+
+webterm.test =
+	load_ascii: load_ascii
+	load_json: load_json
+	setup: setup
+	new_tab: new_tab
+	load: load
+	load_new_tab: load_new_tab
+

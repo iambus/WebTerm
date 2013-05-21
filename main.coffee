@@ -79,13 +79,6 @@ new_bbs_tab = (address) ->
 		on_closed: (info) ->
 			info.session.connection.disconnect()
 
-new_test_tab = (address) ->
-	webterm.tabs.add
-		icon: 'lib/smth.ico'
-		title: 'Test'
-		content: '<div class="screen"></div>'
-		on_open: (info) -> info.session = test("##{info.id} .screen")
-
 setup_address_book = ->
 	for {name, host, port, protocol, module, icon}, i in webterm.bbs.list
 		if icon
@@ -101,7 +94,7 @@ setup_quick_connect = ->
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
 			if selected == 'test'
-				new_test_tab()
+				webterm.test.new_tab()
 			else
 				address_index = parseInt selected
 				address = webterm.bbs.list[address_index]
@@ -333,8 +326,8 @@ setup = ->
 	webterm.keys.root.on_key 'f5', -> $('#script-dialog').dialog 'open'
 	webterm.keys.root.on_key 'f8', -> $('#settings-dialog').dialog 'open'
 
-	new_test_tab() # for testing
-	webterm.keys.root.on_key 'ctrl-n', -> new_test_tab() # for testing
+	webterm.test.new_tab() # for testing
+	webterm.keys.root.on_key 'ctrl-n', -> webterm.test.new_tab() # for testing
 #	$("#connect").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 
