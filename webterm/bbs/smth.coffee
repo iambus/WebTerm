@@ -438,7 +438,8 @@ class BoardJumpListRender extends BoardJumpList
 				ui.item.parent().hide()
 		{top, left} = div.offset()
 		top += div.height()
-		left -= div.find('ul').width() - div.find('span').width()
+		if div.find('ul').width() > div.find('span').width()
+			left -= div.find('ul').width() - div.find('span').width()
 		div.find('ul').offset top: top, left: left
 		menu_show = (e) -> $(e.currentTarget).find('ul').show()
 		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
@@ -461,7 +462,8 @@ class BoardJumpListRenderInMainMenu extends BoardJumpList
 				ui.item.parent().hide()
 		{top, left} = div.offset()
 		top += div.height()
-		left -= div.find('ul').width() - div.find('span').width()
+		if div.find('ul').width() > div.find('span').width()
+			left -= div.find('ul').width() - div.find('span').width()
 		div.find('ul').offset top: top, left: left
 		menu_show = (e) -> $(e.currentTarget).find('ul').show()
 		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()

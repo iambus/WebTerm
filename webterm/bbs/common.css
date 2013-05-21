@@ -27,3 +27,6 @@
 .screen a:hover {
     background-color: rgba(128, 128, 128, 0.5);
 }
+.screen .ui-menu-item {
+    font-size: 0.9em;
+}
