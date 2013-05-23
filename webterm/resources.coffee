@@ -8,7 +8,7 @@ chrome_get = (url, raw, callback) ->
 		xhr.responseType = 'arraybuffer'
 	xhr.onreadystatechange = ->
 		if xhr.readyState == 4
-			if xhr.status in [200, 0]
+			if xhr.status in [200]
 				callback xhr.response
 			else
 				console.error "may be incorrect resource address: #{url}", xhr

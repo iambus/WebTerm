@@ -21,7 +21,10 @@ load_json_content = (screen, data) ->
 
 load_json = (screen, file) ->
 	webterm.resources.get_text "test/" + file, (data) ->
-		load_json_content screen, data
+		if data?
+			load_json_content screen, data
+		else
+			console.error "can't load #{file}"
 
 save_screen = (screen) ->
 	webterm.dialogs.file_save
