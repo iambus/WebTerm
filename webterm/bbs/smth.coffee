@@ -1179,6 +1179,7 @@ modes = [
 	anykey_mode
 	enterkey_mode
 	main_menu_mode
+	user_mode
 	board_mode
 	read_mode
 	reply_mode
@@ -1193,7 +1194,6 @@ modes = [
 	mail_at_mode
 	info_menu_mode
 	system_menu_mode
-	user_mode
 	board_info_mode
 	user_list_mode
 	talk_menu_mode
