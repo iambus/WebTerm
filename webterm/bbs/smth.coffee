@@ -1002,7 +1002,7 @@ class board_mode extends FeaturedMode
 	]
 
 class read_mode extends FeaturedMode
-	@check: test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[阅读精华区资料\])\s/)
+	@check: test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[主题阅读\]|\[阅读精华区资料\])\s/)
 	name: 'read'
 	features: [
 		ArticleUser
