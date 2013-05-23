@@ -44,6 +44,9 @@ class Connection
 		@heartbeat = 300
 		@heartbeat_timer_id = null
 
+	is_connected: ->
+		not @disconnected
+
 	connect: ->
 		socket.create 'tcp', {}, (info) =>
 			@socketId = info.socketId

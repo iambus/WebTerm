@@ -4,7 +4,11 @@ close = ->
 
 safe_close = ->
 	if webterm.tabs.count() > 0
-		$('#close-window-confirm-dialog').dialog 'open'
+		for i in [0...webterm.tabs.count()]
+			if webterm.tabs.nth(i).session?.connection?.is_connected()
+				$('#close-window-confirm-dialog').dialog 'open'
+				return
+		close()
 	else
 		close()
 
