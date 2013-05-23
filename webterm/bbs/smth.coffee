@@ -155,6 +155,19 @@ class MouseEditingHomeEnd extends common.MouseGestureFeature
 			'left up': 'ctrl-s'
 			'left down': 'ctrl-e'
 
+class TopNotification extends Feature
+	scan: (screen) ->
+		if screen.view.text.head().match /^主选单/
+			map_areas_by_words_on_line screen, 1,
+				'[您有信件]': 'v'
+				'[您有@提醒]': 'm enter k enter'
+				'[您有回复提醒]': 'm enter l enter'
+		else
+			map_areas_by_words_on_line screen, 1,
+				'[您有信件]': 'v'
+				'[您有@提醒]': 'left left left left m enter k enter'
+				'[您有回复提醒]': 'left left left left m enter l enter'
+
 ##################################################
 # input options
 ##################################################
@@ -329,9 +342,6 @@ class BoardTopNotification extends Feature
 	scan: (screen) ->
 		map_areas_by_words_on_line screen, 1,
 			'投票中，按 V 进入投票': 'V'
-			'[您有信件]': 'v'
-			'[您有@提醒]': 'left left left left m enter k enter'
-			'[您有回复提醒]': 'left left left left m enter l enter'
 
 
 class BoardModeSwitch extends common.BBSMenu
@@ -959,6 +969,7 @@ class main_menu_mode extends FeaturedMode
 	name: 'main_menu'
 	features: [
 		MenuClick
+		TopNotification
 		GotoDefaultBoard
 		BoardJumpListRenderInMainMenu
 		BottomUserClick
@@ -977,6 +988,7 @@ class board_mode extends FeaturedMode
 	features: [
 		RowClick
 		BoardToolbar
+		TopNotification
 		BoardTopNotification
 		BoardModeSwitch
 		BoardUserClick
@@ -1016,6 +1028,7 @@ class favorite_mode extends FeaturedMode
 	features: [
 		RowClick
 		FavorateListToolbar
+		TopNotification
 		GotoDefaultBoard
 		BoardJumpListRender
 		BottomUserClick
@@ -1203,6 +1216,7 @@ features = [
 	GotoDefaultBoard
 	RowClick
 	BoardToolbar
+	TopNotification
 	BoardTopNotification
 	BoardModeSwitch
 	BoardUserClick
