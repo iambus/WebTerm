@@ -82,12 +82,12 @@ body {
 .dialog {
     display: none;
 }
-#connect form {
+#connect-dialog form {
     margin-bottom: 4px;
 }
-#connect fieldset > div {
+#connect-dialog fieldset > div {
 }
-#connect fieldset .ui-dialog .ui-dialog-content {
+#connect-dialog fieldset .ui-dialog .ui-dialog-content {
     padding-left: 0.5em;
     padding-right: 0.5em;
 }
@@ -95,25 +95,25 @@ body {
     padding-bottom: 4px;
 }
 
-#connect fieldset > div:first-child {
+#connect-dialog fieldset > div:first-child {
     margin-bottom: 6px;
 }
-#connect div.icon-input {
+#connect-dialog div.icon-input {
     display: inline-block;
     height: 22px;
     border: 1px solid rgb(170, 170, 170);
 }
-#connect div.icon-input div.icon {
+#connect-dialog div.icon-input div.icon {
     display: inline-block;
     height: 22px;
 }
-#connect div.icon-input div.icon > img {
+#connect-dialog div.icon-input div.icon > img {
     margin-bottom: -4px;
     margin-left: 4px;
     width: 16px;
     height: 16px;
 }
-#connect .icon-input input {
+#connect-dialog .icon-input input {
     outline: none;
     border-style: none;
 }
@@ -128,10 +128,10 @@ body {
     margin-right: 4px;
     vertical-align: middle;
 }
-#connect input {
+#connect-dialog input {
     height: 22px;
 }
-#connect input, #connect select {
+#connect-dialog input, #connect-dialog select {
     outline: none;
 }
 #connect-host {
@@ -193,7 +193,7 @@ div[aria-describedby="script-dialog"] .ui-dialog-buttonpane {
 
 /* about dialog */
 
-#about a {
+#about-dialog a {
     text-decoration: underline;
 }
 

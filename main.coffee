@@ -105,7 +105,7 @@ setup_quick_connect = ->
 	$('#new-menu').hover menu_show, menu_hide
 
 setup_connect_dialog = ->
-	$("#connect").dialog
+	$("#connect-dialog").dialog
 		autoOpen: false
 #		height: 300
 		width: 380
@@ -204,8 +204,8 @@ setup_menu = ->
 				$('#input-dialog').dialog 'open'
 			else if id == '#script-dialog'
 				$('#script-dialog').dialog 'open'
-			else if id == '#about'
-				$('#about').dialog 'open'
+			else if id == '#about-dialog'
+				$('#about-dialog').dialog 'open'
 			menu_hide()
 	menu_show = -> $('#menu ul').show()
 	menu_hide = -> $('#menu ul').hide()
@@ -302,7 +302,7 @@ setup_script_dialog = ->
 		e.originalEvent.preventDefault()
 
 setup_about = ->
-	$('#about').dialog
+	$('#about-dialog').dialog
 		autoOpen: false
 		modal: true
 		width: 400
@@ -319,7 +319,7 @@ setup = ->
 
 	webterm.tabs.on 'new', ->
 		# TODO: customize behavior
-		$("#connect").dialog 'open'
+		$("#connect-dialog").dialog 'open'
 
 	webterm.keys.on 'alt-f4', -> webterm.windows.safe_close()
 	webterm.keys.on 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
@@ -330,7 +330,7 @@ setup = ->
 	webterm.keys.on 'ctrl-n', webterm.test.new_tab # for testing
 	webterm.keys.on 'ctrl-shift-s', webterm.test.save_current_screen # for testing
 	webterm.keys.on 'ctrl-shift-l', webterm.test.load # for testing
-#	$("#connect").dialog 'open' # for testing
+#	$("#connect-dialog").dialog 'open' # for testing
 #	$("#settings-dialog").dialog 'open' # for testing
 
 	webterm.windows.on_closed ->
