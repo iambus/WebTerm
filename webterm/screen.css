@@ -16,10 +16,12 @@
 .screen {
     -webkit-user-select: none;
 
-    /*padding-bottom: 30%;*/
+    -webkit-flex: 1;
+    /*height: 100%;*/
     min-height: 360px;
     min-width: 560px;
-    font-size: 3.6vmin;
+    /*font-size: 3.6vmin;*/
+    font-size: 16px;
 
     font-family: monospace;
     color: silver;

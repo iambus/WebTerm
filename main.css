@@ -1,13 +1,10 @@
 html, body {
-    /*height: 95%;*/
     overflow: hidden;
 }
 
 body {
     -webkit-user-select: text;
 }
-
-/* tab bar */
 
 html {
     -webkit-app-region: drag;
@@ -16,6 +13,37 @@ body {
     margin-top: 0;
     -webkit-app-region: no-drag;
 }
+
+/* main layout */
+#body-box {
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+#body-box #tabs {
+    -webkit-flex: 1;
+}
+#body-box #status-bar {
+    width: 100%;
+    height: 16px;
+}
+#tabs{
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+}
+#tabs #main {
+    -webkit-flex: 1;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+}
+#tabs #main > div {
+    -webkit-flex: 1;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+}
+
+/* tab bar */
 
 #title-bar {
     -webkit-user-select: none;

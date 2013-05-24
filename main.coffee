@@ -1,21 +1,13 @@
 
 
 resize = ->
-	width = $(window).width()
-	height = $(window).height()
-	width -= 10
-	height -= 32
-	if height/width < 24/40
-		width = height / 24 * 40
-	else
-		height = width / 40 * 24
-	px = width / 40
-	width = 40 * px
-	height = 24 * px
-	console.log width, height, px
-	$('#screen').css
-		width: "${width}px"
-		height: "${height}px"
+	width = $('#main').width()
+	height = $('#main').height()
+	px = Math.floor height / 24
+#	px = _.min [Math.floor(height / 24), Math.floor(width / 40)]
+#	if px % 2 == 1
+#		px--
+	$('.screen').css
 		'font-size': "#{px}px"
 
 connect = (selector, host, port, mode, on_connected) ->
@@ -39,12 +31,6 @@ connect = (selector, host, port, mode, on_connected) ->
 	connection: connection
 	screen: screen
 
-
-#resize()
-#$(window).resize ->
-#	resize()
-$(window).resize ->
-	$('.screen').css 'z-index': 1
 
 
 new_bbs_tab = (address) ->
@@ -338,6 +324,12 @@ setup = ->
 		webterm.cache.save()
 	setInterval webterm.cache.save, 30000 # XXX: auto save every 30s -- just a workaround to above
 
+setup_font = ->
+	resize()
+	$(window).resize resize
+#	$(window).resize ->
+#		$('.screen').css 'z-index': 1
+	webterm.tabs.on 'create', resize
 
 init = ->
 	init = webterm.settings.get("scripts.init")
@@ -354,4 +346,5 @@ webterm.init ->
 	setup_script_dialog()
 	setup_about()
 	setup()
+	setup_font()
 	init()

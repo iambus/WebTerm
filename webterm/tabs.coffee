@@ -4,6 +4,8 @@ class Tabs
 	constructor: (@selector, @new_selector, @body_selector) ->
 		@counter = 0
 		@registry = {}
+		@callbacks =
+			create: []
 
 		Object.defineProperty @, 'active',
 			get: ->
@@ -25,13 +27,17 @@ class Tabs
 	on: (event, callback) ->
 		if event == 'new'
 			@on_new = callback
-		else if event == 'active'
+		else if event == 'activate'
 			@tabs.on 'tabsactivate', (event, ui) ->
 				callback
 					event: event
 					ui: ui
 					id: ui.newPanel.attr 'id'
 					selector: ui.newPanel.selector
+		else if event == 'create'
+			@callbacks.create.push callback
+		else
+			console.error "unkown tab event: #{event}"
 
 	auto_id: ->
 		@counter++
@@ -61,6 +67,8 @@ class Tabs
 		@registry[id] = info
 		on_open?(info)
 		@tabs.tabs 'option', 'active', @bar.find("li").length - 1
+		for callback in @callbacks.create
+			callback()
 
 	on_close: (element) ->
 		li = $(element).closest("li")
