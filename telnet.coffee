@@ -1,4 +1,6 @@
 
+_ = this._
+
 if chrome?
 	socket = chrome.socket
 else
@@ -27,6 +29,92 @@ explain_command = ([command, option]) ->
 
 explain_commands = (commands) ->
 	(explain_command(command...) for command in commands)
+
+class Decoder
+	constructor: (buffer) ->
+		@a = new Uint8Array(buffer)
+		@len = @a.length
+		@offset = 0
+		@binary_mode = false
+
+	peak: ->
+		@a[@offset]
+
+	read: ->
+		if @offset >= @len
+			return
+		if @binary_mode
+			return @read_binary()
+		else if @peak() == IAC
+			return @read_command()
+		else
+			return @read_data()
+		a = @a
+		i = @offset
+		len = @len
+		b = new Uint8Array(len - i)
+		bi = 0
+		while i < len
+			if a[i] == IAC
+				++i
+				if a[i] == IAC
+					b[bi++] == a[i++]
+				else
+					--i
+					break
+			else
+				b[bi++] = a[i++]
+		return b.subarray(0, bi)
+
+	read_command: ->
+		a = @a
+		i = @offset
+		len = @len
+		++i
+		if a[i] in [DONT, DO, WONT, WILL]
+			negotiation = a[i++]
+			option = a[i++]
+			@offset = i
+			assert @offset <= @len, 'incomplete command' # TODO: buffer incomplete command
+			return [negotiation, option]
+		else if a[i] == SB
+			option = a[++i]
+			assert_equals SEND, a[++i]
+			assert_equals IAC, a[++i]
+			assert_equals SE, a[++i]
+			++i
+			@offset = i
+			assert @offset <= @len, 'incomplete command' # TODO: buffer incomplete command
+			return [SB, option, SEND]
+		else
+			throw Error("Not Implemented: #{a[i]}")
+
+	read_data: ->
+		a = @a
+		i = @offset
+		len = @len
+		b = new Uint8Array(len - i)
+		bi = 0
+		while i < len
+			if a[i] == IAC
+				++i
+				if a[i] == IAC
+					b[bi++] == a[i++]
+				else
+					--i
+					break
+			else
+				b[bi++] = a[i++]
+		@offset = i
+		return b.subarray(0, bi)
+
+	read_binary: ->
+		if @offset == 0
+			a = @a
+		else
+			a = @a.subarray(@offset)
+		@offset = @len
+		return a
 
 class Connection
 	term_type: 'ansi'
@@ -85,18 +173,27 @@ class Connection
 		socket.read @socketId, null, callback
 
 	on_read: (buffer) ->
-#		logger.log '--'
-		[commands, data] = @decode buffer
-		for command in commands
-			logger.log '[in]', explain_command command
-			@process_command command
-		if data?
-			try
-				@on_data? data
-			catch e
-				console.error e.stack
+		decoder = new Decoder buffer
+		decoder.binary_mode = @binary_mode
+
+		while x = decoder.read()
+			if x instanceof Uint8Array
+				data = x
+				try
+					@on_data? data
+				catch e
+					console.error e.stack
+			else if _.isArray x
+				command = x
+				logger.log '[in]', explain_command command
+				@process_command command
+				decoder.binary_mode = @binary_mode
+			else
+				throw new Error("Internal error: #{x}")
+
 		for command in @out
 			logger.log '[out]', explain_command command
+
 		@write @encode @out
 		@out = []
 
@@ -148,65 +245,6 @@ class Connection
 				throw Error("Not Implemented: " + explain_command(command))
 		else
 			throw Error("Not Implemented: " + explain_command(command))
-
-	decode: (buffer) ->
-		a = new Uint8Array(buffer)
-		len = a.length
-		if len and a[0] != IAC
-			return @decode_data(buffer)
-		commands = []
-		data = null
-		i = 0
-		while i < len
-			if a[i] == IAC
-				++i
-				if a[i] in [DONT, DO, WONT, WILL]
-					negotiation = a[i++]
-					option = a[i++]
-					commands.push [negotiation, option]
-				else if a[i] == SB
-					option = a[++i]
-					assert_equals SEND, a[++i]
-					assert_equals IAC, a[++i]
-					assert_equals SE, a[++i]
-					commands.push [SB, option, SEND]
-					++i
-				else
-					throw Error("Not Implemented: #{a[i]}")
-			else
-				# TODO: let decode just return a list of command or data, to support multiple data fregements
-				assert data == null, 'only support single data fregement'
-				b = new Uint8Array(len - i)
-				bi = 0
-				while i < len
-					if a[i] == IAC
-						++i
-						if a[i] == IAC
-							b[bi++] == a[i++]
-						else
-							--i
-							break
-					else
-						b[bi++] = a[i++]
-				data = b.subarray(0, bi)
-		return [commands, data]
-
-	decode_data: (buffer) ->
-		a = new Uint8Array(buffer)
-		if @binary_mode
-			return [[], a]
-		len = a.length
-		b = new Uint8Array(len + 1)
-		ai = 0
-		bi = 0
-		while ai < len
-			if a[ai] == IAC
-				++ai
-				assert_equals IAC, a[ai]
-				b[bi++] = a[ai++]
-			else
-				b[bi++] = a[ai++]
-		[[], b.subarray(0, bi)]
 
 	encode: (commands) ->
 		a = []
