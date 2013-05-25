@@ -157,6 +157,9 @@ event_to_virtual_key = (event) ->
 		charCode = null
 		keyCode = event.keyCode
 		k = code_to_key[keyCode]
+		if keyCode == 229
+			# ignore ime event
+			return null
 	else if event.charCode == event.keyCode
 		charCode = event.charCode
 		keyCode = null

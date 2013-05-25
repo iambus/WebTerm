@@ -8,6 +8,9 @@ on_keyboard = (callback) ->
 #		console.log 'keydown', "ctrl: #{event.ctrlKey}, alt: #{event.altKey}, shift: #{event.shiftKey}, meta: #{event.metaKay}, char: #{String.fromCharCode event.charCode}, key: #{String.fromCharCode event.keyCode}, charCode: #{event.charCode}, keyCode: #{event.keyCode}"
 #		console.log 'keydown', keymap.event_to_virtual_key event
 		key = keymap.event_to_virtual_key event
+		if key == null
+			# ignore ime event
+			return
 		if key in ['ctrl', 'shift', 'alt', 'meta']
 			return
 		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert', 'tab', 'alt-f4']
