@@ -534,7 +534,7 @@ class ArticleURL extends Feature
 			title: '打开链接'
 			onclick: (context) ->
 				url = $(context.target).closest('a').attr 'href'
-				if url?
+				if url
 					window.open url
 			context: 'link'
 		screen.context_menus.register
@@ -552,6 +552,14 @@ class ArticleURL extends Feature
 			onclick: (context) ->
 				url = $(context.target).closest('a').attr 'href'
 			context: 'link'
+		screen.context_menus.register
+			id: 'open_as_url'
+			title: '将选中内容作为链接打开'
+			onclick: (context) ->
+				url = screen.selection?.get_selected_text()?.replace /\n/g, ''
+				if url
+					window.open url
+			context: 'selection'
 
 	render: (screen) ->
 		$('div.href').replaceWith ->

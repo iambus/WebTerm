@@ -847,7 +847,7 @@ class ContextMenus
 		if spec == 'all'
 			return true
 		if spec == 'selection'
-			throw new Error("Not Implemented")
+			return @screen.selection?.is_valid()
 		if spec == 'link'
 			return $(context.target).closest('a').length > 0
 		if spec == 'image'
@@ -1009,6 +1009,9 @@ class Selection
 						buffer.push '\n'
 				text = buffer.join ''
 				text.replace /\x20+$/gm, ''
+
+	is_valid: ->
+		true
 
 	get_selected_ascii: ->
 		if @column_mode
