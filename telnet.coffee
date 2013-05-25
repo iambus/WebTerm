@@ -91,7 +91,10 @@ class Connection
 			logger.log '[in]', explain_command command
 			@process_command command
 		if data?
-			@on_data? data
+			try
+				@on_data? data
+			catch e
+				console.error e.stack
 		for command in @out
 			logger.log '[out]', explain_command command
 		@write @encode @out
