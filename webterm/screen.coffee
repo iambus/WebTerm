@@ -4,8 +4,8 @@
 # imports
 ##################################################
 
-# $
-# _
+$ = this.$
+_ = this._
 wcwidth = this.wcwidth
 encoding = this.encoding
 keymap = this.keymap
@@ -807,8 +807,9 @@ class ContextMenus
 		@menus = []
 		$.contextMenu
 			selector: @screen.selector
+			reposition: false
 			build: ($trigger, e) =>
-				return @create_jquery_context_menu()
+				return @create_jquery_context_menu event: e, target: e.target
 
 	register_persisted: (menu) ->
 		@persisted.push menu
@@ -828,29 +829,61 @@ class ContextMenus
 				return menu
 		return
 
-	invoke_menu: (id) ->
+	invoke_menu: (id, context) ->
 		menu = @lookup_menu(id)
 		if not menu
 			console.error "context menu #{id} not found"
 			return
 		if menu.onclick?
-			menu.onclick()
+			menu.onclick context
 
 	#######################
 	# jquery context menu #
 	#######################
 
-	create_jquery_context_menu: ->
+	match_context: (spec, context) ->
+		if not spec
+			return true
+		if spec == 'all'
+			return true
+		if spec == 'selection'
+			throw new Error("Not Implemented")
+		if spec == 'link'
+			return $(context.target).closest('a').length > 0
+		if spec == 'image'
+			return $(context.target).closest('img').length > 0
+		if spec == 'video'
+			throw new Error("Not Implemented")
+		if spec == 'audio'
+			throw new Error("Not Implemented")
+		if _.isArray(spec)
+			for c in spec
+				if @match_context c, context
+					return true
+			return false
+		if _.isFunction(spec)
+			return spec(context)
+		console.error "Unknow menu context spec: #{spec}"
+
+	create_jquery_menu_items: (runtime_context, menus) ->
+		items = []
+		for {id, title, icon, context} in menus
+			if @match_context(context, runtime_context)
+				items.push id: id, name: title, icon: icon
+		items
+
+	create_jquery_context_menu: (context) ->
 		items = {}
-		for {id, title, icon} in @persisted
-			items[id] = name: title, icon: icon
-		if @persisted.length > 0 and @menus.length > 0
+		group1 = @create_jquery_menu_items context, @persisted
+		group2 = @create_jquery_menu_items context, @menus
+		for menu in group1
+			items[menu.id] = menu
+		if group1.length > 0 and group2.length > 0
 			items['seperator'] = "---------"
-		for {id, title, icon} in @menus
-			items[id] = name: title, icon: icon
+		for menu in group2
+			items[menu.id] = menu
 		callback = (id, options) =>
-			console.log options
-			@invoke_menu id
+			@invoke_menu id, context
 		return callback: callback, items: items
 
 	############################
@@ -1182,19 +1215,19 @@ class Screen
 			title: '文本复制'
 			id: 'copy'
 			icon: 'copy'
-			contexts: ['all']
+			context: 'all'
 			onclick: copy
 		@context_menus.register_persisted
 			title: '彩色复制'
 			id: 'copy-ascii'
 			icon: 'copy'
-			contexts: ['all']
+			context: 'all'
 			onclick: copy_ascii
 		@context_menus.register_persisted
 			title: '粘贴'
 			id: 'paste'
 			icon: 'paste'
-			contexts: ['all']
+			contexts: 'all'
 			onclick: paste
 #		@context_menus.refresh()
 

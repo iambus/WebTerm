@@ -529,6 +529,29 @@ class ArticleURL extends Feature
 			bottom = Math.floor(end / screen.width) - 1
 			right = end - screen.width * (bottom - 1) + 1
 			screen.area.define_area 'href', top, left, bottom, right
+		screen.context_menus.register
+			id: 'open_url'
+			title: '打开链接'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+				if url?
+					window.open url
+			context: 'link'
+		screen.context_menus.register
+			id: 'copy_url'
+			title: '复制链接地址'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+				if url?
+					webterm.clipboard.put url
+			context: 'link'
+		screen.context_menus.register
+			id: 'save_url'
+			title: '链接另存为'
+			icon: 'download'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+			context: 'link'
 
 	render: (screen) ->
 		$('div.href').replaceWith ->
@@ -580,6 +603,7 @@ class ArticleDownload extends Feature
 		screen.context_menus.register
 			id: 'download_article'
 			title: '全文下载'
+			icon: 'download'
 			onclick: command
 
 
