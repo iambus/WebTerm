@@ -4,6 +4,7 @@ display_message = (message) ->
 		$('#message-body').addClass 'error'
 	else
 		$('#message-body').removeClass 'error'
+	$('#message-body').attr 'message-id', message.id
 	$('#message-body').text(message.text)
 
 animate_message = (message, callback) ->
@@ -20,20 +21,34 @@ render_message = (message, callback) ->
 	else
 		animate_message message, callback
 
+clear_message = (message) ->
+	if not(message?) or $('#message-body').attr('message-id') == message.id.toString()
+		console.log 'closing....'
+		$('#message-body').removeClass('error').text ''
+
+class Message
+	constructor: (message) ->
+		if _.isString message
+			message =
+				type: 'info'
+				text: message
+		@type = message.type
+		@text = message.text
+		@time = new Date
+	close: ->
+		clear_message @
+
 class MessageQueue
 	constructor: (@queue=[]) ->
 		@counter = 0
 		@working = false
 	post: (message) ->
-		if _.isString message
-			message =
-				type: 'info'
-				text: message
+		message = new Message message
 		message.id = ++@counter
-		message.time = new Date
 		@queue.push message
 		if not @working
 			@poll()
+		return message
 	poll: ->
 		@working = true
 		if @queue.length > 0

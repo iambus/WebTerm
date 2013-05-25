@@ -91,6 +91,7 @@ setup_quick_connect = ->
 	$('#new-menu').hover menu_show, menu_hide
 
 setup_connect_dialog = ->
+	tip = null
 	$("#connect-dialog").dialog
 		autoOpen: false
 #		height: 300
@@ -114,7 +115,11 @@ setup_connect_dialog = ->
 			click: ->
 				$(@).dialog 'close'
 		]
+		open: ->
+			tip = webterm.status_bar.tip '按上下键选择收藏夹中的站点'
 		close: ->
+			tip?.close()
+			tip = null
 
 	apply_addres  = (address) ->
 		$('#connect-host').val address.host
