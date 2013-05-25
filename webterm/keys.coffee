@@ -18,6 +18,8 @@ on_keyboard = (callback) ->
 		else if key in ['tab', 'delete', 'backspace', 'up', 'down', 'left', 'right', 'esc', 'home', 'end', 'pageup', 'pagedown', 'insert',
 										'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
 			callback key: key
+		else if key.match /^shift-f\d+$/
+			callback key: key
 		else if key in ['shift-insert']
 			callback key: key
 
