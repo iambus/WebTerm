@@ -15,14 +15,17 @@ class Tabs
 		@tabs = $(@selector)
 		tabs = @tabs.tabs()
 		@bar = tabs.find(".ui-tabs-nav :first")
-		@bar.sortable
-			axis: "x"
-			stop: ->
-				tabs.tabs "refresh"
+#		@sortable()
 		@bar.on 'click', 'li .ui-icon-close', (e) =>
 			@on_close e.target
 		$(@new_selector).click =>
 			@on_new?()
+
+	sortable: ->
+		@bar.sortable
+			axis: "x"
+			stop: =>
+				@tabs.tabs "refresh"
 
 	on: (event, callback) ->
 		if event == 'new'
