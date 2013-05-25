@@ -190,6 +190,8 @@ setup_menu = ->
 				$('#input-dialog').dialog 'open'
 			else if id == '#script-dialog'
 				$('#script-dialog').dialog 'open'
+			else if id == '#status-bar'
+				webterm.status_bar.show()
 			else if id == '#about-dialog'
 				$('#about-dialog').dialog 'open'
 			menu_hide()

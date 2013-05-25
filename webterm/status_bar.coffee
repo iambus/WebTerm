@@ -12,9 +12,9 @@ animate_message = (message, callback) ->
 			display_message message
 			$('#message-body').effect 'slide', direction: 'down', 200, callback
 
-
 render_message = (message, callback) ->
 	if message.type == 'error'
+		show_status_bar()
 		display_message message
 		callback?()
 	else
@@ -49,7 +49,18 @@ class MessageQueue
 
 queue = new MessageQueue()
 
+hide_status_bar = ->
+	$('#status-bar').hide()
+
+show_status_bar = ->
+	$('#status-bar').show()
+
+$ ->
+	$('#status-bar-close-button').click hide_status_bar
+
 webterm.status_bar =
+	show: show_status_bar
+	hide: hide_status_bar
 	queue: queue
 	tip: (message) -> queue.post message
 	error: (message) -> queue.post type: 'error', text: message
