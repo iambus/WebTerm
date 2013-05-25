@@ -23,6 +23,7 @@
 		"fileSystem.write",
 		"contextMenus",
 		"clipboardRead",
-		"clipboardWrite"
+		"clipboardWrite",
+		"fullscreen"
 	]
 }

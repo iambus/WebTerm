@@ -318,6 +318,7 @@ setup = ->
 	webterm.keys.on 'ctrl-shift-i', -> $('#input-dialog').dialog 'open'
 	webterm.keys.on 'f5', -> $('#script-dialog').dialog 'open'
 	webterm.keys.on 'f8', -> $('#settings-dialog').dialog 'open'
+	webterm.keys.on 'f12', webterm.windows.toggle_full_screen
 
 	webterm.test.new_tab() # for testing
 	webterm.keys.on 'ctrl-n', webterm.test.new_tab # for testing

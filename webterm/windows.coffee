@@ -45,6 +45,18 @@ on_closed = (callback) ->
 	if webterm.platform == 'chrome'
 		chrome.app.window.current().onClosed.addListener callback
 
+enter_full_screen = ->
+	document.body.webkitRequestFullscreen()
+
+exit_full_screen = ->
+	document.webkitExitFullscreen()
+
+toggle_full_screen = ->
+	if document.webkitIsFullScreen
+		exit_full_screen()
+	else
+		enter_full_screen()
+
 $ ->
 	$('#close-window-confirm-dialog').dialog
 		autoOpen: false
@@ -93,3 +105,7 @@ webterm.windows =
 	restore: restore
 	is_maximized: is_maximized
 	on_closed: on_closed
+	enter_full_screen: enter_full_screen
+	exit_full_screen: exit_full_screen
+	toggle_full_screen: toggle_full_screen
+
