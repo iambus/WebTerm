@@ -216,6 +216,7 @@ build_out = ->
 		'webterm/storage.js'
 		'webterm/tabs.js'
 		'webterm/windows.js'
+		'webterm/status_bar.js'
 
 		'lib/byr.ico'
 		'lib/fudan.ico'

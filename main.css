@@ -4,6 +4,7 @@ html, body {
 
 body {
     -webkit-user-select: text;
+    margin-bottom: 4px;
 }
 
 html {
@@ -223,6 +224,25 @@ div[aria-describedby="script-dialog"] .ui-dialog-buttonpane {
 
 #about-dialog a {
     text-decoration: underline;
+}
+
+/* status bar */
+
+#status-bar {
+    display: -webkit-flex;
+    font-size: 12px;
+}
+#status-bar #message-history-button {
+}
+#status-bar #message {
+    margin-right: auto;
+    margin-top: 2px;
+}
+#status-bar #message div.error {
+    color: red;
+}
+#status-bar .ui-icon:hover {
+    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 /* main */
