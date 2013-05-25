@@ -753,6 +753,14 @@ class Events
 		@put_text text
 		@send()
 
+	send_key_sequence_string: (k) ->
+		for x in k.split(' ')
+			if /^\[.+\]$/.test x
+				@put_text x.substring 1, x.length - 1
+			else
+				@put_key x
+			@send()
+
 	on_click: (selector, handler) ->
 		elements = $(@screen.selector).find(selector)
 		$.merge @clickables, elements

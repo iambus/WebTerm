@@ -311,17 +311,49 @@ class RowClick extends Feature
 		for row in [top..bottom]
 			line = view.row(row)
 			if /^-?>\s+(\d+|\[提示\])/.test line
-				screen.area.define_area class:'bbs-clickable', key:'enter',
+				screen.area.define_area class:'bbs-clickable bbs-row-item', key:'enter', 'goto-key': '',
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
 				if current < row
-					key = ('down' for [1..row-current]).join(' ') + ' enter'
+					goto = ('down' for [1..row-current]).join(' ')
+					key = goto + ' enter'
 				else if current > row
-					key = ('up' for [1..current-row]).join(' ') + ' enter'
+					goto = ('up' for [1..current - row]).join(' ')
+					key = goto + ' enter'
 				else
+					goto = ''
 					key = 'enter'
-				screen.area.define_area class:'bbs-clickable', key: key,
+				screen.area.define_area class:'bbs-clickable bbs-row-item', key: key, 'goto-key': goto,
 					row, 1, row, view.width
+
+class BoardArticleItemContextMenu extends Feature
+	scan: (screen) ->
+		context = (context) ->
+			$(context.target).closest('.bbs-row-item').length > 0
+		goto_key = (context, key) ->
+			goto = $(context.target).closest('.bbs-row-item').attr 'goto-key'
+			if goto?
+				if goto
+					key = goto + ' ' + key
+				screen.events.send_key_sequence_string key
+		go = (key) ->
+			(context) -> goto_key context, key
+
+		screen.context_menus.register
+			id: 'bbs-article-reply'
+			title: '回复'
+			onclick: go 'r r'
+			context: context
+		screen.context_menus.register
+			id: 'bbs-article-forward'
+			title: '转帖'
+			onclick: go 'ctrl-c'
+			context: context
+		screen.context_menus.register
+			id: 'bbs-article-info'
+			title: '查看文章信息'
+			onclick: go 'ctrl-q'
+			context: context
 
 class BoardToolbar extends Feature
 	scan: (screen) ->
@@ -1019,6 +1051,7 @@ class board_mode extends FeaturedMode
 	name: 'board'
 	features: [
 		RowClick
+		BoardArticleItemContextMenu
 		BoardToolbar
 		TopNotification
 		BoardTopNotification
@@ -1247,6 +1280,7 @@ features = [
 	MenuClick
 	GotoDefaultBoard
 	RowClick
+	BoardArticleItemContextMenu
 	BoardToolbar
 	TopNotification
 	BoardTopNotification
