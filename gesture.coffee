@@ -276,6 +276,7 @@ $.fn.gesture = (handler) ->
 	@contextmenu (e) ->
 		if new Date() - gesture.gesture_at < 500
 			e.preventDefault()
+			e.stopImmediatePropagation()
 
 	# TODO: mouseout?
 

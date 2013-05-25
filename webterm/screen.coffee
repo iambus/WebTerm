@@ -805,6 +805,10 @@ class ContextMenus
 	constructor: (@screen) ->
 		@persisted = []
 		@menus = []
+		$.contextMenu
+			selector: @screen.selector
+			build: ($trigger, e) =>
+				return @create_jquery_context_menu()
 
 	register_persisted: (menu) ->
 		@persisted.push menu
@@ -814,6 +818,44 @@ class ContextMenus
 
 	clear: ->
 		@menus = []
+
+	lookup_menu: (id) ->
+		for menu in @persisted
+			if menu.id == id
+				return menu
+		for menu in @menus
+			if menu.id == id
+				return menu
+		return
+
+	invoke_menu: (id) ->
+		menu = @lookup_menu(id)
+		if not menu
+			console.error "context menu #{id} not found"
+			return
+		if menu.onclick?
+			menu.onclick()
+
+	#######################
+	# jquery context menu #
+	#######################
+
+	create_jquery_context_menu: ->
+		items = {}
+		for {id, title, icon} in @persisted
+			items[id] = name: title, icon: icon
+		if @persisted.length > 0 and @menus.length > 0
+			items['seperator'] = "---------"
+		for {id, title, icon} in @menus
+			items[id] = name: title, icon: icon
+		callback = (id, options) =>
+			console.log options
+			@invoke_menu id
+		return callback: callback, items: items
+
+	############################
+	# chrome menu: depreciated #
+	############################
 
 	compute_session: ->
 		session = []
@@ -1139,16 +1181,19 @@ class Screen
 		@context_menus.register_persisted
 			title: '文本复制'
 			id: 'copy'
+			icon: 'copy'
 			contexts: ['all']
 			onclick: copy
 		@context_menus.register_persisted
 			title: '彩色复制'
 			id: 'copy-ascii'
+			icon: 'copy'
 			contexts: ['all']
 			onclick: copy_ascii
 		@context_menus.register_persisted
 			title: '粘贴'
 			id: 'paste'
+			icon: 'paste'
 			contexts: ['all']
 			onclick: paste
 #		@context_menus.refresh()

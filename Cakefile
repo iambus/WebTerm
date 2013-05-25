@@ -142,6 +142,15 @@ download_depends = ->
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/mode-coffee.js': 'lib/ace/mode-coffee.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/worker-coffee.js': 'lib/ace/worker-coffee.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/theme-merbivore_soft.js': 'lib/ace/theme-merbivore_soft.js'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/jquery.contextMenu.js': 'lib/jQuery-contextMenu/jquery.contextMenu.js'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/jquery.contextMenu.css': 'lib/jQuery-contextMenu/jquery.contextMenu.css'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/cut.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/door.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_add.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_copy.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_delete.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_edit.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_paste.png': 'lib/jQuery-contextMenu/images/'
 		'http://www.newsmth.net/favicon.ico': 'lib/smth.ico'
 		'http://lilybbs.net/favicon.ico': 'lib/lily.ico'
 		'http://bbs.byr.cn/favicon.ico': 'lib/byr.ico'
@@ -153,6 +162,8 @@ download_depends = ->
 		'http://bbs.whu.edu.cn/favicon.ico': 'lib/whu.ico'
 		'http://bbs.xjtu.edu.cn/favicon.ico': 'lib/xjtu.ico'
 	for url, file of libs
+		if file.match /\/$/
+			file += path.basename url
 		if not fs.existsSync file
 			download url, file
 	download_jquery_ui()
@@ -241,6 +252,15 @@ build_out = ->
 		'lib/ace/mode-coffee.js'
 		'lib/ace/theme-merbivore_soft.js'
 		'lib/ace/worker-coffee.js'
+		'lib/jQuery-contextMenu/jquery.contextMenu.js'
+		'lib/jQuery-contextMenu/jquery.contextMenu.css'
+		'lib/jQuery-contextMenu/images/cut.png'
+		'lib/jQuery-contextMenu/images/door.png'
+		'lib/jQuery-contextMenu/images/page_white_add.png'
+		'lib/jQuery-contextMenu/images/page_white_copy.png'
+		'lib/jQuery-contextMenu/images/page_white_delete.png'
+		'lib/jQuery-contextMenu/images/page_white_edit.png'
+		'lib/jQuery-contextMenu/images/page_white_paste.png'
 
 	]
 	for f in files
