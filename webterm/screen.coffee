@@ -490,20 +490,28 @@ class Term
 					break
 				c = s.charAt(i++)
 				if c != '['
-					throw Error("Not Implemented: #{c}")
-				n = i
-				while s.charAt(n) == ';' or 48 <= s.charCodeAt(n) <= 57
-					n++
-				if n >= len
-					@buffer = s.substring(i-2)
-					break
-				if n > i
-					opts = (parseInt(m) for m in s.substring(i, n).split ';')
+					invalid = '\x1b' + c
+					while i < len
+						c = s.charAt(i++)
+						invalid += c
+						if c.match /^[a-zA-Z]$/
+							console.error "Not Implemented: #{invalid}"
+							break
+#					throw Error("Not Implemented: #{c}")
 				else
-					opts = null
-				i = n
-				c = s.charAt(i++)
-				@control c, opts
+					n = i
+					while s.charAt(n) == ';' or 48 <= s.charCodeAt(n) <= 57
+						n++
+					if n >= len
+						@buffer = s.substring(i-2)
+						break
+					if n > i
+						opts = (parseInt(m) for m in s.substring(i, n).split ';')
+					else
+						opts = null
+					i = n
+					c = s.charAt(i++)
+					@control c, opts
 			else
 				@echo c
 
