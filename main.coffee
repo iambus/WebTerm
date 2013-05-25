@@ -48,6 +48,7 @@ new_bbs_tab = (address) ->
 				info.li.removeClass 'connected'
 				reconnect = ->
 					console.log 'reconnecting...'
+					info.session.screen.data.clear()
 					info.session.connection.reconnect()
 #				info.session.screen.painter.clear().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
 				info.session.screen.painter
@@ -59,6 +60,7 @@ new_bbs_tab = (address) ->
 					.area('bbs-clickable bbs-reconnect', 24, 28, 24, 53)
 					.flush()
 					.render(new webterm.bbs.common.Clickable)
+				info.session.screen.cursor.reset()
 				$(info.session.screen.selector).find('.bbs-reconnect').click reconnect
 				$(info.session.screen.selector).find('.cursor').removeClass('cursor')
 				$(info.session.screen.selector).find('.blink').removeClass('blink')

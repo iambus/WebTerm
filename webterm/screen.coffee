@@ -207,13 +207,13 @@ class Cursor
 			get: -> row
 			set: (x) ->
 				if not (1 <= x <= @data.height)
-					throw Error("Cursor overflow!")
+					throw Error("Cursor overflow! row: #{x}")
 				row = x
 		Object.defineProperty @, 'column',
 			get: -> column
 			set: (x) ->
 				if not (1 <= x <= @data.width+1) # the caret is moved just after the end of the line
-					throw Error("Cursor overflow!")
+					throw Error("Cursor overflow! column: #{x}")
 				column = x
 
 	inc: ->
