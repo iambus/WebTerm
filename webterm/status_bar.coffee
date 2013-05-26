@@ -48,6 +48,11 @@ class MessageQueue
 	post: (message) ->
 		message = new Message message
 		message.id = ++@counter
+		for m in @queue
+			if m.type == message.type and m.text == message.text and m.html == message.html
+				# remove duplicate message
+				# TODO: customize this behavior
+				return
 		@queue.push message
 		if not @working
 			@poll()
