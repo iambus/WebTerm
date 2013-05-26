@@ -198,6 +198,8 @@ else
 		load: load_from_local_storage
 		install: (callback) ->
 			load_from_file_system callback ? (successful) ->
-				if not successful
+				if successful
+					webterm.status_bar.info "IP库加载成功"
+				else
 					webterm.status_bar.error html: "IP文件加载失败，请确认格式是否正确。点击<a eval='webterm.ip.install()'>这里</a>重新上传。"
 		uninstall: delete_from_local_storage
