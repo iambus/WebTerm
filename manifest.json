@@ -19,6 +19,7 @@
 		},
 		"<all_urls>",
 		"storage",
+		"unlimitedStorage",
 		"fileSystem",
 		"fileSystem.write",
 		"contextMenus",

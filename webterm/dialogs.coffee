@@ -15,7 +15,7 @@ file_save = ({text, blob, accepts}) ->
 			writer.write blob
 		writableFileEntry.createWriter writer_callback, error_handler
 
-file_open = ({accepts}, callback) ->
+file_open = ({accepts, format}, callback) ->
 	chrome.fileSystem.chooseEntry type: 'openFile', accepts: accepts, (chosenFileEntry) ->
 		if not chosenFileEntry
 			console.log 'No file selected'
@@ -27,7 +27,17 @@ file_open = ({accepts}, callback) ->
 				console.log 'open file error!', arguments
 			reader.onload = (e) ->
 				callback e.target.result
-			reader.readAsText file
+			format = format ? 'text'
+			if format == 'text'
+				reader.readAsText file
+			else if format == 'arraybuffer'
+				reader.readAsArrayBuffer file
+			else if format == 'binarystring'
+				reader.readAsBinaryString file
+			else if format == 'dataurl'
+				reader.readAsDataURL file
+			else
+				throw new Error("Not Implemented: #{format}")
 
 webterm.dialogs =
 	file_save: file_save

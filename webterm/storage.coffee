@@ -19,11 +19,19 @@ if webterm.platform == 'chrome'
 	storage_set = (key, value) ->
 		o = {}
 		o[key] = value
-		chrome.storage.local.set o
+		chrome.storage.local.set o, ->
+			if chrome.runtime.lastError
+				console.error chrome.runtime.lastError
 	storage_remove = (key) ->
-		chrome.storage.local.remove key
+		chrome.storage.local.remove key, ->
+			if chrome.runtime.lastError
+				console.error chrome.runtime.lastError
 	sotarge_clear = ->
-		chrome.storage.local.clear()
+		chrome.storage.local.clear ->
+		if chrome.runtime.lastError
+			console.error chrome.runtime.lastError
+		else
+			console.log 'webterm.storage.clear done!'
 else
 	storage_get = (key, callback) ->
 		value = localStorage[key]
