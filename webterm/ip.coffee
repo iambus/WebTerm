@@ -22,6 +22,9 @@ class QQWry
 		@end = @view.getUint32 4, true
 		console.log "IP file size: #{@array.length}, index range: #{@start}, #{@end}"
 
+	validate: ->
+		0 < @start < @end < 0x2000000 and (@end - @start) % 7 == 0 and @end + 7 == @array.length
+
 	seek: (@offset) ->
 
 	parse_ip_string: (ip) ->
@@ -152,13 +155,19 @@ load_from_local_storage = (callback) ->
 		else
 			callback? false
 
-load_from_file_system = ->
+load_from_file_system = (callback) ->
 	webterm.dialogs.file_open accepts: [extensions: ['dat']], format: 'binarystring', (s) ->
 		console.log 'IP file loaded'
-		save_to_local_storage s
 		console.log "binary string length: #{s.length}"
-		service = new QQWry binary_string_to_array s
-		console.log 'IP service ready'
+		new_service = new QQWry binary_string_to_array s
+		if new_service.validate()
+			service = new_service
+			save_to_local_storage s
+			console.log 'IP service ready'
+			callback? true
+		else
+			console.error "May be an invalid IP file?"
+			callback? false
 
 lookup_ip = (ip, callback) ->
 	if service?
@@ -187,5 +196,8 @@ else
 		is_service_installed: -> !! service
 		lookup: lookup_ip
 		load: load_from_local_storage
-		install: load_from_file_system
+		install: (callback) ->
+			load_from_file_system callback ? (successful) ->
+				if not successful
+					webterm.status_bar.error html: "IP文件加载失败，请确认格式是否正确。点击<a eval='webterm.ip.install()'>这里</a>重新上传。"
 		uninstall: delete_from_local_storage
