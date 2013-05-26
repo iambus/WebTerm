@@ -85,6 +85,60 @@ class BBSMenu extends Feature
 		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
 		div.hover menu_show, menu_hide
 
+
+class URLRecognizer extends Feature
+	scan: (screen) ->
+		text = screen.view.text.full()
+		url_regexp = /http:\/\/[\w:\/?&=%+(@)$;._-]+/g
+		while m = url_regexp.exec text
+			start = wcwidth(text.substring(0, m.index))
+			end = start + m[0].length - 1
+			top = Math.floor(start / screen.width) - 1
+			left = start - screen.width * (top - 1) + 1
+			bottom = Math.floor(end / screen.width) - 1
+			right = end - screen.width * (bottom - 1) + 1
+			screen.area.define_area 'href', top, left, bottom, right
+		screen.context_menus.register
+			id: 'open_url'
+			title: '打开链接'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+				if url
+					window.open url
+			context: 'link'
+		screen.context_menus.register
+			id: 'copy_url'
+			title: '复制链接地址'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+				if url?
+					webterm.clipboard.put url
+			context: 'link'
+		screen.context_menus.register
+			id: 'save_url'
+			title: '链接另存为'
+			icon: 'download'
+			onclick: (context) ->
+				url = $(context.target).closest('a').attr 'href'
+			context: 'link'
+		screen.context_menus.register
+			id: 'open_as_url'
+			title: '将选中内容作为链接打开'
+			onclick: (context) ->
+				url = screen.selection?.get_selected_text()?.replace /\n/g, ''
+				if url
+					window.open url
+			context: 'selection'
+
+	render: (screen) ->
+		$('div.href').replaceWith ->
+			"<a href='#{$(@).text()}' target='_blank'>#{$(@).html()}</a>"
+
+class ImagePreview extends Feature
+	render: (screen) ->
+		$(screen.selector).find('a').preview()
+
+
 ##################################################
 # exports
 ##################################################
@@ -93,6 +147,8 @@ exports =
 	MouseGestureFeature: MouseGestureFeature
 	Clickable: Clickable
 	BBSMenu: BBSMenu
+	URLRecognizer: URLRecognizer
+	ImagePreview: ImagePreview
 
 if module?.exports?
 	module.exports = exports
