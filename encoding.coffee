@@ -155,7 +155,7 @@ gbk_to_string_partial = (bytes) ->
 
 gbk_to_string = (bytes) ->
 	[s, left] = gbk_to_string_partial(bytes)
-	s += '?' for [1..left.length]
+	s += '?' for [0...left.length]
 	return s
 
 ##################################################
