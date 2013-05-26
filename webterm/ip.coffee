@@ -126,6 +126,8 @@ class QQWry
 # storage, API, etc
 ##################################################
 
+storage_key = 'ip_qq_1'
+
 service = null
 callbacks = []
 
@@ -135,14 +137,20 @@ binary_string_to_array = (s) ->
 		array[i] = s.charCodeAt i
 	array
 
-storage_key = 'ip_qq_1'
+delete_from_local_storage = ->
+	webterm.storage.remove storage_key
+	service = null
 
 save_to_local_storage = (s) ->
 	webterm.storage.set storage_key, btoa s
 
-load_from_local_storage = ->
+load_from_local_storage = (callback) ->
 	webterm.storage.get storage_key, (s) ->
-		service = new QQWry binary_string_to_array atob s
+		if s?
+			service = new QQWry binary_string_to_array atob s
+			callback? true
+		else
+			callback? false
 
 load_from_file_system = ->
 	webterm.dialogs.file_open accepts: [extensions: ['dat']], format: 'binarystring', (s) ->
@@ -178,3 +186,6 @@ else
 		load_from_local_storage: load_from_local_storage
 		is_service_installed: -> !! service
 		lookup: lookup_ip
+		load: load_from_local_storage
+		install: load_from_file_system
+		uninstall: delete_from_local_storage

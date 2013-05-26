@@ -1023,6 +1023,7 @@ class read_mode extends FeaturedMode
 		ArticleBottom
 		common.URLRecognizer
 		common.ImagePreview
+		common.IPResolve
 		ArticleDownload
 		ClickWhitespace
 		MousePaging

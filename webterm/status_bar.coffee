@@ -78,5 +78,6 @@ webterm.status_bar =
 	hide: hide_status_bar
 	queue: queue
 	tip: (message) -> queue.post message
+	info: (message) -> queue.post message
 	error: (message) -> queue.post type: 'error', text: message
 

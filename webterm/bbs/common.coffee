@@ -138,6 +138,42 @@ class ImagePreview extends Feature
 	render: (screen) ->
 		$(screen.selector).find('a').preview()
 
+class IPResolve extends Feature
+	scan: (screen) ->
+		text = screen.view.text.full()
+		ip_regexp = /\b\d+\.\d+\.\d+\.(\d+\b|\*)/g
+		while m = ip_regexp.exec text
+			start = wcwidth(text.substring(0, m.index))
+			end = start + m[0].length - 1
+			top = Math.floor(start / screen.width) - 1
+			left = start - screen.width * (top - 1) + 1
+			bottom = Math.floor(end / screen.width) - 1
+			right = end - screen.width * (bottom - 1) + 1
+			screen.area.define_area 'bbs-ip', top, left, bottom, right
+	render: (screen) ->
+		lookup = (ip) ->
+			location = webterm.ip.lookup ip
+			if location?
+				return location[0] + '\n' + location[1]
+			else
+				return '未知地址'
+		$(screen.selector).find('div.bbs-ip').tooltip
+			items: '.bbs-ip'
+			content: ->
+				element = $(@)
+				ip = element.text()
+				if not webterm.ip.is_service_installed()
+					webterm.status_bar.info '正在初始化IP库'
+					webterm.ip.load (successful) ->
+						if successful
+							webterm.status_bar.info 'IP库加载成功'
+							tooltip_id = element.attr 'aria-describedby'
+							$("##{tooltip_id}").text lookup ip
+						else
+							webterm.status_bar.error 'IP库加载失败'
+					return '正在初始化IP库，请稍候重试……'
+				else
+					lookup ip
 
 ##################################################
 # exports
@@ -149,6 +185,7 @@ exports =
 	BBSMenu: BBSMenu
 	URLRecognizer: URLRecognizer
 	ImagePreview: ImagePreview
+	IPResolve: IPResolve
 
 if module?.exports?
 	module.exports = exports
