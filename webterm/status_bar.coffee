@@ -45,6 +45,7 @@ class MessageQueue
 	constructor: (@queue=[]) ->
 		@counter = 0
 		@working = false
+
 	post: (message) ->
 		message = new Message message
 		message.id = ++@counter
@@ -57,13 +58,25 @@ class MessageQueue
 		if not @working
 			@poll()
 		return message
+
+	is_empty: ->
+		@queue.length <= 0
+
+	schedule: ->
+		if @last_message?.type != 'error' and @queue[0].type == 'error'
+			# don't delay when we receive an error message
+			@poll()
+		else
+			setTimeout (=> @poll()), 1500
+
 	poll: ->
 		@working = true
-		if @queue.length > 0
+		if not @is_empty()
 			message = @queue.shift()
+			@last_message = message
 			render_message message, =>
-				if @queue.length > 0
-					setTimeout (=> @poll()), 2000
+				if not @is_empty()
+					@schedule()
 				else
 					@working = false
 		else
