@@ -170,7 +170,7 @@ class IPResolve extends Feature
 							tooltip_id = element.attr 'aria-describedby'
 							$("##{tooltip_id}").text lookup ip
 						else
-							webterm.status_bar.error 'IP库加载失败'
+							webterm.status_bar.error html: '''IP库加载失败，点击<a eval='webterm.ip.install()'>这里</a>上传IP文件。'''
 					return '正在初始化IP库，请稍候重试……'
 				else
 					lookup ip

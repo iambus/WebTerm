@@ -241,6 +241,12 @@ div[aria-describedby="script-dialog"] .ui-dialog-buttonpane {
 #status-bar #message div.error {
     color: red;
 }
+#status-bar #message-body a {
+    color: blue;
+}
+#status-bar #message-body a:hover {
+    cursor: pointer;
+}
 #status-bar .ui-icon:hover {
     background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }

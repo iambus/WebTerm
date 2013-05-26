@@ -5,7 +5,10 @@ display_message = (message) ->
 	else
 		$('#message-body').removeClass 'error'
 	$('#message-body').attr 'message-id', message.id
-	$('#message-body').text(message.text)
+	if message.text?
+		$('#message-body').text(message.text)
+	if message.html?
+		$('#message-body').html(message.html)
 
 animate_message = (message, callback) ->
 	$('#message-body').effect 'drop', direction: 'up', 50,
@@ -23,7 +26,6 @@ render_message = (message, callback) ->
 
 clear_message = (message) ->
 	if not(message?) or $('#message-body').attr('message-id') == message.id.toString()
-		console.log 'closing....'
 		$('#message-body').removeClass('error').text ''
 
 class Message
@@ -34,6 +36,7 @@ class Message
 				text: message
 		@type = message.type
 		@text = message.text
+		@html = message.html
 		@time = new Date
 	close: ->
 		clear_message @
@@ -71,6 +74,10 @@ show_status_bar = ->
 	$('#status-bar').show()
 
 $ ->
+	$('#message-body').on 'click', '[eval]', ->
+		code = $(@).attr 'eval'
+		if code
+			webterm.eval code
 	$('#status-bar-close-button').click hide_status_bar
 
 webterm.status_bar =
@@ -79,5 +86,10 @@ webterm.status_bar =
 	queue: queue
 	tip: (message) -> queue.post message
 	info: (message) -> queue.post message
-	error: (message) -> queue.post type: 'error', text: message
+	error: (message) ->
+		if _.isString message
+			message =
+				text: message
+		message.type = 'error'
+		queue.post message
 
