@@ -13,7 +13,7 @@ on_keyboard = (callback) ->
 			return
 		if key in ['ctrl', 'shift', 'alt', 'meta']
 			return
-		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert', 'tab', 'alt-f4']
+		if key in ['ctrl-c', 'ctrl-v', 'ctrl-insert', 'shift-insert', 'tab', 'alt-f4', 'ctrl-w']
 			event.preventDefault()
 		$('#ime').focus()
 		if event.ctrlKey or event.altKey or event.metaKey
