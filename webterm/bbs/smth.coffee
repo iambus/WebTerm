@@ -493,6 +493,23 @@ class BottomUserClick extends Feature
 # reading
 ##################################################
 
+class CleanAd extends Feature
+	@patterns: [
+		/※\s发自:\s*.*水木/
+		/发自.*水木.*版/
+		'http://itunes.apple.com/us/app/ucsmth/id543183096?mt=8'
+	]
+	scan: (screen) ->
+		for row in [1...screen.height]
+			line = screen.view.text.row(row).trim()
+			for pattern in CleanAd.patterns
+				if _.isRegExp pattern
+					if line.match(pattern)
+						screen.data.clear_row row
+				else if _.isString pattern
+					if line == pattern
+						screen.data.clear_row row
+
 class ArticleUser extends Feature
 	scan: (screen) ->
 		line = screen.view.text.head()
@@ -1020,6 +1037,7 @@ class read_mode extends FeaturedMode
 	name: 'read'
 	features: [
 		common.CleanSignature
+		CleanAd
 		ArticleUser
 		ArticleBottom
 		common.URLRecognizer
@@ -1243,6 +1261,7 @@ features = [
 	BoardJumpListRender
 	BoardJumpListRenderInMainMenu
 	BottomUserClick
+	CleanAd
 	ArticleUser
 	ArticleBottom
 	ArticleDownload
