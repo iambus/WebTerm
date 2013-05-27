@@ -1281,10 +1281,13 @@ class Screen
 #			@context_menus.refresh()
 		@on_screen_rendered?()
 
-	render: ->
+	render_default: ->
 		$(@selector).html @to_html()
 		if $(@selector).is ":visible"
 			$('#ime').offset $(@selector).find('.cursor').offset()
+
+	render: ->
+		@render_default()
 		@screen_rendered()
 
 	fill_ascii_raw: (a) ->
