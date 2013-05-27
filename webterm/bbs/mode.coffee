@@ -16,11 +16,11 @@ footline = (screen) ->
 
 class Feature
 	@disable: ->
-		@prototype.disabled = true
+		@::disabled = true
 	@enable: ->
-		@prototype.disabled = undefined
+		@::disabled = undefined
 	@is_enabled: ->
-		not @prototype.disabled
+		not @::disabled
 	constructor: ->
 		if not @name
 			@name = @constructor.name
@@ -29,11 +29,11 @@ class Feature
 
 class Mode
 	@disable: ->
-		@prototype.disabled = true
+		@::disabled = true
 	@enable: ->
-		@prototype.disabled = undefined
+		@::disabled = undefined
 	@is_enabled: ->
-		not @prototype.disabled
+		not @::disabled
 	constructor: ->
 		if not @name
 			@name = @constructor.name
@@ -43,13 +43,13 @@ class Mode
 
 class FeaturedMode extends Mode
 	@reset_features: (features) ->
-		@prototype.features = features
+		@::features = features
 	@add_feature: (feature) ->
-		@prototype.features.push feature
+		@::features.push feature
 	@remove_feature: (feature) ->
-		i = @prototype.features.indexOf feature
+		i = @::features.indexOf feature
 		if i != -1
-			@prototype.features.splice i, 1
+			@::features.splice i, 1
 	constructor: ->
 		if not @features
 			throw Error("#{@constructor.name} doesn't provide @features")
