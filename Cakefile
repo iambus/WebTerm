@@ -52,7 +52,7 @@ spawn_with_auto_recover = (command, args, on_stdout, on_stderr, auto_recover) ->
 			end = new Date
 			if auto_recover and end - start > 5000
 				console.error green "restarting..."
-				spawn_with_auto_recover command, args
+				spawn_with_auto_recover command, args, on_stdout, on_stderr, auto_recover
 			else
 				console.error red "abort!"
 
