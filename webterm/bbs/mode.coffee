@@ -42,8 +42,12 @@ class Mode
 	render: (screen) ->
 
 class FeaturedMode extends Mode
+	@get_features: ->
+		@::features
 	@reset_features: (features) ->
+		old = @::features
 		@::features = features
+		old
 	@add_feature: (feature) ->
 		@::features.push feature
 	@remove_feature: (feature) ->
