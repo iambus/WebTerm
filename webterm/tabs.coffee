@@ -20,6 +20,9 @@ class Tabs
 			@on_close e.target
 		$(@new_selector).click =>
 			@on_new?()
+		@on 'activate', (data) =>
+			if data.session?.screen?
+				$('#ime').focus()
 
 	sortable: ->
 		@bar.sortable
@@ -31,12 +34,15 @@ class Tabs
 		if event == 'new'
 			@on_new = callback
 		else if event == 'activate'
-			@tabs.on 'tabsactivate', (event, ui) ->
-				callback
+			@tabs.on 'tabsactivate', (event, ui) =>
+				id = ui.newPanel.attr 'id'
+				data =
 					event: event
 					ui: ui
-					id: ui.newPanel.attr 'id'
+					id: id
 					selector: ui.newPanel.selector
+				$.extend data, @registry[id]
+				callback data
 		else if event == 'create'
 			@callbacks.create.push callback
 		else
