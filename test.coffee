@@ -150,6 +150,7 @@ webterm.test =
 	load: load
 	load_new_tab: load_new_tab
 	benchmark: benchmark
+	benchmark_scan: benchmark_scan
 	benchmark_render: benchmark_render
 	benchmark_render_default: benchmark_render_default
 	benchmark_render_plugin: benchmark_render_plugin
