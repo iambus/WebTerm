@@ -187,7 +187,7 @@ class CleanSignature extends Feature
 		for row in [1...screen.height]
 			if screen.view.text.row(row).trimRight() == '--'
 				for i in [row+1...screen.height]
-					if screen.view.text.row(row).match /^※\s(来源|修改)/
+					if screen.view.text.row(i).match /^※\s(来源|修改)/
 						return
 					screen.data.clear_row i
 				return
