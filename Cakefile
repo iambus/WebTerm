@@ -222,6 +222,7 @@ build_out = ->
 		'webterm/status_bar.js'
 		'webterm/notifications.js'
 		'webterm/ip.js'
+		'webterm/alert.js'
 
 		'lib/byr.ico'
 		'lib/fudan.ico'
