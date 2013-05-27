@@ -80,11 +80,9 @@ class BBSMenu extends Feature
 				callback? ui.item
 				ui.item.parent().hide()
 		# fix menu position
-		{top, left} = div.offset()
-		if $(screen.selector).width() < left - $(screen.selector).offset().left + ul.width()
-			top += div.height()
-			left -= ul.width() - div.width() + 3
-			ul.offset top: top, left: left
+		if $(screen.selector).width() < div.offset().left - $(screen.selector).offset().left + ul.width()
+			diff = ul.width() - div.width() + 3
+			ul.css 'margin-left', "-#{diff}px"
 		# done!
 		menu_show = (e) -> $(e.currentTarget).find('ul').show()
 		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
