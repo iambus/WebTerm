@@ -163,6 +163,7 @@ download_depends = ->
 		'http://bbs.whnet.edu.cn/favicon.ico': 'lib/whnet.ico'
 		'http://bbs.whu.edu.cn/favicon.ico': 'lib/whu.ico'
 		'http://bbs.xjtu.edu.cn/favicon.ico': 'lib/xjtu.ico'
+		'https://raw.github.com/GoogleChrome/chrome-app-samples/master/telnet/icon_128.png': 'lib/webterm.png'
 	for url, file of libs
 		if file.match /\/$/
 			file += path.basename url
@@ -232,6 +233,7 @@ build_out = ->
 		'lib/whnet.ico'
 		'lib/whu.ico'
 		'lib/xjtu.ico'
+		'lib/webterm.png'
 
 		'lib/CoffeeScriptEval.js'
 		'lib/coffee-script.js'

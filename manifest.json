@@ -25,6 +25,7 @@
 		"contextMenus",
 		"clipboardRead",
 		"clipboardWrite",
-		"fullscreen"
+		"fullscreen",
+		"notifications"
 	]
 }
