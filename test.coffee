@@ -124,6 +124,22 @@ benchmark = (n, code) ->
 	duration = end - start
 	console.log "repeat: #{n}, duration: #{duration}ms, average: #{duration/n}ms, performance: #{1000*n/duration}/s"
 
+benchmark_scan = (n=1000) ->
+	benchmark n, ->
+		webterm.screen.screen_updated()
+
+benchmark_render = (n=100) ->
+	benchmark n, ->
+		webterm.screen.render()
+
+benchmark_render_default = (n=100) ->
+	benchmark n, ->
+		webterm.screen.render_default()
+
+benchmark_render_plugin = (n=100) ->
+	benchmark n, ->
+		webterm.screen.screen_rendered()
+
 webterm.test =
 	save_screen: save_screen
 	save_current_screen: save_current_screen
@@ -134,4 +150,7 @@ webterm.test =
 	load: load
 	load_new_tab: load_new_tab
 	benchmark: benchmark
+	benchmark_render: benchmark_render
+	benchmark_render_default: benchmark_render_default
+	benchmark_render_plugin: benchmark_render_plugin
 
