@@ -151,6 +151,8 @@ download_depends = ->
 		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_delete.png': 'lib/jQuery-contextMenu/images/'
 		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_edit.png': 'lib/jQuery-contextMenu/images/'
 		'https://raw.github.com/medialize/jQuery-contextMenu/master/src/images/page_white_paste.png': 'lib/jQuery-contextMenu/images/'
+		'https://raw.github.com/sciactive/pnotify/master/jquery.pnotify.min.js': 'lib/pnotify-1.2.0/'
+		'https://raw.github.com/sciactive/pnotify/master/jquery.pnotify.default.css': 'lib/pnotify-1.2.0/'
 		'http://www.newsmth.net/favicon.ico': 'lib/smth.ico'
 		'http://lilybbs.net/favicon.ico': 'lib/lily.ico'
 		'http://bbs.byr.cn/favicon.ico': 'lib/byr.ico'
@@ -217,6 +219,7 @@ build_out = ->
 		'webterm/tabs.js'
 		'webterm/windows.js'
 		'webterm/status_bar.js'
+		'webterm/notifications.js'
 		'webterm/ip.js'
 
 		'lib/byr.ico'
@@ -263,6 +266,8 @@ build_out = ->
 		'lib/jQuery-contextMenu/images/page_white_delete.png'
 		'lib/jQuery-contextMenu/images/page_white_edit.png'
 		'lib/jQuery-contextMenu/images/page_white_paste.png'
+		'lib/pnotify-1.2.0/jquery.pnotify.min.js'
+		'lib/pnotify-1.2.0/jquery.pnotify.default.css'
 
 	]
 	for f in files

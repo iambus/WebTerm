@@ -289,3 +289,11 @@ textarea#clipboard {
     color: red;
 }
 
+/* pines notification */
+.ui-pnotify-container {
+    /*padding-top: 0.4em;*/
+}
+.ui-pnotify.stack-bottomright {
+    right: auto;
+    top: auto;
+}
