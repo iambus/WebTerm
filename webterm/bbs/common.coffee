@@ -46,6 +46,11 @@ class Clickable extends Feature
 			@click screen, li
 
 class BBSMenu extends Feature
+	render_menu_on_demand: (screen, selector, menus, callback) ->
+		$(screen.selector).find(selector).hover (e) =>
+			if $(e.currentTarget).find('ul').length == 0
+				@render_menu screen, selector, menus, callback
+				$(e.currentTarget).find('ul').show()
 	render_menu: (screen, selector, menus, callback) ->
 		div = $(screen.selector).find(selector)
 		if div.length == 0

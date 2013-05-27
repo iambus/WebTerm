@@ -624,7 +624,7 @@ class Events
 			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
 				now = new Date()
-				if now - mouse_click_when < 500 and $(e.target).closest(@clickables).length > 0
+				if now - mouse_click_when < 500 and @is_clicking_anything e
 					# double clicking on a clickable, let's prevent annoying selections
 					e.preventDefault()
 				mouse_click_when = now
@@ -642,10 +642,8 @@ class Events
 			if e.button == 0
 				if mouse_click_at?
 					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
-						target = $(e.target).closest(@clickables)
-						if target.length > 0
-							target.data('handler')?(target[0]) # XXX: when there are multiple targets?
-							window.getSelection().removeAllRanges() # clear annoying double clicking selections
+						# now it's real mouse click event
+						@do_click e
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>
 			if e.button == 0 and e.which == 1 and @screen.selection and not @screen.selection.done
@@ -769,11 +767,21 @@ class Events
 				@put_key x
 			@send()
 
+	is_clicking_anything: (e) ->
+		$(e.target).closest((x[0] for x in @clickables).join(', ')).length > 0
+
+	do_click: (e) ->
+		target = $(e.target).closest((x[0] for x in @clickables).join(', '))[0]
+		if target?
+			target = $(target)
+			for [selector, handler] in @clickables
+				if target.is selector
+					handler target[0]
+#					window.getSelection().removeAllRanges() # clear annoying double clicking selections
+					return
+
 	on_click: (selector, handler) ->
-		elements = $(@screen.selector).find(selector)
-		$.merge @clickables, elements
-		elements.data 'handler', (e) ->
-			handler e
+		@clickables.push [selector, handler]
 
 	on_click_div: (selector, handler) ->
 		@on_click selector, (e) ->

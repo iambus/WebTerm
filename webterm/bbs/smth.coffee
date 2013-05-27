@@ -396,7 +396,7 @@ class BoardModeSwitch extends common.BBSMenu
 						 ['自删文章', '9']
 						 ['积分变更', 'a']]
 		menus = (text: menu[0], class: 'bbs-clickable', key: "ctrl-g #{menu[1]} enter" for menu in menus)
-		@render_menu screen, ".bbs-menu.bbs-board-mode-switch", menus
+		@render_menu_on_demand screen, ".bbs-menu.bbs-board-mode-switch", menus
 
 
 class BoardUserClick extends Feature
@@ -466,7 +466,7 @@ class BoardJumpListRender extends BoardJumpList
 		if not menus
 			return
 		menus = (text: menu, class: 'bbs-clickable', key: "s [#{menu}] enter" for menu in menus)
-		@render_menu screen, ".bbs-menu.bbs-board-jump", menus
+		@render_menu_on_demand screen, ".bbs-menu.bbs-board-jump", menus
 
 class BoardJumpListRenderInMainMenu extends BoardJumpList
 	render: (screen) ->
@@ -474,7 +474,7 @@ class BoardJumpListRenderInMainMenu extends BoardJumpList
 		if not menus
 			return
 		menus = (text: menu, class: 'bbs-clickable', key: "s enter [#{menu}] enter" for menu in menus)
-		@render_menu screen, ".bbs-menu.bbs-board-jump", menus
+		@render_menu_on_demand screen, ".bbs-menu.bbs-board-jump", menus
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
