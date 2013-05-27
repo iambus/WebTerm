@@ -22,16 +22,16 @@ ace_coffee_editor = ({id, code, listener}) ->
 #	editor.renderer.setShowGutter(false)
 	if code?
 		editor.getSession().setValue code
-#	editor.getSession().on 'change', (e) ->
-#		coffeescript = editor.getSession().getValue()
-#		try
-#			javascript = CoffeeScript.compile coffeescript
-#			listener? coffeescript: coffeescript, javascript: javascript
-#		catch {location, message}
-#			if location?
-#				message = "##{location.first_line + 1}: #{message}"
-#			webterm.status_bar.error message
-#			console.error message
+	editor.getSession().on 'change', (e) ->
+		coffeescript = editor.getSession().getValue()
+		try
+			javascript = CoffeeScript.compile coffeescript
+			listener? coffeescript: coffeescript, javascript: javascript
+		catch {location, message}
+			if location?
+				message = "##{location.first_line + 1}: #{message}"
+			webterm.status_bar.error message
+			console.error message
 	editor.commands.addCommand
 		name: 'eval',
 		bindKey: 'Ctrl-Enter'
