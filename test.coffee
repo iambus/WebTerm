@@ -113,6 +113,17 @@ load = ->
 load_new_tab = (json) ->
 	new_tab_and_do (screen) -> load_json screen, json
 
+benchmark = (n, code) ->
+	if not code?
+		code = n
+		n = 100
+	start = new Date
+	for i in [1..n]
+		code()
+	end = new Date
+	duration = end - start
+	console.log "repeat: #{n}, duration: #{duration}ms, average: #{duration/n}ms, performance: #{1000*n/duration}/s"
+
 webterm.test =
 	save_screen: save_screen
 	save_current_screen: save_current_screen
@@ -122,4 +133,5 @@ webterm.test =
 	new_tab: new_tab
 	load: load
 	load_new_tab: load_new_tab
+	benchmark: benchmark
 
