@@ -177,6 +177,17 @@ class IPResolve extends Feature
 				else
 					lookup ip
 
+class CleanSignature extends Feature
+	scan: (screen) ->
+		for row in [1...screen.height]
+			if screen.view.text.row(row).trimRight() == '--'
+				for i in [row+1...screen.height]
+					if screen.view.text.at(i, 1) == '※'
+						return
+					screen.data.clear_row i
+				return
+
+
 ##################################################
 # exports
 ##################################################
@@ -188,6 +199,7 @@ exports =
 	URLRecognizer: URLRecognizer
 	ImagePreview: ImagePreview
 	IPResolve: IPResolve
+	CleanSignature: CleanSignature
 
 if module?.exports?
 	module.exports = exports
