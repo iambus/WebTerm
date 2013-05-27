@@ -83,7 +83,7 @@ class BBSMenu extends Feature
 		{top, left} = div.offset()
 		if $(screen.selector).width() < left - $(screen.selector).offset().left + ul.width()
 			top += div.height()
-			left -= ul.width() - div.find('span').width() + 3
+			left -= ul.width() - div.width() + 3
 			ul.offset top: top, left: left
 		# done!
 		menu_show = (e) -> $(e.currentTarget).find('ul').show()
