@@ -39,26 +39,25 @@ desktop_notification = (message) ->
 	else
 		webkit_notification(message)
 
+stack_topright =
+	dir1: "down"
+	dir2: "left"
+	firstpos1: 36
+	firstpos2: 12
+	spacing1: 5
+	spacing2: 10
+
+stack_downright =
+	dir1: "up"
+	dir2: "left"
+	firstpos1: 25
+	firstpos2: 12
+	spacing1: 5
+	spacing2: 10
 
 screen_notification = (message) ->
 	if _.isString message
 		message = text: message
-
-	stack_topright =
-		dir1: "down"
-		dir2: "left"
-		firstpos1: 36
-		firstpos2: 12
-		spacing1: 5
-		spacing2: 10
-
-	stack_downright =
-		dir1: "up"
-		dir2: "left"
-		firstpos1: 25
-		firstpos2: 12
-		spacing1: 5
-		spacing2: 10
 
 	default_options =
 #		addclass: "stack-bottomright"
