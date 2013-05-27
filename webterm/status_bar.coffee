@@ -97,6 +97,8 @@ $ ->
 		if code
 			webterm.eval code
 	$('#status-bar-close-button').click hide_status_bar
+	if not window.onerror?
+		window.onerror = (e) -> webterm.status_bar.error e
 
 webterm.status_bar =
 	show: show_status_bar
