@@ -39,6 +39,44 @@ file_open = ({accepts, format}, callback) ->
 			else
 				throw new Error("Not Implemented: #{format}")
 
+common_confirm_callback = null
+
+common_confirm = (title, message, callback) ->
+	if not callback?
+		callback = message
+		message = title
+		title = '请确认'
+	if common_confirm_callback?
+		throw new Error("Multiple instances required for confirm dialog")
+		return
+	common_confirm_callback = callback
+	$('#common-confirm-dialog').dialog 'option', 'title', title
+	$('#common-confirm-dialog .dialog-message').text message
+	$('#common-confirm-dialog').dialog 'open'
+
+$ ->
+	$('#common-confirm-dialog').dialog
+		autoOpen: false
+		modal: true
+		buttons: [
+			text: '确认'
+			click: ->
+				$(@).dialog 'close'
+				common_confirm_callback? true
+				common_confirm_callback = null
+		,
+			text: '取消'
+			click: ->
+				$(@).dialog 'close'
+				common_confirm_callback? false
+				common_confirm_callback = null
+		]
+		close: ->
+			if common_confirm_callback?
+				common_confirm_callback? false
+				common_confirm_callback = null
+
 webterm.dialogs =
 	file_save: file_save
 	file_open: file_open
+	confirm: common_confirm
