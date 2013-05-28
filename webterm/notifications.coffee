@@ -5,7 +5,7 @@ webkit_notification = (message) ->
 			text: message
 	havePermission = window.webkitNotifications.checkPermission()
 	if havePermission == 0
-		notification = window.webkitNotifications.createNotification message.icon ? '', message.title ? '', message.text
+		notification = window.webkitNotifications.createNotification message.icon ? 'lib/webterm.png', message.title ? '', message.text
 		if message.onclick?
 			notification.onclick = ->
 				message.onclick()
