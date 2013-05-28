@@ -144,7 +144,7 @@ class ImagePreview extends Feature
 class IPResolve extends Feature
 	scan: (screen) ->
 		text = screen.view.text.full()
-		ip_regexp = /\b\d+\.\d+\.\d+\.(\d+\b|\*)/g
+		ip_regexp = /\b[12]?\d?\d\.[12]?\d?\d\.[12]?\d?\d\.([12]?\d?\d\b|\*)/g
 		while m = ip_regexp.exec text
 			start = wcwidth(text.substring(0, m.index))
 			end = start + m[0].length - 1
