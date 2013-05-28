@@ -222,11 +222,22 @@ class PressEnterKeyBottomBar extends Feature
 
 class LoginGuest extends Feature
 	scan: (screen) ->
+		login_guest = -> screen.events.send_text 'guest\n'
+		login_guest_and_skip_welcome = -> screen.events.send_key_sequence_string '[guest] enter whitespace whitespace whitespace whitespace whitespace'
 		for row in [screen.height..1]
 			line = screen.view.text.row(row).trim()
 			if line
 				if line == '请输入代号:'
-					screen.events.on_key 'enter', -> screen.events.send_text 'guest\n'
+					screen.events.on_key 'enter', login_guest
+					screen.events.on_key 'whitespace', login_guest_and_skip_welcome
+					screen.context_menus.register
+						id: 'bbs-login-guest'
+						title: '使用guest登录'
+						onclick: login_guest
+					screen.context_menus.register
+						id: 'bbs-login-guest-and-skip-welcome'
+						title: '使用guest登录并跳过欢迎画面'
+						onclick: login_guest_and_skip_welcome
 				break
 
 ##################################################
