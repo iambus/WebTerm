@@ -127,6 +127,16 @@ map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
 		map_areas_on_line screen, row, areas, bindings
 
 ##################################################
+# operations
+##################################################
+
+leave_article = (screen) ->
+	if screen.view.text.foot().match /^下面还有/
+		screen.events.send_key 'q', 'q'
+	else
+		screen.events.send_key 'q'
+
+##################################################
 # global
 ##################################################
 
@@ -322,7 +332,7 @@ class RowClick extends Feature
 		for row in [top..bottom]
 			line = view.row(row)
 			if /^-?>\s+(\d+|\[提示\])/.test line
-				screen.area.define_area class:'bbs-clickable bbs-row-item', key:'enter', 'goto-key': '',
+				screen.area.define_area class:'bbs-clickable bbs-row-item bbs-row-current-item', key:'enter', 'goto-key': '',
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
 				if current < row
@@ -980,6 +990,47 @@ class LogoutMenu extends Feature
 		screen.area.define_area class:'bbs-clickable', key:'esc', 15, 35, 15, 46
 
 ##################################################
+# spoiler
+##################################################
+
+class BoardSpoilerWarning extends Feature
+	@pattern: /剧透|\bjt\b/i
+	scan: (screen) ->
+		is_dangerous = ->
+			headline = $(screen.selector).find('.bbs-row-current-item').text().match(/(★|●|Re:).*/)?[0]
+			return headline?.match BoardSpoilerWarning.pattern
+		screen.events.on_key 'enter', ->
+			if is_dangerous()
+				webterm.dialogs.confirm '剧透警告', '打开内容可能涉及剧透，是否要继续？', (ok) ->
+					if ok
+						screen.events.send_key 'enter'
+			else
+				screen.events.send_key 'enter'
+	render: (screen) ->
+		screen.events.on_click '.bbs-row-item', (div) ->
+			click = ->
+				k = div.getAttribute('key')
+				if k
+					screen.events.send_key_sequence_string k
+			headline = $(div).text().match(/(★|●|Re:).*/)?[0]
+			if headline?.match BoardSpoilerWarning.pattern
+				webterm.dialogs.confirm '剧透警告', '打开内容可能涉及剧透，是否要继续？', (ok) ->
+					if ok
+						click()
+			else
+				click()
+
+class ArticleSpoilerWarning extends Feature
+	@pattern: /标  题:.*(剧透|\bjt\b)|以下.*(剧透|\bjt\b)/i
+	scan: (screen) ->
+		if screen.view.text.full().match ArticleSpoilerWarning.pattern
+			$(screen.selector).hide()
+			webterm.dialogs.confirm '剧透警告', '打开内容可能涉及剧透，是否要继续？', (ok) ->
+				if not ok
+					leave_article screen
+				$(screen.selector).show()
+
+##################################################
 # summary
 ##################################################
 
@@ -1063,6 +1114,7 @@ class board_mode extends FeaturedMode
 		BottomUserClick
 		MousePaging
 		MouseHomeEnd
+		BoardSpoilerWarning
 	]
 
 class read_mode extends FeaturedMode
@@ -1080,6 +1132,7 @@ class read_mode extends FeaturedMode
 		ClickWhitespace
 		MousePaging
 		MouseReadingHomeEnd
+		ArticleSpoilerWarning
 	]
 
 class reply_mode extends FeaturedMode
@@ -1137,6 +1190,7 @@ class x_list_mode extends FeaturedMode
 		XToolBar
 		XBottomBar
 		MousePaging
+		BoardSpoilerWarning
 	]
 
 class mail_menu_mode extends FeaturedMode
@@ -1145,6 +1199,7 @@ class mail_menu_mode extends FeaturedMode
 	features: [
 		MenuClick
 		MailMenuToolbar
+		BoardSpoilerWarning
 	]
 
 class mail_list_mode extends FeaturedMode
@@ -1165,6 +1220,7 @@ class mail_replies_mode extends FeaturedMode
 		RowBoardClick
 		BottomUserClick
 		MousePaging
+		BoardSpoilerWarning
 	]
 
 class mail_at_mode extends FeaturedMode
@@ -1176,6 +1232,7 @@ class mail_at_mode extends FeaturedMode
 		RowBoardClick
 		BottomUserClick
 		MousePaging
+		BoardSpoilerWarning
 	]
 
 class info_menu_mode extends FeaturedMode
@@ -1330,6 +1387,8 @@ features = [
 	ArticleScoreHistoryBottomBar
 	UserListToolbar
 	LogoutMenu
+	BoardSpoilerWarning
+	ArticleSpoilerWarning
 ]
 
 for m in modes
