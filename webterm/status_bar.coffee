@@ -112,4 +112,5 @@ webterm.status_bar =
 				text: message
 		message.type = 'error'
 		queue.post message
+	clear: clear_message
 
