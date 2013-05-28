@@ -223,7 +223,7 @@ class PressEnterKeyBottomBar extends Feature
 class LoginGuest extends Feature
 	scan: (screen) ->
 		login_guest = -> screen.events.send_text 'guest\n'
-		login_guest_and_skip_welcome = -> screen.events.send_key_sequence_string '[guest] enter whitespace whitespace whitespace whitespace whitespace'
+		login_guest_and_skip_welcome = -> screen.events.send_key_sequence_string '[guest] enter whitespace whitespace whitespace whitespace whitespace whitespace whitespace whitespace whitespace'
 		for row in [screen.height..1]
 			line = screen.view.text.row(row).trim()
 			if line
