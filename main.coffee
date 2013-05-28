@@ -301,6 +301,11 @@ setup_about = ->
 		autoOpen: false
 		modal: true
 		width: 400
+		open: ->
+			webterm.resources.get_text 'manifest.json', (text) ->
+				webterm_version = JSON.parse(text).version
+				chrome_version = window.navigator.appVersion.match(/Chrom(?:e|ium)\/\S+/)?[0] ? 'Chrome version unknown'
+				$('#about-version').text "Webterm/#{webterm_version}, #{chrome_version}"
 
 setup = ->
 	Object.defineProperty webterm, 'active',
