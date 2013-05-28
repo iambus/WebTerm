@@ -140,6 +140,28 @@ benchmark_render_plugin = (n=100) ->
 	benchmark n, ->
 		webterm.screen.screen_rendered()
 
+benchmark_feature_scan = (n, feature) ->
+	if not feature?
+		feature = n
+		n = 1000
+	if _.isString feature
+		feature = webterm.bbs.smth.features[feature] ? webterm.bbs.common[feature]
+		if not feature
+			throw "#{feature} not found"
+	benchmark n, ->
+		new feature().scan webterm.screen
+
+benchmark_feature_render = (n, feature) ->
+	if not feature?
+		feature = n
+		n = 1000
+	if _.isString feature
+		feature = webterm.bbs.smth.features[feature] ? webterm.bbs.common[feature]
+		if not feature
+			throw "#{feature} not found"
+	benchmark n, ->
+		new feature().render webterm.screen
+
 webterm.test =
 	save_screen: save_screen
 	save_current_screen: save_current_screen
@@ -154,4 +176,6 @@ webterm.test =
 	benchmark_render: benchmark_render
 	benchmark_render_default: benchmark_render_default
 	benchmark_render_plugin: benchmark_render_plugin
+	benchmark_feature_scan: benchmark_feature_scan
+	benchmark_feature_render: benchmark_feature_render
 
