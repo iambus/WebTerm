@@ -61,15 +61,15 @@ $ ->
 		buttons: [
 			text: '确认'
 			click: ->
-				$(@).dialog 'close'
 				common_confirm_callback? true
 				common_confirm_callback = null
+				$(@).dialog 'close'
 		,
 			text: '取消'
 			click: ->
-				$(@).dialog 'close'
 				common_confirm_callback? false
 				common_confirm_callback = null
+				$(@).dialog 'close'
 		]
 		close: ->
 			if common_confirm_callback?
