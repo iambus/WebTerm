@@ -166,6 +166,8 @@ event_to_virtual_key = (event) ->
 		k = String.fromCharCode(charCode)
 		if k == '\r'
 			return 'enter'
+		else if k == ' '
+			return 'whitespace'
 		else
 			return k
 	else
