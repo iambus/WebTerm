@@ -371,6 +371,16 @@ class BoardArticleItemContextMenu extends Feature
 			onclick: go 'ctrl-c'
 			context: context
 		screen.context_menus.register
+			id: 'bbs-article-first'
+			title: '同主题首篇'
+			onclick: go '='
+			context: context
+		screen.context_menus.register
+			id: 'bbs-article-source'
+			title: '溯源'
+			onclick: go '^'
+			context: context
+		screen.context_menus.register
 			id: 'bbs-article-info'
 			title: '查看文章信息'
 			onclick: go 'ctrl-q'
@@ -530,6 +540,21 @@ class CleanAd extends Feature
 				else if _.isString pattern
 					if line == pattern
 						screen.data.clear_row row
+
+class ArticleContextMenu extends Feature
+	scan: (screen) ->
+		screen.context_menus.register
+			id: 'bbs-article-first'
+			title: '同主题首篇'
+			onclick: ->
+				leave_article(screen)
+				screen.events.send_key '=', 'r'
+		screen.context_menus.register
+			id: 'bbs-article-source'
+			title: '溯源'
+			onclick: ->
+				leave_article(screen)
+				screen.events.send_key '^', 'r'
 
 class ArticleUser extends Feature
 	scan: (screen) ->
@@ -1123,6 +1148,7 @@ class read_mode extends FeaturedMode
 	features: [
 		common.CleanSignature
 		CleanAd
+		ArticleContextMenu
 		ArticleUser
 		ArticleBottom
 		common.URLRecognizer
@@ -1370,6 +1396,7 @@ features = [
 	BoardJumpListRenderInMainMenu
 	BottomUserClick
 	CleanAd
+	ArticleContextMenu
 	ArticleUser
 	ArticleBottom
 	ArticleDownload
