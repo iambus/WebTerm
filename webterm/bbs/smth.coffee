@@ -542,9 +542,10 @@ class ArticleBottom extends Feature
 				'l': "l"
 				'n': "n"
 				'上': "l"
-				'下': "n"
+				'下篇': "n"
 				'/': "/"
 				'?': "?"
+				'搜索': "/"
 				's': "s"
 				'e': "e"
 				'开头': "s"
@@ -918,6 +919,27 @@ class BoardInfoBottomBar extends Feature
 				'添加到个人定制区[a]': "a"
 
 ##################################################
+# article info
+##################################################
+
+class ArticleInfoBottomBar extends Feature
+	scan: (screen) ->
+		line = screen.view.text.foot().trim()
+		map_areas_by_words_on_line screen, screen.height,
+			'<A>查看对本文的积分奖励记录': "A"
+
+##################################################
+# article score history
+##################################################
+
+class ArticleScoreHistoryBottomBar extends Feature
+	scan: (screen) ->
+		map_areas_by_words_on_line screen, screen.height,
+			'上一页 PGUP,↑': "up"
+			'下一页 PGDN,空格,↓': "whitespace"
+			'退出 Q,E,←': "q"
+
+##################################################
 # user list
 ##################################################
 
@@ -990,7 +1012,7 @@ class option_input_mode extends FeaturedMode
 	]
 
 class anykey_mode extends FeaturedMode
-	@check: test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.)\s*$/)
+	@check: test_footline(/^\s*(按任何键继续|按任何键继续 \.\.|☆ 按任意键继续\.\.\.|本文无积分奖励记录, 按 <任意> 键继续\.\.\.)\s*$/)
 	name: 'anykey'
 	features: [
 		ClickWhitespace
@@ -1185,6 +1207,22 @@ class board_info_mode extends FeaturedMode
 		ClickWhitespace
 	]
 
+class article_info_mode extends FeaturedMode
+	@check: test_footline(/^\s*<A>查看对本文的积分奖励记录/)
+	name: 'article_info'
+	features: [
+		common.URLRecognizer
+		ArticleInfoBottomBar
+		ClickWhitespace
+	]
+
+class article_score_history_mode extends FeaturedMode
+	@check: test_headline /^文章.*的积分奖励记录.*/
+	name: 'article_score_history'
+	features: [
+		ArticleScoreHistoryBottomBar
+	]
+
 class user_list_mode extends FeaturedMode
 	@check: test_headline(/^\[使用者列表\]/)
 	name: 'user_list'
@@ -1240,6 +1278,8 @@ modes = [
 	info_menu_mode
 	system_menu_mode
 	board_info_mode
+	article_info_mode
+	article_score_history_mode
 	user_list_mode
 	talk_menu_mode
 	logout_mode
@@ -1286,6 +1326,8 @@ features = [
 	RowBoardClick
 	UserBottomBar
 	BoardInfoBottomBar
+	ArticleInfoBottomBar
+	ArticleScoreHistoryBottomBar
 	UserListToolbar
 	LogoutMenu
 ]
