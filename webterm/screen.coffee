@@ -833,7 +833,7 @@ class ContextMenus
 			selector: @screen.selector
 			reposition: false
 			build: ($trigger, e) =>
-				return @create_jquery_context_menu event: e, target: e.target
+				return @create_jquery_context_menu event: e, target: e.target, screen: @screen
 
 	register_persisted: (menu) ->
 		@persisted.push menu

@@ -349,8 +349,12 @@ class RowClick extends Feature
 
 class BoardArticleItemContextMenu extends Feature
 	scan: (screen) ->
-		context = (context) ->
+		normal_context = (context) ->
 			$(context.target).closest('.bbs-row-item').length > 0
+		non_guest_context = (context) ->
+			normal_context(context) and context.screen.view.text.foot().match(/使用者\[(\w+)\]/)?[1] != 'guest'
+		owner_context = (context) ->
+			non_guest_context(context) # TODO: get article user and compare with current user
 		goto_key = (context, key) ->
 			goto = $(context.target).closest('.bbs-row-item').attr 'goto-key'
 			if goto?
@@ -364,27 +368,32 @@ class BoardArticleItemContextMenu extends Feature
 			id: 'bbs-article-reply'
 			title: '回复'
 			onclick: go 'r r'
-			context: context
+			context: non_guest_context
 		screen.context_menus.register
 			id: 'bbs-article-forward'
 			title: '转帖'
 			onclick: go 'ctrl-c'
-			context: context
+			context: non_guest_context
+		screen.context_menus.register
+			id: 'bbs-article-edit'
+			title: '编辑'
+			onclick: go 'E'
+			context: owner_context
 		screen.context_menus.register
 			id: 'bbs-article-first'
 			title: '同主题首篇'
 			onclick: go '='
-			context: context
+			context: normal_context
 		screen.context_menus.register
 			id: 'bbs-article-source'
 			title: '溯源'
 			onclick: go '^'
-			context: context
+			context: normal_context
 		screen.context_menus.register
 			id: 'bbs-article-info'
 			title: '查看文章信息'
 			onclick: go 'ctrl-q'
-			context: context
+			context: normal_context
 
 class BoardToolbar extends Feature
 	scan: (screen) ->
