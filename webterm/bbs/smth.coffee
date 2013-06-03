@@ -661,6 +661,25 @@ class ArticleDownload extends Feature
 
 
 ##################################################
+# post
+##################################################
+
+class PostOptions extends Feature
+	scan: (screen) ->
+		map_areas_by_regexp_on_line screen, screen.height,
+			/(P使用模板)，(Z选择标签)，(b回复到信箱)，(T改标题)，(u传附件), (Q放弃), (Enter继续):/
+			[
+				'P enter'
+				'Z enter'
+				'b enter'
+				'T enter'
+				'u enter'
+				'Q enter'
+				'enter'
+			]
+
+
+##################################################
 # reply
 ##################################################
 
@@ -1169,6 +1188,14 @@ class edit_mode extends FeaturedMode
 		MouseEditingHomeEnd
 	]
 
+class post_mode extends FeaturedMode
+	@check: test_footline(/^P使用模板，Z选择标签，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
+	name: 'post'
+	features: [
+		PostOptions
+		common.URLRecognizer
+	]
+
 class reply_mode extends FeaturedMode
 	@check: test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
 	name: 'reply'
@@ -1357,6 +1384,7 @@ modes = [
 	board_mode
 	read_mode
 	edit_mode
+	post_mode
 	reply_mode
 	favorite_mode
 	board_list_mode
