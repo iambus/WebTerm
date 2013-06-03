@@ -271,10 +271,7 @@ setup_script_dialog = ->
 		resizeStop: ->
 			editor.resize()
 
-	$('#script-dialog').on 'drop', (e) ->
-		e.originalEvent.stopPropagation()
-		e.originalEvent.preventDefault()
-		data = e.originalEvent.dataTransfer
+	webterm.dnd.drag_data_to '#script-dialog', (data) ->
 		items = _.filter data.items, (item) -> item.kind == 'file'
 		if items.length == 0
 			return

@@ -208,6 +208,8 @@ build_out = ->
 		'webterm/cache.js'
 		'webterm/clipboard.js'
 		'webterm/dialogs.js'
+		'webterm/dnd.js'
+		'webterm/upload.js'
 		'webterm/editors.js'
 		'webterm/eval.js'
 		'webterm/init.js'

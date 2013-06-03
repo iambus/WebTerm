@@ -710,10 +710,18 @@ class Events
 		@on_mouse_gesture_persisted 'right', =>
 			@send_key 'right'
 
+		# drag and drop
+		@dnd_handler = null
+		webterm.dnd.drag_data_to screen.selector, (data) =>
+			@dnd_handler? data # TODO: send event to upper listener when @dnd_handler is null
+
+
+
 	clear: ->
 		@key_mappings = new webterm.keys.KeyListener @key_mappings_persisted
 		@clickables = []
 		@gestures = {}
+		@dnd_handler = null
 
 	on_keyboard: (e) ->
 		@key_mappings.dispatch e
@@ -797,6 +805,10 @@ class Events
 
 	on_mouse_gesture_persisted: (gesture, callback) ->
 		@gestures_persisted[gesture] = callback
+
+
+	on_dnd: (callback) ->
+		@dnd_handler = callback
 
 ##################################################
 # Commands

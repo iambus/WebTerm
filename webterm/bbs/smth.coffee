@@ -679,6 +679,83 @@ class ArticleDownload extends Feature
 # post
 ##################################################
 
+class AttachmentUpload extends Feature
+	scan: (screen) ->
+		if screen.view.text.row(1).trim() == '附件上传地址: (请勿将此链接发送给别人)'
+			url = screen.view.text.row(2).trimRight()
+			if url.match /^http:.*/
+				screen.area.define_area 'bbs-attachment-url',
+					2, 1, 2, url.length
+	render: (screen) ->
+		url = $(screen.selector).find('.bbs-attachment-url').text()
+		m = url.match /^http:\/\/www\.newsmth\.net\/(bbsupload\.php\?|bbseditatt\.php\?bid=\d+&id=\d+&)sid=(\w+)$/
+		if not m
+			# something is wrong!
+			return
+		url = url.replace /sid=\w+$/, 'act=add'
+		sid = m[2]
+		multiple = !! m[1].match /^bbsupload/
+		webterm.status_bar.tip '你可以直接拖拽文件到屏幕上来上传附件'
+		if multiple
+			screen.events.on_dnd (data) ->
+				files = data.files
+				if files.length == 0
+					return
+				form =
+					sid: sid
+					counter: files.length
+				for file, i in files
+					form['attachfile'+i] = file
+				webterm.upload.upload_files
+					url: url
+					form: form
+					success: (data) ->
+						error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]
+						success_message = data.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
+						screen.events.send_key 'u', 'enter'
+						if error_message
+							console.error error_message
+							webterm.status_bar.error error_message
+						else
+							webterm.status_bar.info "附件上传成功 #{success_message}"
+					error: ->
+						console.error 'upload failed', arguments
+						webterm.status_bar.error '上传文件失败'
+		else
+			screen.events.on_dnd (data) ->
+				files = data.files
+				if files.length == 0
+					return
+				index = 0
+				upload = ->
+					if index >= files.length
+						webterm.status_bar.info '所有附件上传完毕'
+						screen.events.send_key 'u', 'enter'
+						return
+					file = files[index++]
+					webterm.status_bar.info "正在上传附件 #{index}/#{files.length}"
+					form =
+						sid: sid
+						attachfile: file
+					webterm.upload.upload_files
+						url: url
+						form: form
+						success: (data) ->
+							error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]?.trim()
+							# TODO: check remaining bytes
+							success_message = data.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
+							if error_message and error_message != '提示：添加附件成功'
+								console.error error_message
+								webterm.status_bar.error error_message
+							else
+								webterm.status_bar.info "附件上传成功 #{success_message}"
+								upload()
+						error: ->
+							console.error 'upload failed', arguments
+							webterm.status_bar.error '上传文件失败'
+				upload()
+
+
 class PostOptions extends Feature
 	scan: (screen) ->
 		map_areas_by_regexp_on_line screen, screen.height,
@@ -1207,6 +1284,7 @@ class post_mode extends FeaturedMode
 	@check: test_footline(/^P使用模板，Z选择标签，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
 	name: 'post'
 	features: [
+		AttachmentUpload
 		PostOptions
 		common.URLRecognizer
 	]
@@ -1215,7 +1293,9 @@ class reply_mode extends FeaturedMode
 	@check: test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
 	name: 'reply'
 	features: [
+		AttachmentUpload
 		ReplyOptions
+		common.URLRecognizer
 	]
 
 class favorite_mode extends FeaturedMode
@@ -1452,6 +1532,8 @@ features = [
 	ArticleUser
 	ArticleBottom
 	ArticleDownload
+	AttachmentUpload
+	PostOptions
 	ReplyOptions
 	FavorateListToolbar
 	BoardListToolbar
