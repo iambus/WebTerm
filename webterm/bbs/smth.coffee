@@ -1161,6 +1161,14 @@ class read_mode extends FeaturedMode
 		ArticleSpoilerWarning
 	]
 
+class edit_mode extends FeaturedMode
+	@check: test_footline(/状态 \[插入\]/)
+	name: 'edit'
+	features: [
+		MousePaging
+		MouseEditingHomeEnd
+	]
+
 class reply_mode extends FeaturedMode
 	@check: test_footline(/^S\/Y\/N\/R\/A 改引言模式，b回复到信箱，T改标题，u传附件, Q放弃, Enter继续:/)
 	name: 'reply'
@@ -1348,6 +1356,7 @@ modes = [
 	user_mode
 	board_mode
 	read_mode
+	edit_mode
 	reply_mode
 	favorite_mode
 	board_list_mode
