@@ -603,10 +603,16 @@ class ArticleBottom extends Feature
 				'主题阅读 ^X或p': "p" # ctrl-x == p?
 		else if line == '[通知模式] [阅读文章] 结束Q,| 上一篇 | 下一篇<空格>, | 同主题^x,p'
 			map_areas_by_words_on_line screen, row,
-				'结束 Q': "q"
+				'结束Q': "q"
 				'上一篇': "up"
-				'下一篇': "whitespace"
-				'主题阅读 ^X或p': "p" # ctrl-x == p?
+				'下一篇<空格>': "whitespace"
+				'同主题^x,p': "p" # ctrl-x == p?
+		else if line == '[十大模式] [阅读文章] 结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ | 同主题 ^X,p'
+			map_areas_by_words_on_line screen, row,
+				'结束 Q,←': "q"
+				'上一篇 ↑': "up"
+				'下一篇 <Space>,↓': "whitespace"
+				'同主题 ^X,p': "p" # ctrl-x == p?
 		else if line == '[阅读精华区资料]  结束 Q,← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓'
 			map_areas_by_words_on_line screen, row,
 				'结束 Q,←': "q"
@@ -1162,7 +1168,7 @@ class board_mode extends FeaturedMode
 	]
 
 class read_mode extends FeaturedMode
-	@check: test_footline(/^(下面还有喔|\[通知模式\] \[阅读文章\]|\[阅读文章\]|\[主题阅读\]|\[阅读精华区资料\])\s/)
+	@check: test_footline(/^(下面还有喔|\[(通知|十大)模式\] \[阅读文章\]|\[阅读文章\]|\[主题阅读\]|\[阅读精华区资料\])\s/)
 	name: 'read'
 	features: [
 		common.CleanSignature
