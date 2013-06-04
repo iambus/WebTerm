@@ -193,6 +193,18 @@ class Options extends Feature
 		map_areas_by_regexp_on_line screen, screen.height,
 			/(8\)本版精华区搜索) (9\)自删文章) (A\)积分变更) \[1\]:/
 			['9 enter' , '9 enter' , 'a enter']
+		line = screen.view.text.foot()
+		if line.substring(0, 18) == '删除文章，确认吗？(Y/N) [N]'
+			y = 'y enter'
+			n = 'n enter'
+			clear = ('backspace' for [0...line.substring(19).trim().length]).join ' '
+			if clear
+				y = clear + ' ' + y
+				n = clear + ' ' + n
+			screen.area.define_area class: 'bbs-clickable', key: y,
+				screen.height, 20, screen.height, 20
+			screen.area.define_area class: 'bbs-clickable', key: n,
+				screen.height, 22, screen.height, 22
 
 ##################################################
 # any key...
@@ -1190,9 +1202,7 @@ class option_input_mode extends FeaturedMode
 		line = screen.view.text.foot().trim()
 		if not line
 			return
-		if line.indexOf(':') == -1
-			return
-		return true
+		return line.indexOf(':') != -1 or line.match /确认.*Y\/N/
 	name: 'option_input'
 	features: [
 		Options
