@@ -522,6 +522,9 @@ class Term
 
 class Painter
 	constructor: (@screen) ->
+	reset_state: ->
+		@screen.reset_state()
+		@
 	clear: ->
 		@screen.data.erase_all()
 		@
@@ -1287,13 +1290,16 @@ class Screen
 	# user interface #
 	##################
 
-	screen_updated: ->
+	reset_state: ->
 		@update_area()
 		@update_view()
 		@events.clear()
 		@commands.clear()
 		@context_menus.clear()
 		@expect.update()
+
+	screen_updated: ->
+		@reset_state()
 		@on_screen_updated?()
 
 	screen_rendered: ->

@@ -52,6 +52,7 @@ new_bbs_tab = (address) ->
 					info.session.connection.reconnect()
 #				info.session.screen.painter.clear().foreground('red').move_to(24, 28).fill_text('连接已断开，按回车键重连。').flush()
 				info.session.screen.painter
+					.reset_state()
 					.scollup()
 					.foreground('red')
 					.move_to(24, 28)
