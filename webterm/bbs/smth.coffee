@@ -456,7 +456,7 @@ class BoardModeSwitch extends common.BBSMenu
 		@render_menu_on_demand screen, ".bbs-menu.bbs-board-mode-switch", menus
 
 
-class BoardUserClick extends Feature
+class BoardArticleUserClick extends Feature
 	scan: (screen) ->
 		header = screen.view.text.row 3
 		i = header.match(/刊\s*登\s*者|发布者|发信者/)?.index
@@ -1293,7 +1293,7 @@ class board_mode extends FeaturedMode
 		TopNotification
 		BoardTopNotification
 		BoardModeSwitch
-		BoardUserClick
+		BoardArticleUserClick
 		BoardBMClick
 		BoardInfoClick
 		BoardJumpListCache
@@ -1414,7 +1414,7 @@ class mail_list_mode extends FeaturedMode
 	name: 'mail_list'
 	features: [
 		RowClick
-		BoardUserClick
+		BoardArticleUserClick
 		BottomUserClick
 	]
 
@@ -1423,7 +1423,7 @@ class mail_replies_mode extends FeaturedMode
 	name: 'mail_replies'
 	features: [
 		RowClick
-		BoardUserClick
+		BoardArticleUserClick
 		RowBoardClick
 		BottomUserClick
 		MousePaging
@@ -1435,7 +1435,7 @@ class mail_at_mode extends FeaturedMode
 	name: 'mail_at'
 	features: [
 		RowClick
-		BoardUserClick
+		BoardArticleUserClick
 		RowBoardClick
 		BottomUserClick
 		MousePaging
@@ -1508,7 +1508,7 @@ class board_user_list_mode extends FeaturedMode
 	name: 'board_user_list'
 	features: [
 		RowClick
-		BoardUserClick
+		BoardArticleUserClick
 		MousePaging
 	]
 
@@ -1599,7 +1599,7 @@ features = [
 	TopNotification
 	BoardTopNotification
 	BoardModeSwitch
-	BoardUserClick
+	BoardArticleUserClick
 	BoardBMClick
 	BoardInfoClick
 	BoardJumpList
