@@ -335,7 +335,7 @@ class RowClick extends Feature
 		current = null
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^-?>\s+(\d+|\[提示\])/.test line
+			if /^(-?>|◆)\s+(\d+|\[提示\])/.test line
 				current = row
 				break
 		if not current?
@@ -343,7 +343,7 @@ class RowClick extends Feature
 			return
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^-?>\s+(\d+|\[提示\])/.test line
+			if /^(-?>|◆)\s+(\d+|\[提示\])/.test line
 				screen.area.define_area class:'bbs-clickable bbs-row-item bbs-row-current-item', key:'enter', 'goto-key': '',
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
@@ -405,6 +405,11 @@ class BoardArticleItemContextMenu extends Feature
 			id: 'bbs-article-info'
 			title: '查看文章信息'
 			onclick: go 'ctrl-q'
+			context: normal_context
+		screen.context_menus.register
+			id: 'bbs-board-user-list'
+			title: '查看驻版用户'
+			onclick: -> screen.events.send_key 'ctrl-k'
 			context: normal_context
 
 class BoardToolbar extends Feature
@@ -1123,6 +1128,17 @@ class ArticleScoreHistoryBottomBar extends Feature
 			'退出 Q,E,←': "q"
 
 ##################################################
+# board user
+##################################################
+
+class BoardUserListToolbar extends Feature
+	scan: (screen) ->
+		map_areas_by_words_on_line screen, 2,
+			'加入驻版[j]': "j"
+			'取消驻版[t]': "t"
+			'其他操作请通过[h]查看帮助': "h"
+
+##################################################
 # user list
 ##################################################
 
@@ -1487,6 +1503,15 @@ class article_score_history_mode extends FeaturedMode
 		ArticleScoreHistoryBottomBar
 	]
 
+class board_user_list_mode extends FeaturedMode
+	@check: test_headline(/^\[驻版用户列表\]/)
+	name: 'board_user_list'
+	features: [
+		RowClick
+		BoardUserClick
+		MousePaging
+	]
+
 class user_list_mode extends FeaturedMode
 	@check: test_headline(/^\[使用者列表\]/)
 	name: 'user_list'
@@ -1548,6 +1573,7 @@ modes = [
 	board_info_mode
 	article_info_mode
 	article_score_history_mode
+	board_user_list_mode
 	user_list_mode
 	talk_menu_mode
 	logout_mode
@@ -1600,6 +1626,7 @@ features = [
 	BoardInfoBottomBar
 	ArticleInfoBottomBar
 	ArticleScoreHistoryBottomBar
+	BoardUserListToolbar
 	UserListToolbar
 	LogoutMenu
 	BoardSpoilerWarning
