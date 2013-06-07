@@ -1593,6 +1593,7 @@ features = [
 	Top10
 	XToolBar
 	XBottomBar
+	VoteListToolbar
 	MailMenuToolbar
 	RowBoardClick
 	UserBottomBar
