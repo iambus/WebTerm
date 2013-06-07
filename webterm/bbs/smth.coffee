@@ -549,7 +549,7 @@ class CleanAd extends Feature
 	@patterns: [
 		/※\s发自:\s*.*水木/
 		/发自.*水木.*版/
-		'http://itunes.apple.com/us/app/ucsmth/id543183096?mt=8'
+		/ucsmth\/id543183096/
 	]
 	scan: (screen) ->
 		for row in [1...screen.height]
