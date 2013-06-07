@@ -1035,6 +1035,16 @@ class VoteListToolbar extends Feature
 			'↑': "up"
 			'↓': "down"
 
+class VoteOpenOption extends Feature
+	scan: (screen) ->
+		map_areas_by_words_on_line screen, 3,
+			'(0)取消': "backspace 0 enter"
+			'(1)是非': "backspace 1 enter"
+			'(2)单选': "backspace 2 enter"
+			'(3)复选': "backspace 3 enter"
+			'(4)数值': "backspace 4 enter"
+			'(5)问答': "backspace 5 enter"
+
 ##################################################
 # user
 ##################################################
@@ -1425,6 +1435,13 @@ class vote_list_mode extends FeaturedMode
 		MousePaging
 	]
 
+class vote_open_options_mode extends FeaturedMode
+	@check: test_headline /^开启投票箱/
+	name: 'vote_open_options'
+	features: [
+		VoteOpenOption
+	]
+
 class info_menu_mode extends FeaturedMode
 	@check: test_headline(/^工具箱选单\s/)
 	name: 'system'
@@ -1525,6 +1542,7 @@ modes = [
 	mail_replies_mode
 	mail_at_mode
 	vote_list_mode
+	vote_open_options_mode
 	info_menu_mode
 	system_menu_mode
 	board_info_mode
