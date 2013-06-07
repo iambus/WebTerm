@@ -1021,6 +1021,21 @@ class RowBoardClick extends Feature
 
 
 ##################################################
+# vote
+##################################################
+
+class VoteListToolbar extends Feature
+	scan: (screen) ->
+		map_areas_by_words_on_line screen, 2,
+			'离开[←,e]': "e"
+			'求助[h]': "h"
+			'进行投票[→,r <cr>]': "r"
+			'上': "up"
+			'下': "down"
+			'↑': "up"
+			'↓': "down"
+
+##################################################
 # user
 ##################################################
 
@@ -1401,6 +1416,15 @@ class mail_at_mode extends FeaturedMode
 		BoardSpoilerWarning
 	]
 
+class vote_list_mode extends FeaturedMode
+	@check: test_headline /^\[投票箱列表\]/
+	name: 'vote_list'
+	features: [
+		RowClick
+		VoteListToolbar
+		MousePaging
+	]
+
 class info_menu_mode extends FeaturedMode
 	@check: test_headline(/^工具箱选单\s/)
 	name: 'system'
@@ -1500,6 +1524,7 @@ modes = [
 	mail_list_mode
 	mail_replies_mode
 	mail_at_mode
+	vote_list_mode
 	info_menu_mode
 	system_menu_mode
 	board_info_mode
