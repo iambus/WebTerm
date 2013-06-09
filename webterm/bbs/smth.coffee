@@ -726,6 +726,7 @@ class AttachmentUpload extends Feature
 				webterm.upload.upload_files
 					url: url
 					form: form
+					encoding: 'gbk'
 					success: (data) ->
 						error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]
 						success_message = data.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
@@ -757,6 +758,7 @@ class AttachmentUpload extends Feature
 					webterm.upload.upload_files
 						url: url
 						form: form
+						encoding: 'gbk'
 						success: (data) ->
 							error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]?.trim()
 							# TODO: check remaining bytes
