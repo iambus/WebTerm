@@ -913,8 +913,8 @@ class ContextMenus
 
 	create_jquery_context_menu: (context) ->
 		items = {}
-		group1 = @create_jquery_menu_items context, @persisted
-		group2 = @create_jquery_menu_items context, @menus
+		group1 = @create_jquery_menu_items context, @menus
+		group2 = @create_jquery_menu_items context, @persisted
 		for menu in group1
 			items[menu.id] = menu
 		if group1.length > 0 and group2.length > 0

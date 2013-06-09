@@ -1310,12 +1310,12 @@ class read_mode extends FeaturedMode
 	features: [
 		common.CleanSignature
 		CleanAd
-		ArticleContextMenu
-		ArticleUser
-		ArticleBottom
 		common.URLRecognizer
 		common.ImagePreview
 		common.IPResolve
+		ArticleContextMenu
+		ArticleUser
+		ArticleBottom
 		ArticleDownload
 		ClickWhitespace
 		MousePaging
