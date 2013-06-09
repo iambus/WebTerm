@@ -1418,6 +1418,7 @@ class mail_list_mode extends FeaturedMode
 		RowClick
 		BoardArticleUserClick
 		BottomUserClick
+		MousePaging
 	]
 
 class mail_replies_mode extends FeaturedMode
