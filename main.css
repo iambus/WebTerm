@@ -105,6 +105,9 @@ body {
     margin-right: 4px;
     vertical-align: middle;
 }
+li.user_defined a {
+    color: green;
+}
 
 /* connect dialog */
 

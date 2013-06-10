@@ -40,9 +40,16 @@ connect = (n) ->
 		console.error "address book overflow: #{n}"
 
 add = (address) ->
+	address.user_defined = true
 	get_user_defined().push address
 	sync()
 	get_user_defined().length
+
+remove = (id) ->
+	if 0 <= id < get_user_defined().length
+		get_user_defined().splice(id, 1)
+		sync()
+		id
 
 webterm.address_book =
 	get_list: get_list
@@ -51,3 +58,4 @@ webterm.address_book =
 	lookup_host: lookup_host
 	connect: connect
 	add: add
+	remove: remove

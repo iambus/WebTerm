@@ -14,13 +14,14 @@ resize = ->
 setup_address_book = ->
 	$('#quick-connect').empty()
 	$('#connect-book').empty()
-	for {name, host, port, protocol, module, icon}, i in webterm.address_book.get_list()
+	for {name, host, port, protocol, module, icon, user_defined}, i in webterm.address_book.get_list()
+		css = if user_defined then 'user_defined' else ''
 		if icon
-			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
-			$('#connect-book').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
+			li = "<li connect='#{i}' class='#{css}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
 		else
-			$('#quick-connect').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
-			$('#connect-book').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
+			li = "<li connect='#{i}' class='#{css}'><a href='#'>#{name}</a></li>"
+		$('#quick-connect').append li
+		$('#connect-book').append li
 
 update_address_book = ->
 	setup_address_book()
@@ -131,7 +132,7 @@ setup_connect_dialog = ->
 	menu_hide = -> $('#connect-book').hide()
 	$('#connect-icon').hover menu_show, menu_hide
 
-	switch_address 0
+	switch_address 0 # init dialog to address #0
 
 	$("#connect-add-name").dialog
 		autoOpen: false
@@ -159,6 +160,25 @@ setup_connect_dialog = ->
 				$('#connect-host').focus()
 		]
 
+		$.contextMenu
+			selector: '#connect-host'
+			build: ($trigger, e) ->
+				menu =
+					callback: ->
+						index = $('#connect-host').attr('connect') ? 0
+						removed = webterm.address_book.remove index
+						if removed?
+							update_address_book()
+							webterm.status_bar.info '删除地址成功'
+							switch_address index
+						else
+							webterm.status_bar.info '不能删除此地址（此地址可能为内置地址）'
+					items: [
+						id: 'delete'
+						name: '删除此地址'
+						icon: 'delete'
+					]
+				return menu
 
 setup_settings_dialog = ->
 	$('#settings').click ->
