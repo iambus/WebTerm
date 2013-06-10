@@ -1455,6 +1455,17 @@ class mail_at_mode extends FeaturedMode
 		BoardSpoilerWarning
 	]
 
+class timeline_mode extends FeaturedMode
+	@check: test_headline(/^\[驻版阅读模式\]\s/)
+	name: 'timeline'
+	features: [
+		RowClick
+		BoardArticleUserClick
+		BottomUserClick
+		MousePaging
+		BoardSpoilerWarning
+	]
+
 class vote_list_mode extends FeaturedMode
 	@check: test_headline /^\[投票箱列表\]/
 	name: 'vote_list'
@@ -1579,6 +1590,7 @@ modes = [
 	mail_list_mode
 	mail_replies_mode
 	mail_at_mode
+	timeline_mode
 	vote_list_mode
 	vote_open_options_mode
 	info_menu_mode
