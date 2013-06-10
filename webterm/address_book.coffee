@@ -21,8 +21,16 @@ lookup_host = (host) ->
 	return
 
 
+connect = (n) ->
+	address = nth n
+	if address?
+		webterm.new_bbs_tab address
+	else
+		console.error "address book overflow: #{n}"
+
 webterm.address_book =
 	get_list: get_list
 	nth: nth
 	size: size
 	lookup_host: lookup_host
+	connect: connect
