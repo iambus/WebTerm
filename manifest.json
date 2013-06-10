@@ -5,6 +5,7 @@
 	"description": "A term",
 	"version": "0.0.1",
 
+	"icons": { "128": "lib/webterm.png" },
 	"app": {
 		"background": {
 			"scripts": ["launch.js"]
