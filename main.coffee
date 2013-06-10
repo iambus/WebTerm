@@ -325,7 +325,8 @@ setup = ->
 	webterm.keys.on 'f8', -> $('#settings-dialog').dialog 'open'
 	webterm.keys.on 'f12', webterm.windows.toggle_full_screen
 
-	webterm.test.new_tab() # for testing
+#	webterm.test.new_tab() # for testing
+	$("#connect-dialog").dialog 'open'
 	webterm.keys.on 'ctrl-n', webterm.test.new_tab # for testing
 	webterm.keys.on 'ctrl-shift-s', webterm.test.save_current_screen # for testing
 	webterm.keys.on 'ctrl-shift-l', webterm.test.load # for testing
