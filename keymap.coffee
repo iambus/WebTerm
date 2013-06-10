@@ -116,7 +116,7 @@ key_to_ascii_table =
 	space: ' '
 	whitespace: ' '
 	backspace: '\x08'
-	delete: '\x7f'
+	delete: '\x1b[3~'
 #	enter: '\r\n'
 	enter: '\r'
 	tab: '\t'
