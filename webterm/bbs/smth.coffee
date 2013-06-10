@@ -359,7 +359,7 @@ class RowClick extends Feature
 				screen.area.define_area class:'bbs-clickable bbs-row-item', key: key, 'goto-key': goto,
 					row, 1, row, view.width
 
-class BoardArticleItemContextMenu extends Feature
+class BoardContextMenu extends Feature
 	scan: (screen) ->
 		normal_context = (context) ->
 			$(context.target).closest('.bbs-row-item').length > 0
@@ -836,6 +836,14 @@ class FavorateListToolbar extends Feature
 ##################################################
 
 
+class BoardListContextMenu extends Feature
+	scan: (screen) ->
+		screen.context_menus.register
+			id: 'bbs-ctrl-k'
+			title: '查看驻版文章'
+			onclick: ->
+				screen.events.send_key 'ctrl-k'
+
 class BoardListToolbar extends Feature
 	scan: (screen) ->
 		row = 2
@@ -1290,7 +1298,7 @@ class board_mode extends FeaturedMode
 	name: 'board'
 	features: [
 		RowClick
-		BoardArticleItemContextMenu
+		BoardContextMenu
 		BoardToolbar
 		TopNotification
 		BoardTopNotification
@@ -1356,6 +1364,7 @@ class favorite_mode extends FeaturedMode
 	name: 'favorite'
 	features: [
 		RowClick
+		BoardListContextMenu
 		FavorateListToolbar
 		TopNotification
 		GotoDefaultBoard
@@ -1369,6 +1378,7 @@ class board_list_mode extends FeaturedMode
 	name: 'board_list'
 	features: [
 		RowClick
+		BoardListContextMenu
 		BoardListToolbar
 		GotoDefaultBoard
 		BoardJumpListRender
@@ -1597,7 +1607,7 @@ features = [
 	MenuClick
 	GotoDefaultBoard
 	RowClick
-	BoardArticleItemContextMenu
+	BoardContextMenu
 	BoardToolbar
 	TopNotification
 	BoardTopNotification
@@ -1618,6 +1628,7 @@ features = [
 	PostOptions
 	ReplyOptions
 	FavorateListToolbar
+	BoardListContextMenu
 	BoardListToolbar
 	Top10
 	XToolBar
