@@ -151,6 +151,12 @@ setup_connect_dialog = ->
 		else if k == 'enter'
 			$('#connect-ok').click()
 
+	$('#connect-host').on 'input', (e) ->
+		host = $(@).val()
+		address = webterm.address_book.lookup_host host
+		$('#connect-dialog').dialog "option", "title", "连接到#{address?.name ? ''}"
+		$('#connect-icon > img').attr 'src', address?.icon ? 'lib/webterm.png'
+
 	$('#connect-book').menu
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
