@@ -12,6 +12,8 @@ resize = ->
 
 
 setup_address_book = ->
+	$('#quick-connect').empty()
+	$('#connect-book').empty()
 	for {name, host, port, protocol, module, icon}, i in webterm.address_book.get_list()
 		if icon
 			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
@@ -20,8 +22,12 @@ setup_address_book = ->
 			$('#quick-connect').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
 			$('#connect-book').append "<li connect='#{i}'><a href='#'>#{name}</a></li>"
 
+update_address_book = ->
+	setup_address_book()
+	$('#quick-connect').menu 'refresh'
+	$('#connect-book').menu 'refresh'
+
 setup_quick_connect = ->
-	$('#quick-connect').append "<li connect='test'><a href='#'>空白测试页面</a></li>"
 	$('#quick-connect').menu
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
@@ -44,6 +50,25 @@ setup_connect_dialog = ->
 		modal: true
 		resizable: false
 		buttons: [
+			id: 'connect-add'
+			text: '添加此地址'
+			click: ->
+				$('#connect-add-name').dialog 'open'
+				name = $('#connect-dialog').dialog('option', 'title').match('^连接到(.+)$')?[1]
+				if name
+					$('#connect-add-name input').val name
+					$('#connect-add-name input').select()
+		,
+#			id: 'connect-manage'
+#			text: '管理'
+#			click: ->
+#				$(@).dialog 'close'
+#		,
+			id: 'connect-cancel'
+			text: '取消'
+			click: ->
+				$(@).dialog 'close'
+		,
 			id: 'connect-ok'
 			text: '连接'
 			click: ->
@@ -52,12 +77,7 @@ setup_connect_dialog = ->
 					name: $('#connect-dialog').dialog('option', 'title').match('^连接到(.+)$')?[1] ? $('#connect-host').val()
 					host: $('#connect-host').val()
 					port: parseInt $('#connect-port').val()
-					module: webterm.bbs[$('#connect-type').val().toLowerCase()]
-				$(@).dialog 'close'
-		,
-			id: 'connect-cancel'
-			text: '取消'
-			click: ->
+					module: $('#connect-type').val().toLowerCase()
 				$(@).dialog 'close'
 		]
 		open: ->
@@ -105,12 +125,40 @@ setup_connect_dialog = ->
 			address_index = parseInt selected
 			address = webterm.address_book.nth address_index
 			apply_addres address
+			$('#connect-host').attr 'connect', address_index
 			$('#connect-book').hide()
 	menu_show = -> $('#connect-book').show()
 	menu_hide = -> $('#connect-book').hide()
 	$('#connect-icon').hover menu_show, menu_hide
 
 	switch_address 0
+
+	$("#connect-add-name").dialog
+		autoOpen: false
+		height: 120
+		modal: true
+		buttons: [
+			text: '添加'
+			click: ->
+				new_index = webterm.address_book.add
+					icon: $('#connect-icon > img').attr 'src'
+					name: $(@).find('input').val()
+					host: $('#connect-host').val()
+					port: parseInt $('#connect-port').val()
+					module: $('#connect-type').val().toLowerCase()
+				update_address_book()
+				old_index = parseInt $('#connect-host').attr('connect') ? 0
+				if new_index <= old_index
+					$('#connect-host').attr 'connect', old_index + 1
+				$(@).dialog 'close'
+				$('#connect-host').focus()
+		,
+			text: '取消'
+			click: ->
+				$(@).dialog 'close'
+				$('#connect-host').focus()
+		]
+
 
 setup_settings_dialog = ->
 	$('#settings').click ->

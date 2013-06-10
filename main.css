@@ -146,9 +146,25 @@ body {
     outline: none;
     border-style: none;
 }
+div[aria-describedby="connect-dialog"] .ui-dialog-buttonpane .ui-dialog-buttonset {
+    float: none;
+}
+div[aria-describedby="connect-dialog"] .ui-dialog-buttonpane .ui-dialog-buttonset #connect-add {
+    text-align: left;
+}
+div[aria-describedby="connect-dialog"] .ui-dialog-buttonpane .ui-dialog-buttonset #connect-manage {
+    text-align: left;
+}
+div[aria-describedby="connect-dialog"] .ui-dialog-buttonpane .ui-dialog-buttonset #connect-ok {
+    float: right;
+}
+div[aria-describedby="connect-dialog"] .ui-dialog-buttonpane .ui-dialog-buttonset #connect-cancel {
+    float: right;
+}
 #connect-book {
     display: none;
     position: fixed;
+    z-index: 1;
 }
 #connect-book li img {
     width: 16px;

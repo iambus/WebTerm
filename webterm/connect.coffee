@@ -3,6 +3,13 @@ connect = (selector, host, port, mode, on_connected) ->
 	connection = new telnet.Connection host, port
 	screen = new webterm.Screen selector
 	screen.name = host
+
+	if mode == 'smth'
+		mode = webterm.bbs.smth
+	else if mode == 'lily'
+		mode = webterm.bbs.lily
+	else if mode == 'firebird'
+		mode = webterm.bbs.firebird
 	mode?(screen)
 
 	connection.on_connected = on_connected
