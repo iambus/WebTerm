@@ -132,6 +132,7 @@ setup_connect_dialog = ->
 			when webterm.bbs.smth then 'SMTH'
 			when webterm.bbs.lily then 'LILY'
 			when webterm.bbs.firebird then 'Firebird'
+		$('#connect-dialog').dialog "option", "title", "连接到#{address.name}"
 
 	switch_address = (n) ->
 		current = parseInt $('#connect-host').attr('connect') ? 0
@@ -160,6 +161,8 @@ setup_connect_dialog = ->
 	menu_show = -> $('#connect-book').show()
 	menu_hide = -> $('#connect-book').hide()
 	$('#connect-icon').hover menu_show, menu_hide
+
+	switch_address 0
 
 setup_settings_dialog = ->
 	$('#settings').click ->
