@@ -225,6 +225,7 @@ build_out = ->
 		'webterm/notifications.js'
 		'webterm/ip.js'
 		'webterm/alert.js'
+		'webterm/address_book.js'
 
 		'lib/byr.ico'
 		'lib/fudan.ico'

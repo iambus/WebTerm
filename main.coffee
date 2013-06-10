@@ -69,7 +69,7 @@ new_bbs_tab = (address) ->
 			info.session.connection.disconnect()
 
 setup_address_book = ->
-	for {name, host, port, protocol, module, icon}, i in webterm.bbs.list
+	for {name, host, port, protocol, module, icon}, i in webterm.address_book.get_list()
 		if icon
 			$('#quick-connect').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
 			$('#connect-book').append "<li connect='#{i}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
@@ -86,7 +86,7 @@ setup_quick_connect = ->
 				webterm.test.new_tab()
 			else
 				address_index = parseInt selected
-				address = webterm.bbs.list[address_index]
+				address = webterm.address_book.nth address_index
 				new_bbs_tab address
 				$('#quick-connect').hide()
 	menu_show = -> $('#quick-connect').show()
@@ -135,8 +135,8 @@ setup_connect_dialog = ->
 
 	switch_address = (n) ->
 		current = parseInt $('#connect-host').attr('connect') ? 0
-		selected = (current + n + webterm.bbs.list.length) % webterm.bbs.list.length
-		apply_addres webterm.bbs.list[selected]
+		selected = (current + n + webterm.address_book.size()) % webterm.address_book.size()
+		apply_addres webterm.address_book.nth selected
 		$('#connect-host').attr 'connect', selected
 
 	$('#connect-host').keydown (e) ->
@@ -154,7 +154,7 @@ setup_connect_dialog = ->
 		select: (event, ui) ->
 			selected = ui.item.attr('connect')
 			address_index = parseInt selected
-			address = webterm.bbs.list[address_index]
+			address = webterm.address_book.nth address_index
 			apply_addres address
 			$('#connect-book').hide()
 	menu_show = -> $('#connect-book').show()
