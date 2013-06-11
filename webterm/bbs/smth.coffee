@@ -359,6 +359,58 @@ class RowClick extends Feature
 				screen.area.define_area class:'bbs-clickable bbs-row-item', key: key, 'goto-key': goto,
 					row, 1, row, view.width
 
+class RowFieldClick extends Feature
+	scan_column: (screen, header_regexp, max_width, current_key, other_key) ->
+		header = screen.view.text.row 3
+		i = header.match(header_regexp)?.index
+		if not i?
+			# something is wrong...
+			return
+		left = wcwidth(header.substring(0, i)) + 1
+		top = 4
+		bottom = screen.height - 1
+		current = null
+		for row in [top..bottom]
+			line = screen.view.text.row(row)
+			if /^-?>/.test line
+				current = row
+				break
+		if not current?
+			# something is wrong
+			return
+		for row in [top..bottom]
+			line = screen.view.text.row(row)
+			if not /^(-?>|◆)?\s+(\d+|\[提示\])/.test line
+				continue
+			box = screen.view.text.row_range row, left, left + max_width
+			i = box.indexOf ' '
+			if i == 0
+				continue
+			if i < 0
+				right = left + max_width
+			else
+				right = left + i - 1
+			field = $.trim(box)
+			offset = row - current
+			if offset == 0
+				key = current_key
+			else
+				key = other_key field, offset
+			if _.isString key
+				attrs = class: 'bbs-clickable bbs-inner-clickable', key: key
+			else if key?
+				attrs = key
+			else
+				continue
+			screen.area.define_area attrs, row, left, row, right
+
+class ArticleRowUserClick extends RowFieldClick
+	scan: (screen) ->
+		@scan_column screen, /刊\s*登\s*者|发布者|发信者/, 12,
+			'ctrl-a'
+			(field) -> "u [#{field}] enter"
+
+
 class BoardContextMenu extends Feature
 	scan: (screen) ->
 		normal_context = (context) ->
@@ -454,32 +506,6 @@ class BoardModeSwitch extends common.BBSMenu
 						 ['积分变更', 'a']]
 		menus = (text: menu[0], class: 'bbs-clickable', key: "ctrl-g #{menu[1]} enter" for menu in menus)
 		@render_menu_on_demand screen, ".bbs-menu.bbs-board-mode-switch", menus
-
-
-class BoardArticleUserClick extends Feature
-	scan: (screen) ->
-		header = screen.view.text.row 3
-		i = header.match(/刊\s*登\s*者|发布者|发信者/)?.index
-		if not i?
-			# something is wrong...
-			return
-		left = wcwidth(header.substring(0, i)) + 1
-		for row in [4..screen.height-1]
-			box = screen.view.text.row_range row, left, left + 12
-			i = box.indexOf ' '
-			if i == 0
-				continue
-			if i < 0
-				right = left + 12
-			else
-				right = left + i - 1
-			user = $.trim(box)
-			if screen.view.text.at(row, 1) == '>'
-				key = 'ctrl+a'
-			else
-				key = "u [#{user}] enter"
-			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
-				row, left, row, right
 
 class BoardBMClick extends Feature
 	scan: (screen) ->
@@ -994,50 +1020,25 @@ class MailMenuToolbar extends Feature
 				'改名[T]': "T"
 				'删除[d]': "d"
 
-class RowBoardClick extends Feature
+class RepliesRowBoardClick extends RowFieldClick
 	scan: (screen) ->
-		header = screen.view.text.row 3
-		i = header.match(/讨论区名称/)?.index
-		if not i?
-			# something is wrong...
-			return
-		left = wcwidth(header.substring(0, i)) + 1
-		top = 4
-		bottom = screen.height - 1
-		current = null
-		for row in [top..bottom]
-			line = screen.view.text.row(row)
-			if /^-?>/.test line
-				current = row
-				break
-		if not current?
-			# something is wrong
-			return
-		for row in [top..bottom]
-			line = screen.view.text.row(row)
-			box = screen.view.text.row_range row, left, left + 12
-			i = box.indexOf ' '
-			if i == 0
-				continue
-			if i < 0
-				right = left + 12
-			else
-				right = left + i - 1
-			board = $.trim(box)
-			if /^(-?>\s*|\s+)\d+/.test line
-				if current < row
-					key = ('down' for [1..row-current]).join(' ') + ' s'
-				else if current > row
-					key = ('up' for [1..current-row]).join(' ') + ' s'
-				else
-					key = 's'
-				screen.area.define_area class: 'bbs-clickable bbs-inner-clickable', key: key,
-					row, left, row, right
-
+		@scan_column screen, /讨论区名称/, 12,
+			's'
+			(field, offset) ->
+				if offset > 0
+					('down' for [1..offset]).join(' ') + ' s'
+				else if offset < 0
+					('up' for [1..-offset]).join(' ') + ' s'
 
 ##################################################
 # timeline
 ##################################################
+
+class TimelineRowBoardClick extends RowFieldClick
+	scan: (screen) ->
+		@scan_column screen, /讨论区名称/, 12,
+			'ctrl-s'
+			(field) -> "s [#{field}] enter"
 
 class TimelineToolbar extends Feature
 	scan: (screen) ->
@@ -1324,7 +1325,7 @@ class board_mode extends FeaturedMode
 		TopNotification
 		BoardTopNotification
 		BoardModeSwitch
-		BoardArticleUserClick
+		ArticleRowUserClick
 		BoardBMClick
 		BoardInfoClick
 		BoardJumpListCache
@@ -1447,7 +1448,7 @@ class mail_list_mode extends FeaturedMode
 	name: 'mail_list'
 	features: [
 		RowClick
-		BoardArticleUserClick
+		ArticleRowUserClick
 		BottomUserClick
 		MousePaging
 	]
@@ -1457,8 +1458,8 @@ class mail_replies_mode extends FeaturedMode
 	name: 'mail_replies'
 	features: [
 		RowClick
-		BoardArticleUserClick
-		RowBoardClick
+		ArticleRowUserClick
+		RepliesRowBoardClick
 		BottomUserClick
 		MousePaging
 		BoardSpoilerWarning
@@ -1469,8 +1470,8 @@ class mail_at_mode extends FeaturedMode
 	name: 'mail_at'
 	features: [
 		RowClick
-		BoardArticleUserClick
-		RowBoardClick
+		ArticleRowUserClick
+		RepliesRowBoardClick
 		BottomUserClick
 		MousePaging
 		BoardSpoilerWarning
@@ -1481,7 +1482,8 @@ class timeline_mode extends FeaturedMode
 	name: 'timeline'
 	features: [
 		RowClick
-		BoardArticleUserClick
+		ArticleRowUserClick
+		TimelineRowBoardClick
 		TimelineToolbar
 		BottomUserClick
 		MousePaging
@@ -1554,7 +1556,7 @@ class board_user_list_mode extends FeaturedMode
 	name: 'board_user_list'
 	features: [
 		RowClick
-		BoardArticleUserClick
+		ArticleRowUserClick
 		MousePaging
 	]
 
@@ -1641,12 +1643,13 @@ features = [
 	MenuClick
 	GotoDefaultBoard
 	RowClick
+	RowFieldClick
 	BoardContextMenu
 	BoardToolbar
 	TopNotification
 	BoardTopNotification
 	BoardModeSwitch
-	BoardArticleUserClick
+	ArticleRowUserClick
 	BoardBMClick
 	BoardInfoClick
 	BoardJumpList
@@ -1669,7 +1672,8 @@ features = [
 	XBottomBar
 	VoteListToolbar
 	MailMenuToolbar
-	RowBoardClick
+	RepliesRowBoardClick
+	TimelineRowBoardClick
 	TimelineToolbar
 	UserBottomBar
 	BoardInfoBottomBar
