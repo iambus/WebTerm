@@ -1030,6 +1030,25 @@ class RepliesRowBoardClick extends RowFieldClick
 				else if offset < 0
 					('up' for [1..-offset]).join(' ') + ' s'
 
+class RepliesToolbar extends Feature
+	scan: (screen) ->
+		row = 2
+		toolbar = screen.view.text.row(row).trim()
+		if toolbar == '''离开[←,e] 选择[↑,↓] 阅读[→,r] 版面[s] 删除[d] 标题[?,/] 作者[a,A] 寻版[',"]'''
+			map_areas_by_words_on_line screen, row,
+				'离开[←,e]': "e"
+				'↑': "up"
+				'↓': "down"
+				'阅读[→,r]': "r"
+				'版面[s]': "s"
+				'删除[d]': "d"
+				'?': class: 'bbs-clickable', key: '?', title: '向上搜索标题'
+				'/': class: 'bbs-clickable', key: '/', title: '向下搜索标题'
+				'a': class: 'bbs-clickable', key: 'a', title: '向下搜索作者'
+				'A': class: 'bbs-clickable', key: 'A', title: '向上搜索作者'
+				"'": class: 'bbs-clickable', key: "'", title: '向下寻版'
+				'"': class: 'bbs-clickable', key: '"', title: '向上寻版'
+
 ##################################################
 # timeline
 ##################################################
@@ -1460,6 +1479,7 @@ class mail_replies_mode extends FeaturedMode
 		RowClick
 		ArticleRowUserClick
 		RepliesRowBoardClick
+		RepliesToolbar
 		BottomUserClick
 		MousePaging
 		BoardSpoilerWarning
@@ -1472,6 +1492,7 @@ class mail_at_mode extends FeaturedMode
 		RowClick
 		ArticleRowUserClick
 		RepliesRowBoardClick
+		RepliesToolbar
 		BottomUserClick
 		MousePaging
 		BoardSpoilerWarning
@@ -1673,6 +1694,7 @@ features = [
 	VoteListToolbar
 	MailMenuToolbar
 	RepliesRowBoardClick
+	RepliesToolbar
 	TimelineRowBoardClick
 	TimelineToolbar
 	UserBottomBar
