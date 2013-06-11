@@ -1423,6 +1423,7 @@ class board_list_mode extends FeaturedMode
 		RowClick
 		BoardListContextMenu
 		BoardListToolbar
+		TopNotification
 		GotoDefaultBoard
 		BoardJumpListRender
 		BottomUserClick
