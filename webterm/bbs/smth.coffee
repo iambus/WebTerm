@@ -172,11 +172,13 @@ class TopNotification extends Feature
 				'[您有信件]': 'v'
 				'[您有@提醒]': 'm enter k enter'
 				'[您有回复提醒]': 'm enter l enter'
+				'[您有Like提醒]': 'm enter b enter'
 		else
 			map_areas_by_words_on_line screen, 1,
 				'[您有信件]': 'v'
 				'[您有@提醒]': 'left left left left m enter k enter'
 				'[您有回复提醒]': 'left left left left m enter l enter'
+				'[您有Like提醒]': 'left left left left m enter b enter'
 
 ##################################################
 # input options
@@ -1498,6 +1500,19 @@ class mail_at_mode extends FeaturedMode
 		BoardSpoilerWarning
 	]
 
+class mail_like_mode extends FeaturedMode
+	@check: test_headline(/^\[Like我的文章\]\s/)
+	name: 'mail_like'
+	features: [
+		RowClick
+		ArticleRowUserClick
+		RepliesRowBoardClick
+		RepliesToolbar
+		BottomUserClick
+		MousePaging
+		BoardSpoilerWarning
+	]
+
 class timeline_mode extends FeaturedMode
 	@check: test_headline(/^\[驻版阅读模式\]\s/)
 	name: 'timeline'
@@ -1635,6 +1650,7 @@ modes = [
 	mail_list_mode
 	mail_replies_mode
 	mail_at_mode
+	mail_like_mode
 	timeline_mode
 	vote_list_mode
 	vote_open_options_mode
