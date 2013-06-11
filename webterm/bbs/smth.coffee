@@ -362,13 +362,16 @@ class RowClick extends Feature
 					row, 1, row, view.width
 
 class RowFieldClick extends Feature
-	scan_column: (screen, header_regexp, max_width, current_key, other_key) ->
+	scan_column: (screen, header_regexp, field_regexp, max_width, current_key, other_key) ->
 		header = screen.view.text.row 3
 		i = header.match(header_regexp)?.index
 		if not i?
 			# something is wrong...
 			return
 		left = wcwidth(header.substring(0, i)) + 1
+		right_boundary = left + max_width
+		if right_boundary > screen.width
+			right_boundary = screen.width
 		top = 4
 		bottom = screen.height - 1
 		current = null
@@ -384,7 +387,7 @@ class RowFieldClick extends Feature
 			line = screen.view.text.row(row)
 			if not /^(-?>|◆)?\s+(\d+|\[提示\])/.test line
 				continue
-			box = screen.view.text.row_range row, left, left + max_width
+			box = screen.view.text.row_range row, left, right_boundary
 			i = box.indexOf ' '
 			if i == 0
 				continue
@@ -393,11 +396,15 @@ class RowFieldClick extends Feature
 			else
 				right = left + i - 1
 			field = $.trim(box)
+			if field_regexp and not field_regexp.test field
+				continue
 			offset = row - current
 			if offset == 0
 				key = current_key
 			else
-				key = other_key field, offset
+				key = other_key
+			if _.isFunction key
+				key = key field, offset
 			if _.isString key
 				attrs = class: 'bbs-clickable bbs-inner-clickable', key: key
 			else if key?
@@ -408,7 +415,7 @@ class RowFieldClick extends Feature
 
 class ArticleRowUserClick extends RowFieldClick
 	scan: (screen) ->
-		@scan_column screen, /刊\s*登\s*者|发布者|发信者/, 12,
+		@scan_column screen, /刊\s*登\s*者|发布者|发信者/, /^\w+$/, 12,
 			'ctrl-a'
 			(field) -> "u [#{field}] enter"
 
@@ -843,6 +850,12 @@ class ReplyOptions extends Feature
 # favorite
 ##################################################
 
+class BoardRowManagerClick extends RowFieldClick
+	scan: (screen) ->
+		@scan_column screen, /版  主/, /^\w+$/, 12,
+			(field) -> "u [#{field}] enter"
+			(field) -> "u [#{field}] enter"
+
 class FavorateListToolbar extends Feature
 	scan: (screen) ->
 		row = 2
@@ -1024,7 +1037,7 @@ class MailMenuToolbar extends Feature
 
 class RepliesRowBoardClick extends RowFieldClick
 	scan: (screen) ->
-		@scan_column screen, /讨论区名称/, 12,
+		@scan_column screen, /讨论区名称/, /^\w+$/, 12,
 			's'
 			(field, offset) ->
 				if offset > 0
@@ -1057,7 +1070,7 @@ class RepliesToolbar extends Feature
 
 class TimelineRowBoardClick extends RowFieldClick
 	scan: (screen) ->
-		@scan_column screen, /讨论区名称/, 12,
+		@scan_column screen, /讨论区名称/, /^\w+$/, 12,
 			'ctrl-s'
 			(field) -> "s [#{field}] enter"
 
@@ -1407,6 +1420,7 @@ class favorite_mode extends FeaturedMode
 	name: 'favorite'
 	features: [
 		RowClick
+		BoardRowManagerClick
 		BoardListContextMenu
 		FavorateListToolbar
 		TopNotification
@@ -1421,6 +1435,7 @@ class board_list_mode extends FeaturedMode
 	name: 'board_list'
 	features: [
 		RowClick
+		BoardRowManagerClick
 		BoardListContextMenu
 		BoardListToolbar
 		TopNotification
@@ -1702,6 +1717,7 @@ features = [
 	AttachmentUpload
 	PostOptions
 	ReplyOptions
+	BoardRowManagerClick
 	FavorateListToolbar
 	BoardListContextMenu
 	BoardListToolbar
