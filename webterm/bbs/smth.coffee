@@ -1036,6 +1036,27 @@ class RowBoardClick extends Feature
 
 
 ##################################################
+# timeline
+##################################################
+
+class TimelineToolbar extends Feature
+	scan: (screen) ->
+		if screen.view.text.row(2) == '离开[←,e] 选择[↑,↓] 阅读[→,r] 版面[^s] 标题[?,/] 作者[a,A] 寻版[b,B] 帮助[h]'
+			map_areas_by_words_on_line screen, 2,
+				'离开[←,e]': "e"
+				'↑': "up"
+				'↓': "down"
+				'阅读[→,r]': "r"
+				'版面[^s]': "ctrl-s"
+				'?': class: 'bbs-clickable', key: '?', title: '向上搜索标题'
+				'/': class: 'bbs-clickable', key: '/', title: '向下搜索标题'
+				'a': class: 'bbs-clickable', key: 'a', title: '向下搜索作者'
+				'A': class: 'bbs-clickable', key: 'A', title: '向上搜索作者'
+				'b': class: 'bbs-clickable', key: 'b', title: '向下寻版'
+				'B': class: 'bbs-clickable', key: 'B', title: '向上寻版'
+				'帮助[h]': "h"
+
+##################################################
 # vote
 ##################################################
 
@@ -1461,6 +1482,7 @@ class timeline_mode extends FeaturedMode
 	features: [
 		RowClick
 		BoardArticleUserClick
+		TimelineToolbar
 		BottomUserClick
 		MousePaging
 		BoardSpoilerWarning
@@ -1648,6 +1670,7 @@ features = [
 	VoteListToolbar
 	MailMenuToolbar
 	RowBoardClick
+	TimelineToolbar
 	UserBottomBar
 	BoardInfoBottomBar
 	ArticleInfoBottomBar
