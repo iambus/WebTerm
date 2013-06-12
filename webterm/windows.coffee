@@ -73,12 +73,14 @@ $ ->
 
 	$('#close-window').click safe_close
 	$('#min-window').click ->
-		minimize()
 	$('#max-window').click ->
 		if is_maximized()
 			restore()
 		else
 			maximize()
+		minimize()
+	$('#main-menu').click ->
+		minimize()
 
 	if webterm.platform == 'chrome'
 		chrome.app.window.current().onMaximized.addListener ->
