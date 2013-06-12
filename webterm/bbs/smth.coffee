@@ -662,6 +662,12 @@ class ArticleBottom extends Feature
 				'上一封 ↑': "up"
 				'下一封 <Space>,↓': "enter"
 				'主题阅读 ^X或p': "p" # ctrl-x == p?
+		else if line == '[主题阅读]  回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓'
+			map_areas_by_words_on_line screen, row,
+				'回信 R': "r"
+				'结束 Q,←': "q"
+				'上一封 ↑': "up"
+				'下一封 <Space>,↓': "enter"
 		else if line == '[通知模式] [阅读文章] 结束Q,| 上一篇 | 下一篇<空格>, | 同主题^x,p'
 			map_areas_by_words_on_line screen, row,
 				'结束Q': "q"
