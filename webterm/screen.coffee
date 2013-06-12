@@ -617,9 +617,11 @@ class Events
 		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
 			if e.button == 0 and e.which == 1
+				# clear old selection
 				if @screen.selection
 					@screen.selection = null
 					@screen.render()
+				# start a new selection
 				@screen.selection = new Selection(@screen)
 				@screen.selection.start = [e.pageX, e.pageY]
 				@screen.selection.column_mode = e.altKey
@@ -654,6 +656,8 @@ class Events
 					start_x = @screen.selection.start[0]
 					start_y = @screen.selection.start[1]
 					if start_x == e.pageX and start_y == e.pageY
+						return
+					if Math.abs(start_x - e.pageX) < 4 and Math.abs(start_y - e.pageY) < 4
 						return
 					@screen.selection.ready = true
 					@screen.render()
