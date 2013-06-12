@@ -315,7 +315,7 @@ class MenuClick extends Feature
 class GotoDefaultBoard extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match /\[(\w+)\]$/
+		m = head.match /\[([\w.]+)\]$/
 		if m
 			board = m[1]
 			if head.match /^主选单\s/
@@ -534,7 +534,7 @@ class BoardBMClick extends Feature
 class BoardInfoClick extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
+		m = head.match(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
 		if m
 			cn_board = m[1]
 			board = m[2]
@@ -549,7 +549,7 @@ class BoardJumpList extends common.BBSMenu
 
 class BoardJumpListCache extends BoardJumpList
 	scan: (screen) ->
-		board = screen.view.text.head().match(/\[(\w+)\]$/)?[1]
+		board = screen.view.text.head().match(/\[([\w.]+)\]$/)?[1]
 		webterm.cache.mru("bbs.smth.boards:#{screen.name}", 10).put board
 
 class BoardJumpListRender extends BoardJumpList
@@ -1350,7 +1350,7 @@ class talk_menu_mode extends FeaturedMode
 	]
 
 class board_mode extends FeaturedMode
-	@check: test_headline(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[(\w+)\]$/)
+	@check: test_headline(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
 	name: 'board'
 	features: [
 		RowClick
