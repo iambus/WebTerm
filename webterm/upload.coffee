@@ -93,6 +93,8 @@ upload_files = ({url, form, encoding, success, error}) ->
 				return error? 'file too big!'
 			name = v.name
 			files.push [k, v, name]
+		else if _.isObject(v) and v.blob? and v.name?
+			data.append k, v.blob, v.name
 		else
 			data.append k, v
 	form_files_to_blobs data, files, error, ->
