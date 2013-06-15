@@ -288,7 +288,15 @@ for k, v of NavigatorPathsInfo
 		NavigatorKeyPaths[k] = NavigatorPathsInfo.main + ' ' + v
 
 class Navigator
-
+	@main: (screen) ->
+		screen.events.send_key_sequence_string NavigatorKeyPaths.main
+	@logout: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorKeyPaths.logout
+	@logout_confirm: (screen) =>
+		webterm.dialogs.confirm '退出确认', '是否要注销此次登陆？', (ok) =>
+			if ok
+				@logout screen
 
 is_guest = (screen) ->
 	screen.view.text.foot().match(/使用者\[(\w+)\]/)?[1] is 'guest'
@@ -305,7 +313,7 @@ class NavigatorMenu extends common.BBSMenu
 	,
 		text: '在线好友', class: 'bbs-clickable', key: NavigatorKeyPaths.friends, context: '!guest'
 	,
-		text: '离开水木', class: 'bbs-clickable', key: NavigatorKeyPaths.logout
+		text: '离开水木', class: 'bbs-clickable', callback: Navigator.logout_confirm
 	]
 	scan: (screen) ->
 		line = screen.view.text.head()

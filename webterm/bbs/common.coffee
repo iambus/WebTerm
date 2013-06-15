@@ -36,9 +36,15 @@ class MouseGestureFeature extends Feature
 
 class Clickable extends Feature
 	click: (screen, div) ->
-		k = div.getAttribute('key')
-		if k
-			screen.events.send_key_sequence_string k
+		key = div.getAttribute 'key'
+		command = div.getAttribute 'command'
+		callback = div.getAttribute 'callback'
+		if key
+			screen.events.send_key_sequence_string key
+		if command
+			screen.commands.execute command
+		if callback
+			screen.area.data[callback]? screen
 	render: (screen) ->
 		screen.events.on_click_div 'div.bbs-clickable:not(.bbs-menu), div.bbs-clickable.bbs-menu > span', (div) =>
 			@click screen, div
@@ -64,7 +70,7 @@ class BBSMenu extends Feature
 				html.push "<li"
 				for k, v of menu
 					if k != 'text'
-						html.push " #{k}='#{v}'"
+						html.push " #{k}='#{screen.area.to_data v}'"
 				html.push "><a href='#'>"
 				html.push menu.text
 				html.push "</a></li>"

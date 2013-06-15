@@ -568,12 +568,29 @@ class AreaManager
 	constructor: (@width, @height) ->
 		@open = []
 		@closed = []
+		@data = {}
+		@data_id = 0
 
 	index: (row, column) ->
 		(row - 1) * @width + column - 1
 
-	define_area: (attrs, top, left, bottom, right) ->
+	to_data: (data) ->
+		if _.isFunction data
+			k = "webterm-screen-data-#{@data_id++}"
+			@data[k] = data
+			return k
+		else
+			return data
+
+	normalize_attrs: (attrs) ->
 		attrs = if _.isString(attrs) then {class: attrs} else attrs
+		new_attrs = {}
+		for k, v of attrs
+			new_attrs[k] = @to_data v
+		new_attrs
+
+	define_area: (attrs, top, left, bottom, right) ->
+		attrs = @normalize_attrs attrs
 		start = @index top, left
 		end = @index bottom, right
 		names = @open[start] ? []
@@ -589,6 +606,9 @@ class AreaManager
 
 	get_closed_area_number: (row, column) ->
 		@closed[@index row, column]
+
+	data: (id) ->
+		@data[id]
 
 ##################################################
 # Events
