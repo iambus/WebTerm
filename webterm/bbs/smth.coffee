@@ -745,6 +745,15 @@ class AttachmentUpload extends Feature
 				screen.area.define_area 'bbs-attachment-url',
 					2, 1, 2, url.length
 
+	parse_response: (html) ->
+		error_message = html.match(/<font color='red'>([^<>]+)<\/font>/)?[1]?.trim() or html.match(/<body>(您还没有登录，或者你发呆时间过长被服务器清除。)/)?[1]
+		# TODO: check remaining bytes
+		success_message = html.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
+		if error_message and error_message != '提示：添加附件成功'
+			return error_message: error_message
+		else
+			return success_message: "附件上传成功 #{success_message}"
+
 	new_upload: (screen, url, sid, files) ->
 		if files.length == 0
 			return
@@ -757,15 +766,14 @@ class AttachmentUpload extends Feature
 			url: url
 			form: form
 			encoding: 'gbk'
-			success: (data) ->
-				error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]
-				success_message = data.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
+			success: (data) =>
+				{success_message, error_message} = @parse_response data
 				screen.events.send_key 'u', 'enter'
 				if error_message
 					console.error error_message
 					webterm.status_bar.error error_message
 				else
-					webterm.status_bar.info "附件上传成功 #{success_message}"
+					webterm.status_bar.info success_message
 			error: ->
 				console.error 'upload failed', arguments
 				webterm.status_bar.error '上传文件失败'
@@ -774,7 +782,7 @@ class AttachmentUpload extends Feature
 		if files.length == 0
 			return
 		index = 0
-		upload = ->
+		upload = =>
 			if index >= files.length
 				webterm.status_bar.info '所有附件上传完毕'
 				screen.events.send_key 'u', 'enter'
@@ -788,15 +796,13 @@ class AttachmentUpload extends Feature
 				url: url
 				form: form
 				encoding: 'gbk'
-				success: (data) ->
-					error_message = data.match(/<font color='red'>([^<>]+)<\/font>/)?[1]?.trim()
-					# TODO: check remaining bytes
-					success_message = data.match(/\(最多能上传 \d+ 个, 还能上传 <font[^<>]+><b>\d+<\/b><\/font> 个\)/)?[0]?.replace /<[^<>]+>/g, ''
-					if error_message and error_message != '提示：添加附件成功'
+				success: (data) =>
+					{success_message, error_message} = @parse_response data
+					if error_message
 						console.error error_message
 						webterm.status_bar.error error_message
 					else
-						webterm.status_bar.info "附件上传成功 #{success_message}"
+						webterm.status_bar.info success_message
 						upload()
 				error: ->
 					console.error 'upload failed', arguments
