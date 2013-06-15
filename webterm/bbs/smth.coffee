@@ -744,6 +744,13 @@ class AttachmentUpload extends Feature
 			if url.match /^http:.*/
 				screen.area.define_area 'bbs-attachment-url',
 					2, 1, 2, url.length
+			if screen.view.text.row(3).trim() == '已上传附件列表: (按 u 刷新, u<序号> 删除相应序号附件)'
+				for row in [4..screen.height]
+					n = screen.view.text.row_range(row, 1, 4).match(/^\[(\d\d)\]$/)?[1]
+					if not n
+						return
+					screen.area.define_area class: 'bbs-clickable', key: "u [#{n}] enter", title: "点击删除此附件",
+						row, 1, row, 4
 
 	parse_response: (html) ->
 		error_message = html.match(/<font color='red'>([^<>]+)<\/font>/)?[1]?.trim() or html.match(/<body>(您还没有登录，或者你发呆时间过长被服务器清除。)/)?[1]
