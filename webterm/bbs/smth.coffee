@@ -319,8 +319,11 @@ class Navigator
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.like
 	@friends: (screen) =>
-		@main screen
-		screen.events.send_key_sequence_string NavigatorPathsInfo.friends
+		if not screen.view.text.head().match /^(版主|\[个人定制区\]|\[讨论区列表\]|\[驻版阅读模式\]|邮件选单|\[@我的文章\]|\[回复我的文章\]|\[Like我的文章\])/
+			screen.events.send_key 'o'
+		else
+			@main screen
+			screen.events.send_key_sequence_string NavigatorPathsInfo.friends
 	@top10: (screen) =>
 		if screen.view.text.head().match(/^版主/) and not screen.view.text.head(/^\[十大模式\]/)
 			screen.events.send_key 'H', 'enter'
@@ -1800,6 +1803,16 @@ class user_list_mode extends FeaturedMode
 		MousePaging
 	]
 
+class friends_list_mode extends FeaturedMode
+	@check: test_headline(/^\[好朋友列表\]/)
+	name: 'friends_list'
+	features: [
+		NavigatorMenu
+		RowClick
+		UserListToolbar
+		common.IPResolve
+		MousePaging
+	]
 
 class logout_mode extends FeaturedMode
 	@check: (screen) ->
@@ -1856,6 +1869,7 @@ modes = [
 	article_score_history_mode
 	board_user_list_mode
 	user_list_mode
+	friends_list_mode
 	talk_menu_mode
 	logout_mode
 	default_mode
