@@ -268,6 +268,55 @@ class LoginGuest extends Feature
 # main menu
 ##################################################
 
+NavigatorPathsInfo =
+	main: "left left left left down"
+	favorite: 'f enter'
+	mail: 'm enter'
+	all_mails: 'm enter r enter'
+	new_mails: 'm enter n enter'
+	at: 'm enter k enter'
+	replies: 'm enter l enter'
+	like: 'm enter b enter'
+	friends: 't enter f enter'
+	logout: 'g enter enter enter'
+
+NavigatorKeyPaths =
+	main: NavigatorPathsInfo.main
+
+for k, v of NavigatorPathsInfo
+	if k != 'main'
+		NavigatorKeyPaths[k] = NavigatorPathsInfo.main + ' ' + v
+
+class Navigator
+
+
+is_guest = (screen) ->
+	screen.view.text.foot().match(/使用者\[(\w+)\]/)?[1] is 'guest'
+
+class NavigatorMenu extends common.BBSMenu
+	@menus: [
+		text: '主选单', class: 'bbs-clickable', key: NavigatorKeyPaths.main
+	,
+		text: '收藏夹', class: 'bbs-clickable', key: NavigatorKeyPaths.favorite, context: '!guest'
+	,
+		text: '所有信件', class: 'bbs-clickable', key: NavigatorKeyPaths.all_mails, context: '!guest'
+	,
+		text: '回复我的文章', class: 'bbs-clickable', key: NavigatorKeyPaths.replies, context: '!guest'
+	,
+		text: '在线好友', class: 'bbs-clickable', key: NavigatorKeyPaths.friends, context: '!guest'
+	,
+		text: '离开水木', class: 'bbs-clickable', key: NavigatorKeyPaths.logout
+	]
+	scan: (screen) ->
+		line = screen.view.text.head()
+		menu = line.match(/^(主选单|版主|邮件选单|\[[^\]]+\])/)?[1]
+		if menu
+			screen.area.define_area 'bbs-menu bbs-navigator', 1, 1, 1, wcwidth(menu)
+	render: (screen) ->
+		guest = is_guest screen
+		menus = (menu for menu in NavigatorMenu.menus when not (menu.context == '!guest' and guest))
+		@render_menu_on_demand screen, ".bbs-menu.bbs-navigator", menus
+
 class MenuClick extends Feature
 	scan: (screen) ->
 		top = 5
@@ -425,7 +474,7 @@ class BoardContextMenu extends Feature
 		normal_context = (context) ->
 			$(context.target).closest('.bbs-row-item').length > 0
 		non_guest_context = (context) ->
-			normal_context(context) and context.screen.view.text.foot().match(/使用者\[(\w+)\]/)?[1] != 'guest'
+			normal_context(context) and not is_guest context.screen
 		owner_context = (context) ->
 			non_guest_context(context) # TODO: get article user and compare with current user
 		goto_key = (context, key) ->
@@ -1389,6 +1438,7 @@ class main_menu_mode extends FeaturedMode
 	@check: test_headline(/^主选单\s/)
 	name: 'main_menu'
 	features: [
+		NavigatorMenu
 		MenuClick
 		TopNotification
 		GotoDefaultBoard
@@ -1407,6 +1457,7 @@ class board_mode extends FeaturedMode
 	@check: test_headline(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
 	name: 'board'
 	features: [
+		NavigatorMenu
 		RowClick
 		BoardContextMenu
 		BoardToolbar
@@ -1473,6 +1524,7 @@ class favorite_mode extends FeaturedMode
 	@check: test_headline(/^\[个人定制区\]\s/)
 	name: 'favorite'
 	features: [
+		NavigatorMenu
 		RowClick
 		BoardRowManagerClick
 		BoardListContextMenu
@@ -1488,6 +1540,7 @@ class board_list_mode extends FeaturedMode
 	@check: test_headline(/^\[讨论区列表\]\s/)
 	name: 'board_list'
 	features: [
+		NavigatorMenu
 		RowClick
 		BoardRowManagerClick
 		BoardListContextMenu
@@ -1503,6 +1556,7 @@ class board_group_mode extends FeaturedMode
 	@check: test_headline(/^分类讨论区选单\s/)
 	name: 'board_group'
 	features: [
+		NavigatorMenu
 		MenuClick
 	]
 
@@ -1529,6 +1583,7 @@ class mail_menu_mode extends FeaturedMode
 	@check: test_headline(/^\[处理信笺选单\]\s/)
 	name: 'mail'
 	features: [
+		NavigatorMenu
 		MenuClick
 		MailMenuToolbar
 		BoardSpoilerWarning
@@ -1538,6 +1593,7 @@ class mail_list_mode extends FeaturedMode
 	@check: test_headline(/^邮件选单\s/)
 	name: 'mail_list'
 	features: [
+		NavigatorMenu
 		RowClick
 		ArticleRowUserClick
 		BottomUserClick
@@ -1548,6 +1604,7 @@ class mail_replies_mode extends FeaturedMode
 	@check: test_headline(/^\[回复我的文章\]\s/)
 	name: 'mail_replies'
 	features: [
+		NavigatorMenu
 		RowClick
 		ArticleRowUserClick
 		RepliesRowBoardClick
@@ -1561,6 +1618,7 @@ class mail_at_mode extends FeaturedMode
 	@check: test_headline(/^\[@我的文章\]\s/)
 	name: 'mail_at'
 	features: [
+		NavigatorMenu
 		RowClick
 		ArticleRowUserClick
 		RepliesRowBoardClick
@@ -1587,6 +1645,7 @@ class timeline_mode extends FeaturedMode
 	@check: test_headline(/^\[驻版阅读模式\]\s/)
 	name: 'timeline'
 	features: [
+		NavigatorMenu
 		RowClick
 		ArticleRowUserClick
 		TimelineRowBoardClick
@@ -1671,6 +1730,7 @@ class user_list_mode extends FeaturedMode
 	@check: test_headline(/^\[使用者列表\]/)
 	name: 'user_list'
 	features: [
+		NavigatorMenu
 		RowClick
 		UserListToolbar
 		MousePaging
@@ -1748,6 +1808,7 @@ features = [
 	PressAnyKeyBottomBar
 	PressEnterKeyBottomBar
 	LoginGuest
+	NavigatorMenu
 	MenuClick
 	GotoDefaultBoard
 	RowClick
