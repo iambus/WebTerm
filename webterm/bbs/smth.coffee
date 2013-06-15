@@ -739,7 +739,7 @@ class ArticleDownload extends Feature
 
 class AttachmentUpload extends Feature
 	scan: (screen) ->
-		if screen.view.text.row(1).trim() == '附件上传地址: (请勿将此链接发送给别人)'
+		if screen.view.text.row(1).trim() in ['附件上传地址: (请勿将此链接发送给别人)', '附件编辑地址: (请勿将此链接发送给别人)']
 			url = screen.view.text.row(2).trimRight()
 			if url.match /^http:.*/
 				screen.area.define_area 'bbs-attachment-url',
@@ -1638,6 +1638,7 @@ class article_info_mode extends FeaturedMode
 	name: 'article_info'
 	features: [
 		common.URLRecognizer
+		AttachmentUpload
 		ArticleInfoBottomBar
 		ClickWhitespace
 	]
