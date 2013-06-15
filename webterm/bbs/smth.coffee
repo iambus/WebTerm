@@ -291,8 +291,12 @@ class Navigator
 		if not screen.view.text.head().match /^主选单/
 			screen.events.send_key_sequence_string NavigatorPathsInfo.main
 	@favorite: (screen) =>
-		@main screen
-		screen.events.send_key_sequence_string NavigatorPathsInfo.favorite
+		if not screen.view.text.head().match /^\[个人定制区\]/
+			@main screen
+			screen.events.send_key_sequence_string NavigatorPathsInfo.favorite
+	@timeline: (screen) =>
+		@favorite screen
+		screen.events.send_key 'ctrl-k'
 	@mail: (screen) ->
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.mail
@@ -336,17 +340,19 @@ is_guest = (screen) ->
 
 class NavigatorMenu extends common.BBSMenu
 	@menus: [
-		text: '主选单', class: 'bbs-clickable', key: NavigatorKeyPaths.main
+		text: '主选单', class: 'bbs-clickable', callback: Navigator.main
 	,
-		text: '收藏夹', class: 'bbs-clickable', key: NavigatorKeyPaths.favorite, context: '!guest'
+		text: '收藏夹', class: 'bbs-clickable', callback: Navigator.favorite, context: '!guest'
+	,
+		text: '驻版阅读', class: 'bbs-clickable', callback: Navigator.timeline, context: '!guest'
 	,
 		text: '十大话题', class: 'bbs-clickable', callback: Navigator.top10
 	,
-		text: '所有信件', class: 'bbs-clickable', key: NavigatorKeyPaths.all_mails, context: '!guest'
+		text: '所有信件', class: 'bbs-clickable', callback: Navigator.all_mails, context: '!guest'
 	,
-		text: '回复我的文章', class: 'bbs-clickable', key: NavigatorKeyPaths.replies, context: '!guest'
+		text: '回复我的文章', class: 'bbs-clickable', callback: Navigator.replies, context: '!guest'
 	,
-		text: '在线好友', class: 'bbs-clickable', key: NavigatorKeyPaths.friends, context: '!guest'
+		text: '在线好友', class: 'bbs-clickable', callback: Navigator.friends, context: '!guest'
 	,
 		text: '离开水木', class: 'bbs-clickable', callback: Navigator.logout_confirm
 	]
