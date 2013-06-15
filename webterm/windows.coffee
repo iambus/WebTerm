@@ -79,7 +79,6 @@ $ ->
 			restore()
 		else
 			maximize()
-		minimize()
 	$('#main-menu').click ->
 		minimize()
 
