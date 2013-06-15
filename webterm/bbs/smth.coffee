@@ -877,6 +877,10 @@ class AttachmentUpload extends Feature
 		else
 			return success_message: "附件上传成功 #{success_message}"
 
+	refresh: (screen) ->
+		if screen.view.text.foot().indexOf('u传附件') != -1
+			screen.events.send_key 'u', 'enter'
+
 	new_upload: (screen, url, sid, files) ->
 		if files.length == 0
 			return
@@ -891,7 +895,7 @@ class AttachmentUpload extends Feature
 			encoding: 'gbk'
 			success: (data) =>
 				{success_message, error_message} = @parse_response data
-				screen.events.send_key 'u', 'enter'
+				@refresh screen
 				if error_message
 					console.error error_message
 					webterm.status_bar.error error_message
@@ -908,7 +912,7 @@ class AttachmentUpload extends Feature
 		upload = =>
 			if index >= files.length
 				webterm.status_bar.info '所有附件上传完毕'
-				screen.events.send_key 'u', 'enter'
+				@refresh screen
 				return
 			file = files[index++]
 			webterm.status_bar.info "正在上传附件 #{index}/#{files.length}"
