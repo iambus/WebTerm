@@ -318,11 +318,11 @@ class Navigator
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.friends
 	@top10: (screen) =>
-		if screen.view.text.head().match /^版主/
-			screen.events.send_key 'H', '1'
+		if screen.view.text.head().match(/^版主/) and not screen.view.text.head(/^\[十大模式\]/)
+			screen.events.send_key 'H', 'enter'
 		else
 			@main screen
-			screen.events.send_key_sequence_string NavigatorPathsInfo.friends
+			screen.events.send_key_sequence_string NavigatorPathsInfo.top10
 	@logout: (screen) =>
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.logout
@@ -340,7 +340,7 @@ class NavigatorMenu extends common.BBSMenu
 	,
 		text: '收藏夹', class: 'bbs-clickable', key: NavigatorKeyPaths.favorite, context: '!guest'
 	,
-		text: '十大话题', class: 'bbs-clickable', key: NavigatorKeyPaths.top10
+		text: '十大话题', class: 'bbs-clickable', callback: Navigator.top10
 	,
 		text: '所有信件', class: 'bbs-clickable', key: NavigatorKeyPaths.all_mails, context: '!guest'
 	,
