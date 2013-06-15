@@ -115,13 +115,22 @@ map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
 	m = line.match regexp
 	if m
 		if m.length == 1
+			if _.isFunction bindings
+				bindings = bindings m[0]
 			left = 1 + wcwidth(line.substring(0, index))
 			right = left + wcwidth(m[0]) - 1
 			return map_areas_on_line screen, row, [[left, right]], [bindings]
 		areas = []
 		index = m.index
+		if m.length - 1 != bindings.length
+			throw new Error("Incorrect mappings: #{m.length - 1} != #{bindings.length}")
+		new_bindings = []
 		for i in [1...m.length]
 			word = m[i]
+			binding = bindings[i-1]
+			if _.isFunction binding
+				binding = binding word
+			new_bindings.push binding
 			index = line.indexOf word, index
 			if index < 0
 				# something is wrong!
@@ -129,7 +138,7 @@ map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
 			left = 1 + wcwidth(line.substring(0, index))
 			right = left + wcwidth(word) - 1
 			areas.push [left, right]
-		map_areas_on_line screen, row, areas, bindings
+		map_areas_on_line screen, row, areas, new_bindings
 
 ##################################################
 # operations
@@ -671,15 +680,9 @@ class BoardJumpListRenderInMainMenu extends BoardJumpList
 
 class BottomUserClick extends Feature
 	scan: (screen) ->
-		foot = screen.view.text.foot()
-		m = foot.match(/使用者\[(\w+)\]/)
-		if m and m.index == 37
-			user = m[1]
-			left = 51
-			right = left + user.length - 1
-			key = "u [#{user}] enter"
-			screen.area.define_area class: 'bbs-clickable bbs-inner-clickable board-info', key: key,
-				screen.height, left, screen.height, right
+		map_areas_by_regexp_on_line screen, screen.height,
+			/使用者\[(\w+)\]/
+			[(user) -> "u [#{user}] enter"]
 
 
 ##################################################
@@ -1509,7 +1512,6 @@ class main_menu_mode extends FeaturedMode
 		TopNotification
 		GotoDefaultBoard
 		BoardJumpListRenderInMainMenu
-		BottomUserClick
 	]
 
 class talk_menu_mode extends FeaturedMode
