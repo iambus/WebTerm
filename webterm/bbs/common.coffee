@@ -92,7 +92,7 @@ class BBSMenu extends Feature
 class URLRecognizer extends Feature
 	scan: (screen) ->
 		text = screen.view.text.full()
-		url_regexp = /http:\/\/[\w:\/?&=%+(@)$;._-]+/g
+		url_regexp = /https?:\/\/[\w:\/?&=%+#(@)$;._-]+/g
 		while m = url_regexp.exec text
 			start = wcwidth(text.substring(0, m.index))
 			end = start + m[0].length - 1
