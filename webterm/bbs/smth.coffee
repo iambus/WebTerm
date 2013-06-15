@@ -844,6 +844,7 @@ class AttachmentUpload extends Feature
 						name: filename
 						blob: blob
 					upload [data]
+				webterm.status_bar.info "正在下载：#{text}"
 			else
 				webterm.status_bar.error '剪切板内容可能不是一个合法的地址'
 		upload_clipboard = ->
