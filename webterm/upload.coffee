@@ -103,5 +103,6 @@ upload_files = ({url, form, encoding, success, error}) ->
 		else
 			post_form url, data, success, error
 
+# TODO: move to webterm.ajax
 webterm.upload =
 	upload_files: upload_files

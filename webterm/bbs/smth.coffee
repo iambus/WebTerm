@@ -814,16 +814,13 @@ class AttachmentUpload extends Feature
 		multiple = !! m[1].match /^bbsupload/
 		webterm.status_bar.tip '你可以直接拖拽文件到屏幕上来上传附件，或者按ctrl-v/shift-insert上传剪切板的图片'
 
-		new_upload = (files) => @new_upload screen, url, sid, files
-		update_upload = (files) => @update_upload screen, url, sid, files
 		if multiple
-			screen.events.on_dnd (data) =>
-				files = data.files
-				new_upload files
+			upload = (files) => @new_upload screen, url, sid, files
 		else
-			screen.events.on_dnd (data) =>
-				files = data.files
-				update_upload files
+			upload = (files) => @update_upload screen, url, sid, files
+
+		screen.events.on_dnd (data) =>
+			upload data.files
 
 		upload_clipboard_image = ->
 			image_callback = (blob) ->
@@ -831,13 +828,26 @@ class AttachmentUpload extends Feature
 				data =
 					name: filename
 					blob: blob
-				if multiple
-					new_upload [data]
-				else
-					update_upload [data]
+				upload [data]
 			webterm.clipboard.get_image_as_png_blob image_callback, webterm.status_bar.error
-		screen.events.on_key 'ctrl-v', upload_clipboard_image
-		screen.events.on_key 'shift-insert', upload_clipboard_image
+		upload_clipboard_text = (text) ->
+			if filename = text.match(/^http:\/\/\S+\/([^\s/\\]+\.\w+)$/)?[1]
+				error = -> webterm.status_bar.error "下载失败：#{text}"
+				webterm.ajax.get_blob text, error, (blob) ->
+					data =
+						name: filename
+						blob: blob
+					upload [data]
+			else
+				webterm.status_bar.error '剪切板内容可能不是一个合法的地址'
+		upload_clipboard = ->
+			text = webterm.clipboard.get()
+			if text
+				upload_clipboard_text(text)
+			else
+				upload_clipboard_image()
+		screen.events.on_key 'ctrl-v', upload_clipboard
+		screen.events.on_key 'shift-insert', upload_clipboard
 
 
 class PostOptions extends Feature

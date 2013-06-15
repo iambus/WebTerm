@@ -205,6 +205,7 @@ build_out = ->
 		'webterm/bbs/mode.js'
 		'webterm/bbs/smth.css'
 		'webterm/bbs/smth.js'
+		'webterm/ajax.js'
 		'webterm/cache.js'
 		'webterm/clipboard.js'
 		'webterm/dialogs.js'

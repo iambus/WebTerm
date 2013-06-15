@@ -15,10 +15,14 @@ paste_data = (callback) ->
 	$('#ime').focus()
 	return
 
+get_items = (callback) ->
+	paste_data (data) ->
+		callback data.items
+
 get_image_as_png_blob = (callback, error) ->
 	error = error ? (x) -> console.error x
-	paste_data (data) ->
-		image = data.items[0]
+	get_items (items) ->
+		image = items[0]
 		if not image?
 			error? 'Clipboard is empty'
 			return
