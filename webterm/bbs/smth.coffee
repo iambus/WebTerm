@@ -832,6 +832,18 @@ class ArticleDownload extends Feature
 
 
 ##################################################
+# editing
+##################################################
+
+class PasteWithoutConfirm extends Feature
+	scan: (screen) ->
+		screen.commands.register 'paste-default', screen.commands.lookup 'paste'
+
+class PasteRichConfirm extends Feature
+	scan: (screen) ->
+		screen.commands.register 'paste-default', screen.commands.lookup 'paste-rich-confirm'
+
+##################################################
 # post
 ##################################################
 
@@ -1448,6 +1460,7 @@ class login_mode extends FeaturedMode
 	name: 'login'
 	features: [
 		LoginGuest
+		PasteRichConfirm
 	]
 
 class option_input_mode extends FeaturedMode
@@ -1465,6 +1478,7 @@ class option_input_mode extends FeaturedMode
 	name: 'option_input'
 	features: [
 		Options
+		PasteRichConfirm
 	]
 
 class anykey_mode extends FeaturedMode
@@ -1547,6 +1561,7 @@ class edit_mode extends FeaturedMode
 	@check: test_footline(/状态 \[插入\]/)
 	name: 'edit'
 	features: [
+		PasteWithoutConfirm
 		MousePaging
 		MouseEditingHomeEnd
 	]
@@ -1880,6 +1895,8 @@ features = [
 	ArticleBottom
 	ArticleDownload
 	AttachmentUpload
+	PasteWithoutConfirm
+	PasteRichConfirm
 	PostOptions
 	ReplyOptions
 	BoardRowManagerClick

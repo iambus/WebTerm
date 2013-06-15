@@ -39,6 +39,7 @@ file_open = ({accepts, format}, callback) ->
 			else
 				throw new Error("Not Implemented: #{format}")
 
+common_confirm_result = null
 common_confirm_callback = null
 
 common_confirm = (title, message, callback) ->
@@ -61,20 +62,19 @@ $ ->
 		buttons: [
 			text: '确认'
 			click: ->
-				common_confirm_callback? true
-				common_confirm_callback = null
+				common_confirm_result = true
 				$(@).dialog 'close'
 		,
 			text: '取消'
 			click: ->
-				common_confirm_callback? false
-				common_confirm_callback = null
+				common_confirm_result = false
 				$(@).dialog 'close'
 		]
 		close: ->
 			if common_confirm_callback?
-				common_confirm_callback? false
-				common_confirm_callback = null
+				common_confirm_callback? common_confirm_result
+			common_confirm_result = null
+			common_confirm_callback = null
 
 webterm.dialogs =
 	file_save: file_save

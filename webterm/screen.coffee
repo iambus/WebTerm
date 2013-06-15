@@ -1256,21 +1256,37 @@ class Screen
 			else
 				@events.send_key 'ctrl-c'
 
-
 		paste = =>
 			data = webterm.clipboard.get()
 			data = data.replace /\x1b/g, '\x1b\x1b'
 			@events.send_text data
 
+		paste_confirm = ->
+			webterm.dialogs.confirm '粘贴确认', '当前状态可能不是编辑状态，确认要发送剪切板上的内容吗？', (ok) ->
+				if ok
+					paste()
+
+		paste_rich_confirm = ->
+			data = webterm.clipboard.get()
+			if data.match /[\r\n\x1b]/
+				webterm.dialogs.confirm '粘贴确认', '剪切板上的内容可能包含控制字符或者换行，确认发送？', (ok) ->
+					if ok
+						paste()
+			else
+				paste()
+
 		@commands.register_persisted 'copy', copy
 		@commands.register_persisted 'copy-ascii', copy_ascii
 		@commands.register_persisted 'copy-if', copy_if
 		@commands.register_persisted 'paste', paste
+		@commands.register_persisted 'paste-confirm', paste_confirm
+		@commands.register_persisted 'paste-rich-confirm', paste_rich_confirm
+		@commands.register_persisted 'paste-default', paste_confirm
 
 		@events.on_key_persisted 'ctrl-insert', =>
 			@commands.execute('copy')
 		@events.on_key_persisted 'shift-insert', =>
-			@commands.execute('paste')
+			@commands.execute('paste-default')
 		@events.on_key_persisted 'ctrl-shift-c', =>
 			@commands.execute('copy-ascii')
 		@events.on_key_persisted 'ctrl-c', =>
@@ -1294,7 +1310,7 @@ class Screen
 			id: 'paste'
 			icon: 'paste'
 			contexts: 'all'
-			onclick: paste
+			onclick: paste # XXX: or paste-default?
 #		@context_menus.refresh()
 
 		@expect = new Expect @

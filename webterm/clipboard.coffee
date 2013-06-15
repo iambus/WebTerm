@@ -7,7 +7,7 @@ $('#clipboard').on 'paste', (e) ->
 	data = e.originalEvent.clipboardData
 	h? data
 
-paste_data = (callback) ->
+get_data = (callback) ->
 	once_callback = callback
 	$('#clipboard').val('').select()
 	document.execCommand('paste')
@@ -15,9 +15,19 @@ paste_data = (callback) ->
 	$('#ime').focus()
 	return
 
+get_files = (callback) ->
+	get_data (data) ->
+		# XXX: data.files is always empty!
+		callback data.files
+
 get_items = (callback) ->
-	paste_data (data) ->
+	get_data (data) ->
 		callback data.items
+
+get_text = (callback) ->
+	get_items (items) ->
+		items[0]?.getAsString (data) ->
+			callback data
 
 get_image_as_png_blob = (callback, error) ->
 	error = error ? (x) -> console.error x
@@ -37,18 +47,26 @@ get_image_as_png_blob = (callback, error) ->
 			callback new Blob [e.target.result]
 		reader.readAsArrayBuffer file
 
+get_sync = ->
+	$('#clipboard').val('').select()
+	document.execCommand('paste')
+	data = $('#clipboard').val()
+	$('#clipboard').val('')
+	$('#ime').focus()
+	data
+
+put_sync = (text) ->
+	$('#clipboard').val(text).select()
+	document.execCommand('copy')
+	$('#clipboard').val('')
+	$('#ime').focus()
+
 webterm.clipboard =
-	get: ->
-		$('#clipboard').val('').select()
-		document.execCommand('paste')
-		data = $('#clipboard').val()
-		$('#clipboard').val('')
-		$('#ime').focus()
-		data
-	put: (text) ->
-		$('#clipboard').val(text).select()
-		document.execCommand('copy')
-		$('#clipboard').val('')
-		$('#ime').focus()
+	get: (callback) ->
+		if callback?
+			get_text callback
+		else
+			get_sync()
+	put: put_sync
 	get_image_as_png_blob: get_image_as_png_blob
 
