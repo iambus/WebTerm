@@ -72,7 +72,12 @@ map_areas_on_line = (screen, row, areas, bindings) ->
 	for i in [0...areas.length]
 		[left, right] = areas[i]
 		key = bindings[i]
-		attrs = if _.isObject(key) then key else class: 'bbs-clickable', key: key
+		if _.isFunction key
+			attrs = class: 'bbs-clickable', callback: key
+		else if _.isObject key
+			attrs = key
+		else
+			attrs = class: 'bbs-clickable', key: key
 		screen.area.define_area attrs,
 			row, left, row, right
 
@@ -167,18 +172,11 @@ class MouseEditingHomeEnd extends common.MouseGestureFeature
 
 class TopNotification extends Feature
 	scan: (screen) ->
-		if screen.view.text.head().match /^主选单/
-			map_areas_by_words_on_line screen, 1,
-				'[您有信件]': 'v'
-				'[您有@提醒]': 'm enter k enter'
-				'[您有回复提醒]': 'm enter l enter'
-				'[您有Like提醒]': 'm enter b enter'
-		else
-			map_areas_by_words_on_line screen, 1,
-				'[您有信件]': 'v'
-				'[您有@提醒]': 'left left left left m enter k enter'
-				'[您有回复提醒]': 'left left left left m enter l enter'
-				'[您有Like提醒]': 'left left left left m enter b enter'
+		map_areas_by_words_on_line screen, 1,
+			'[您有信件]': Navigator.new_mails
+			'[您有@提醒]': Navigator.at
+			'[您有回复提醒]': Navigator.replies
+			'[您有Like提醒]': Navigator.like
 
 ##################################################
 # input options
@@ -269,7 +267,7 @@ class LoginGuest extends Feature
 ##################################################
 
 NavigatorPathsInfo =
-	main: "left left left left down"
+	main: "left left left left left left left left left left 0"
 	favorite: 'f enter'
 	mail: 'm enter'
 	all_mails: 'm enter r enter'
@@ -278,6 +276,7 @@ NavigatorPathsInfo =
 	replies: 'm enter l enter'
 	like: 'm enter b enter'
 	friends: 't enter f enter'
+	top10: 's enter enter H enter'
 	logout: 'g enter enter enter'
 
 NavigatorKeyPaths =
@@ -289,10 +288,44 @@ for k, v of NavigatorPathsInfo
 
 class Navigator
 	@main: (screen) ->
-		screen.events.send_key_sequence_string NavigatorKeyPaths.main
+		if not screen.view.text.head().match /^主选单/
+			screen.events.send_key_sequence_string NavigatorPathsInfo.main
+	@favorite: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.favorite
+	@mail: (screen) ->
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.mail
+	@all_mails: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.all_mails
+	@new_mails: (screen) =>
+		if screen.view.text.head().match /^版主/
+			screen.events.send_key 'v'
+		else
+			@main screen
+			screen.events.send_key_sequence_string NavigatorPathsInfo.new_mails
+	@at: (screen) ->
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.at
+	@replies: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.replies
+	@like: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.like
+	@friends: (screen) =>
+		@main screen
+		screen.events.send_key_sequence_string NavigatorPathsInfo.friends
+	@top10: (screen) =>
+		if screen.view.text.head().match /^版主/
+			screen.events.send_key 'H', '1'
+		else
+			@main screen
+			screen.events.send_key_sequence_string NavigatorPathsInfo.friends
 	@logout: (screen) =>
 		@main screen
-		screen.events.send_key_sequence_string NavigatorKeyPaths.logout
+		screen.events.send_key_sequence_string NavigatorPathsInfo.logout
 	@logout_confirm: (screen) =>
 		webterm.dialogs.confirm '退出确认', '是否要注销此次登陆？', (ok) =>
 			if ok
@@ -306,6 +339,8 @@ class NavigatorMenu extends common.BBSMenu
 		text: '主选单', class: 'bbs-clickable', key: NavigatorKeyPaths.main
 	,
 		text: '收藏夹', class: 'bbs-clickable', key: NavigatorKeyPaths.favorite, context: '!guest'
+	,
+		text: '十大话题', class: 'bbs-clickable', key: NavigatorKeyPaths.top10
 	,
 		text: '所有信件', class: 'bbs-clickable', key: NavigatorKeyPaths.all_mails, context: '!guest'
 	,
@@ -1877,6 +1912,7 @@ for f in features
 smth = (screen) -> plugin screen, modes, global_mode
 smth.modes = modes
 smth.features = features
+smth.navigator = Navigator
 
 ##################################################
 # exports
