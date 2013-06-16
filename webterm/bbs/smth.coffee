@@ -723,14 +723,33 @@ class ArticleContextMenu extends Feature
 
 class ArticleUser extends Feature
 	scan: (screen) ->
-		line = screen.view.text.head()
-		m = line.match(/^发信人: ((\w+) \(.*\)), 信区: (\w+)\s*$/)
-		if m
-			user = m[2]
-			left = 9
-			right = left + wcwidth(m[1]) - 1
-			screen.area.define_area class: 'bbs-clickable', key: "u [#{user}] enter",
-				1, left, 1, right
+		for row in [1...screen.height]
+			# author
+			map_areas_by_regexp_on_line screen, row,
+				/发信人: ((?:\w+) \(.*\)), 信区: ([\w.]+)\s*$/
+				[
+					(field) -> "u [#{field.match(/^\w+/)[0]}] enter"
+					(field) -> "s s [#{field}] enter"
+				]
+			# reply
+			map_areas_by_regexp_on_line screen, row,
+				/【 在 ((?:\w+) \(.*\)) 的大作中提到: 】/
+				[
+					(field) -> "u [#{field.match(/^\w+/)[0]}] enter"
+				]
+			# at
+			map_areas_by_regexp_on_line screen, row,
+				/(@\w{2,})[^.]/
+				[
+					(field) -> "u [#{field.substring(1)}] enter"
+				]
+			# like
+			map_areas_by_regexp_on_line screen, row,
+				/\[[+-\s]\d\] (\w{2,}):/
+				[
+					(field) -> "u [#{field}] enter"
+				]
+
 
 class ArticleBottom extends Feature
 	scan: (screen) ->
