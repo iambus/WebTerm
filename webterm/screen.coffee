@@ -666,9 +666,8 @@ class Events
 					return
 			if e.button == 0
 				if mouse_click_at?
-					if mouse_click_at[0] == e.offsetX and mouse_click_at[1] == e.offsetY
-						# now it's real mouse click event
-						@do_click e
+					# now it's real mouse click event
+					@do_click e
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>
 			if e.button == 0 and e.which == 1 and @screen.selection and not @screen.selection.done
