@@ -966,10 +966,27 @@ class AttachmentUpload extends Feature
 		multiple = !! m[1].match /^bbsupload/
 		webterm.status_bar.tip '你可以直接拖拽文件到屏幕上来上传附件，或者按ctrl-v/shift-insert上传剪切板的图片'
 
+		sort_files = (files) ->
+			sorted_files = []
+			for x in files
+				sorted_files.push x
+			sorted_files.sort (a, b) ->
+				a = a.name
+				b = b.name
+				if a.toLocaleLowerCase() != b.toLocaleLowerCase()
+					a = a.toLocaleLowerCase()
+					b = b.toLocaleLowerCase()
+				if a < b
+					return -1
+				else if a == b
+					return 0
+				else
+					return 1
+			sorted_files
 		if multiple
-			upload = (files) => @new_upload screen, url, sid, files
+			upload = (files) => @new_upload screen, url, sid, sort_files files
 		else
-			upload = (files) => @update_upload screen, url, sid, files
+			upload = (files) => @update_upload screen, url, sid, sort_files files
 
 		screen.events.on_dnd (data) =>
 			upload data.files
