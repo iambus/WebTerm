@@ -1643,6 +1643,7 @@ class favorite_mode extends FeaturedMode
 		BoardJumpListRender
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 	]
 
 class board_list_mode extends FeaturedMode
@@ -1659,6 +1660,7 @@ class board_list_mode extends FeaturedMode
 		BoardJumpListRender
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 	]
 
 class board_group_mode extends FeaturedMode
@@ -1685,6 +1687,7 @@ class x_list_mode extends FeaturedMode
 		XToolBar
 		XBottomBar
 		MousePaging
+		MouseHomeEnd
 		BoardSpoilerWarning
 	]
 
@@ -1707,6 +1710,7 @@ class mail_list_mode extends FeaturedMode
 		ArticleRowUserClick
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 	]
 
 class mail_replies_mode extends FeaturedMode
@@ -1720,6 +1724,7 @@ class mail_replies_mode extends FeaturedMode
 		RepliesToolbar
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 		BoardSpoilerWarning
 	]
 
@@ -1734,6 +1739,7 @@ class mail_at_mode extends FeaturedMode
 		RepliesToolbar
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 		BoardSpoilerWarning
 	]
 
@@ -1747,6 +1753,7 @@ class mail_like_mode extends FeaturedMode
 		RepliesToolbar
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 		BoardSpoilerWarning
 	]
 
@@ -1761,6 +1768,7 @@ class timeline_mode extends FeaturedMode
 		TimelineToolbar
 		BottomUserClick
 		MousePaging
+		MouseHomeEnd
 		BoardSpoilerWarning
 	]
 
@@ -1771,6 +1779,7 @@ class vote_list_mode extends FeaturedMode
 		RowClick
 		VoteListToolbar
 		MousePaging
+		MouseHomeEnd
 	]
 
 class vote_open_options_mode extends FeaturedMode
@@ -1833,6 +1842,7 @@ class board_user_list_mode extends FeaturedMode
 		RowClick
 		ArticleRowUserClick
 		MousePaging
+		MouseHomeEnd
 	]
 
 class user_list_mode extends FeaturedMode
@@ -1843,6 +1853,7 @@ class user_list_mode extends FeaturedMode
 		RowClick
 		UserListToolbar
 		MousePaging
+		MouseHomeEnd
 	]
 
 class friends_list_mode extends FeaturedMode
@@ -1854,6 +1865,7 @@ class friends_list_mode extends FeaturedMode
 		UserListToolbar
 		common.IPResolve
 		MousePaging
+		MouseHomeEnd
 	]
 
 class logout_mode extends FeaturedMode
