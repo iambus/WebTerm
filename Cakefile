@@ -138,6 +138,7 @@ download_depends = ->
 		'http://documentcloud.github.io/underscore/underscore-min.js': 'lib/underscore-min.js'
 		'http://coffeescript.org/extras/coffee-script.js': 'lib/coffee-script.js'
 		'http://iambus.github.io/static/CoffeeScriptEval.js': 'lib/CoffeeScriptEval.js'
+		'https://raw.github.com/caolan/async/master/lib/async.js': 'lib/async.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js': 'lib/ace/ace.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/mode-coffee.js': 'lib/ace/mode-coffee.js'
 		'https://raw.github.com/ajaxorg/ace-builds/master/src-min-noconflict/worker-coffee.js': 'lib/ace/worker-coffee.js'
@@ -243,6 +244,7 @@ build_out = ->
 
 		'lib/CoffeeScriptEval.js'
 		'lib/coffee-script.js'
+		'lib/async.js'
 		'lib/underscore-min.js'
 		'lib/jquery-1.9.1.min.js'
 		'lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/animated-overlay.gif'
