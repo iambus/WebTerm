@@ -955,6 +955,21 @@ class AttachmentUpload extends Feature
 					webterm.status_bar.error '上传文件失败'
 		upload()
 
+	upload_urls: (upload, urls) ->
+		error = (url) -> webterm.status_bar.error "下载失败：#{url}"
+		webterm.ajax.get_blobs urls, error, (blobs) ->
+			files = []
+			for url, i in urls
+				blob = blobs[i]
+				filename = url.match(/^http:\/\/\S+\/([^\s/\\]+\.\w+)$/)?[1]
+				if blob? and filename?
+					files.push
+						name: filename
+						blob: blob
+			if files.length > 0
+				upload files
+		webterm.status_bar.info "正在下载：#{urls[0]}..."
+
 	render: (screen) ->
 		url = $(screen.selector).find('.bbs-attachment-url').text()
 		m = url.match /^http:\/\/www\.newsmth\.net\/(bbsupload\.php\?|bbseditatt\.php\?bid=\d+&id=\d+&)sid=(\w+)$/
@@ -999,15 +1014,10 @@ class AttachmentUpload extends Feature
 					blob: blob
 				upload [data]
 			webterm.clipboard.get_image_as_png_blob image_callback, webterm.status_bar.error
-		upload_clipboard_text = (text) ->
-			if filename = text.match(/^http:\/\/\S+\/([^\s/\\]+\.\w+)$/)?[1]
-				error = -> webterm.status_bar.error "下载失败：#{text}"
-				webterm.ajax.get_blob text, error, (blob) ->
-					data =
-						name: filename
-						blob: blob
-					upload [data]
-				webterm.status_bar.info "正在下载：#{text}"
+		upload_clipboard_text = (text) =>
+			if text.match(/^http:\/\/\S+\/([^\s/\\]+\.\w+)(\nhttp:\/\/\S+\/([^\s/\\]+\.\w+))*\n?$/)
+				urls = _.without text.split('\n'), ''
+				@upload_urls upload, urls
 			else
 				webterm.status_bar.error '剪切板内容可能不是一个合法的地址'
 		upload_clipboard = ->
