@@ -10,7 +10,6 @@ get_blob = ->
 			[url, error, callback] = arguments
 		else
 			throw new Error("Invalid arguments: #{arguments}")
-	$.ajax
 	xhr = new XMLHttpRequest()
 	xhr.open('GET', url, true)
 	xhr.responseType = 'blob'
