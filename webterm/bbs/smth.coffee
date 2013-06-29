@@ -1525,7 +1525,7 @@ class option_input_mode extends FeaturedMode
 			return
 		if screen.data.at(screen.height, 1).background
 			return
-		if screen.data.at(screen.height, 1).foreground
+		if screen.data.at(screen.height, 1).foreground not in [null, undefined, 37]
 			return
 		line = screen.view.text.foot().trim()
 		if not line
