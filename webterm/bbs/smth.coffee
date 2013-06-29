@@ -370,7 +370,7 @@ class NavigatorMenu extends common.BBSMenu
 	]
 	scan: (screen) ->
 		line = screen.view.text.head()
-		menu = line.match(/^(主选单|版主|邮件选单|\[[^\]]+\])/)?[1]
+		menu = line.match(/^(主选单|版主|诚征版主中|邮件选单|\[[^\]]+\])/)?[1]
 		if menu
 			screen.area.define_area 'bbs-menu bbs-navigator', 1, 1, 1, wcwidth(menu)
 	render: (screen) ->
@@ -733,7 +733,7 @@ class ArticleUser extends Feature
 				]
 			# reply
 			map_areas_by_regexp_on_line screen, row,
-				/【 在 ((?:\w+) \(.*\)) 的大作中提到: 】/
+				/【 在 ((?:\w+)(?: \(.*\))?) 的大作中提到: 】/
 				[
 					(field) -> "u [#{field.match(/^\w+/)[0]}] enter"
 				]
@@ -1284,6 +1284,21 @@ class RepliesToolbar extends Feature
 				"'": class: 'bbs-clickable', key: "'", title: '向下寻版'
 				'"': class: 'bbs-clickable', key: '"', title: '向上寻版'
 
+class MailListToolbar extends Feature
+	scan: (screen) ->
+		row = 2
+		toolbar = screen.view.text.row(row).trim()
+		if toolbar == '离开[←,e]  选择[↑,↓]  阅读信件[→,r]  回信[R]  砍信／清除旧信[d,D]  求助[h]'
+			map_areas_by_words_on_line screen, row,
+				'离开[←,e]': "e"
+				'↑': "up"
+				'↓': "down"
+				'阅读信件[→,r]': "r"
+				'回信[R]': "R"
+				'd': "d"
+				'D': "D"
+				'求助[h]': "求助[h]"
+
 ##################################################
 # timeline
 ##################################################
@@ -1718,6 +1733,7 @@ class mail_list_mode extends FeaturedMode
 		NavigatorMenu
 		RowClick
 		ArticleRowUserClick
+		MailListToolbar
 		BottomUserClick
 		MousePaging
 		MouseHomeEnd
@@ -1818,6 +1834,7 @@ class user_mode extends FeaturedMode
 	name: 'user'
 	features: [
 		UserBottomBar
+		common.URLRecognizer
 	]
 
 class board_info_mode extends FeaturedMode
@@ -1872,6 +1889,7 @@ class friends_list_mode extends FeaturedMode
 	features: [
 		NavigatorMenu
 		RowClick
+		TopNotification
 		UserListToolbar
 		common.IPResolve
 		MousePaging
