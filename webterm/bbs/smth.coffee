@@ -306,7 +306,7 @@ class Navigator
 	@timeline: (screen) =>
 		@favorite screen
 		screen.events.send_key 'ctrl-k'
-	@mail: (screen) ->
+	@mail: (screen) =>
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.mail
 	@all_mails: (screen) =>
@@ -318,7 +318,7 @@ class Navigator
 		else
 			@main screen
 			screen.events.send_key_sequence_string NavigatorPathsInfo.new_mails
-	@at: (screen) ->
+	@at: (screen) =>
 		@main screen
 		screen.events.send_key_sequence_string NavigatorPathsInfo.at
 	@replies: (screen) =>
