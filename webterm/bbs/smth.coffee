@@ -908,6 +908,7 @@ class AttachmentUpload extends Feature
 			counter: files.length
 		for file, i in files
 			form['attachfile'+i] = file
+		webterm.status_bar.info "正在上传附件"
 		webterm.upload.upload_files
 			url: url
 			form: form
