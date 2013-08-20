@@ -56,8 +56,8 @@ spawn_with_auto_recover = (command, args, on_stdout, on_stderr, auto_recover) ->
 			else
 				console.error red "abort!"
 
-coffee = (args, {on_stdout, on_stderr, auto_recover}) ->
-	spawn_with_auto_recover coffee_bin(), args, on_stdout, on_stderr, auto_recover
+coffee = (args, opts) ->
+	spawn_with_auto_recover coffee_bin(), args, opts?.on_stdout, opts?.on_stderr, opts?.auto_recover
 
 mkdir = (dir) ->
 	if not fs.existsSync dir
