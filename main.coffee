@@ -17,7 +17,7 @@ setup_address_book = ->
 	for {name, host, port, protocol, module, icon, user_defined}, i in webterm.address_book.get_list()
 		css = if user_defined then 'user_defined' else ''
 		if icon
-			li = "<li connect='#{i}' class='#{css}'><a href='#}'><img src='#{icon}'/>#{name}</a></li>"
+			li = "<li connect='#{i}' class='#{css}'><a href='#'><img src='#{icon}'/>#{name}</a></li>"
 		else
 			li = "<li connect='#{i}' class='#{css}'><a href='#'>#{name}</a></li>"
 		$('#quick-connect').append li
@@ -160,25 +160,25 @@ setup_connect_dialog = ->
 				$('#connect-host').focus()
 		]
 
-		$.contextMenu
-			selector: '#connect-host'
-			build: ($trigger, e) ->
-				menu =
-					callback: ->
-						index = $('#connect-host').attr('connect') ? 0
-						removed = webterm.address_book.remove index
-						if removed?
-							update_address_book()
-							webterm.status_bar.info '删除地址成功'
-							switch_address index
-						else
-							webterm.status_bar.info '不能删除此地址（此地址可能为内置地址）'
-					items: [
-						id: 'delete'
-						name: '删除此地址'
-						icon: 'delete'
-					]
-				return menu
+	$.contextMenu
+		selector: '#connect-host'
+		build: ($trigger, e) ->
+			menu =
+				callback: ->
+					index = $('#connect-host').attr('connect') ? 0
+					removed = webterm.address_book.remove index
+					if removed?
+						update_address_book()
+						webterm.status_bar.info '删除地址成功'
+						switch_address index
+					else
+						webterm.status_bar.info '不能删除此地址（此地址可能为内置地址）'
+				items: [
+					id: 'delete'
+					name: '删除此地址'
+					icon: 'delete'
+				]
+			return menu
 
 setup_settings_dialog = ->
 	$('#settings').click ->
