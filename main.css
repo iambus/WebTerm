@@ -78,11 +78,11 @@ body {
 #new-tab .icon {
     width: 16px;
     height: 16px;
-    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
+    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_222222_256x240.png);
     background-position: -32px -128px;
 }
 #new-tab .icon:hover {
-    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
+    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 #title-panel {
@@ -90,7 +90,7 @@ body {
     height: 16px;
 }
 #title-panel div.ui-icon:hover {
-    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
+    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 #quick-connect {
@@ -267,7 +267,7 @@ div[aria-describedby="script-dialog"] .ui-dialog-buttonpane {
     cursor: pointer;
 }
 #status-bar .ui-icon:hover {
-    background-image: url(lib/jquery-ui-1.10.2.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
+    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 /* main */
