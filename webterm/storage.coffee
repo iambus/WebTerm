@@ -15,7 +15,10 @@ else
 
 if webterm.platform == 'chrome'
 	storage_get = (key, callback) ->
-		chrome.storage.local.get key, (o) -> callback o[key]
+		chrome.storage.local.get key, (o) ->
+			setTimeout ->
+				callback o[key]
+			, 0
 	storage_set = (key, value) ->
 		o = {}
 		o[key] = value
