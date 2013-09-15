@@ -113,6 +113,9 @@ load = ->
 load_new_tab = (json) ->
 	new_tab_and_do (screen) -> load_json screen, json
 
+load_new_tab_from_ascii = (files...) ->
+	new_tab_and_do (screen) -> load_ascii.apply null, [screen].concat(files)
+
 benchmark = (n, code) ->
 	if not code?
 		code = n
@@ -171,6 +174,7 @@ webterm.test =
 	new_tab: new_tab
 	load: load
 	load_new_tab: load_new_tab
+	load_new_tab_from_ascii: load_new_tab_from_ascii
 	benchmark: benchmark
 	benchmark_scan: benchmark_scan
 	benchmark_render: benchmark_render
