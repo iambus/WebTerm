@@ -88,6 +88,7 @@ body {
 #title-panel {
     display: -webkit-flex;
     height: 16px;
+    z-index: 101;
 }
 
 #quick-connect {
