@@ -694,6 +694,7 @@ class CleanAd extends Feature
 		/※\s发自:\s*.*水木/
 		/发自.*水木.*版/
 		/ucsmth\/id543183096/
+		/-来自.*客户端/
 	]
 	scan: (screen) ->
 		for row in [1...screen.height]
