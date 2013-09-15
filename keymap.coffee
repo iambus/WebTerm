@@ -142,6 +142,7 @@ key_to_ascii_table =
 	f11: '\x1b[22~'
 
 key_to_ascii_table['ctrl-'+String.fromCharCode(x)] = String.fromCharCode(x-96) for x in [97..122]
+key_to_ascii_table['ctrl-shift-2'] = '\x00'
 
 ##################################################
 # mappings
