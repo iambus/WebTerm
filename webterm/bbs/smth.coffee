@@ -1837,6 +1837,8 @@ class user_mode extends FeaturedMode
 	features: [
 		UserBottomBar
 		common.URLRecognizer
+		common.ImagePreview
+		common.IPResolve
 	]
 
 class board_info_mode extends FeaturedMode

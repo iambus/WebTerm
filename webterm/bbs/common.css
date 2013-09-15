@@ -30,3 +30,7 @@
 .screen .ui-menu-item {
     font-size: 0.9em;
 }
+.screen .bbs-ip:hover {
+    background-color: rgba(128, 128, 128, 0.5);
+    /*cursor: pointer;*/
+}
