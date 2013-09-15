@@ -644,9 +644,9 @@ class BoardBMClick extends Feature
 class BoardInfoClick extends Feature
 	scan: (screen) ->
 		head = screen.view.text.head()
-		m = head.match(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S.*\S|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
+		m = head.match(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)(\s\s\s*\S.*\S|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
 		if m
-			cn_board = m[1]
+			cn_board = m[1].trim()
 			board = m[2]
 			key = "U [#{board}] enter"
 			mappings = {}
@@ -1589,7 +1589,7 @@ class talk_menu_mode extends FeaturedMode
 	]
 
 class board_mode extends FeaturedMode
-	@check: test_headline(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)\s\s\s*(\S.*\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
+	@check: test_headline(/^(?:版主:(?: (?:\w+|\[只读\]))+|诚征版主中)(\s\s\s*\S.*\S+|投票中，按 V 进入投票)\s*\s\s(?:讨论区)? \[([\w.]+)\]$/)
 	name: 'board'
 	features: [
 		NavigatorMenu
