@@ -89,9 +89,6 @@ body {
     display: -webkit-flex;
     height: 16px;
 }
-#title-panel div.ui-icon:hover {
-    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
-}
 
 #quick-connect {
     display: none;
@@ -265,9 +262,6 @@ div[aria-describedby="script-dialog"] .ui-dialog-buttonpane {
 }
 #status-bar #message-body a:hover {
     cursor: pointer;
-}
-#status-bar .ui-icon:hover {
-    background-image: url(lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
 }
 
 /* main */

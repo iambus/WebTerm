@@ -1,0 +1,26 @@
+
+/* button */
+
+.button.ui-icon:hover {
+    background-color: #f19c92;
+}
+
+.button.ui-icon.toggled {
+    background-color: #f19c92;
+}
+
+/* menu */
+
+.popup-menu .menu-label {
+    display: flex;
+}
+.popup-menu ul.menu-items {
+    display: none;
+    position: absolute;
+}
+
+/* toolbar */
+
+.ui-icon.toolbar-divider {
+    background-image: url(/lib/jquery-ui-1.10.3.custom/css/ui-lightness/images/ui-icons_888888_256x240.png);
+}
