@@ -447,7 +447,7 @@ class RowClick extends Feature
 		current = null
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^(-?>|◆)\s+(\d+|\[提示\])/.test line
+			if /^(-?>|◆)\s*(\d+|\[提示\])/.test line
 				current = row
 				break
 		if not current?
@@ -455,7 +455,7 @@ class RowClick extends Feature
 			return
 		for row in [top..bottom]
 			line = view.row(row)
-			if /^(-?>|◆)\s+(\d+|\[提示\])/.test line
+			if /^(-?>|◆)\s*(\d+|\[提示\])/.test line
 				screen.area.define_area class:'bbs-clickable bbs-row-item bbs-row-current-item', key:'enter', 'goto-key': '',
 					row, 1, row, view.width
 			else if /^\s+(\d+|\[提示\])/.test line
@@ -495,7 +495,7 @@ class RowFieldClick extends Feature
 			return
 		for row in [top..bottom]
 			line = screen.view.text.row(row)
-			if not /^(-?>|◆)?\s+(\d+|\[提示\])/.test line
+			if not /^(-?>|◆)?\s*(\d+|\[提示\])/.test line
 				continue
 			box = screen.view.text.row_range row, left, right_boundary
 			i = box.indexOf ' '
