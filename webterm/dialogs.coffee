@@ -39,44 +39,53 @@ file_open = ({accepts, format}, callback) ->
 			else
 				throw new Error("Not Implemented: #{format}")
 
-common_confirm_result = null
-common_confirm_callback = null
 
-common_confirm = (title, message, callback) ->
+
+confirm = (title, message, callback) ->
 	if not callback?
 		callback = message
 		message = title
 		title = '请确认'
-	if common_confirm_callback?
-		throw new Error("Multiple instances required for confirm dialog")
-		return
-	common_confirm_callback = callback
-	$('#common-confirm-dialog').dialog 'option', 'title', title
-	$('#common-confirm-dialog .dialog-message').text message
-	$('#common-confirm-dialog').dialog 'open'
-
-$ ->
-	$('#common-confirm-dialog').dialog
-		autoOpen: false
+	dialog = $ """
+						 <p>
+						 <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+						 <span class="dialog-message"></span>
+						 </p>"""
+	dialog.find('.dialog-message').text message
+	result = null
+	dialog.dialog
+		title: title
+		autoOpen: true
 		modal: true
 		buttons: [
 			text: '确认'
 			click: ->
-				common_confirm_result = true
+				result = true
 				$(@).dialog 'close'
 		,
 			text: '取消'
 			click: ->
-				common_confirm_result = false
+				result = false
 				$(@).dialog 'close'
 		]
+		open: ->
+#			$(@).parents('.ui-dialog-buttonpane button:eq(1)').focus() # XXX: doesn't work
+			$(@).parent().find('.ui-dialog-buttonpane button:eq(1)').focus()
 		close: ->
-			if common_confirm_callback?
-				common_confirm_callback? common_confirm_result
-			common_confirm_result = null
-			common_confirm_callback = null
+			$(@).dialog('destroy').remove()
+			callback? result
+	dialog.parent().keypress (e) ->
+		if e.keyCode == e.charCode == 'y'.charCodeAt(0)
+			$(@).find('.ui-dialog-buttonpane button:eq(0)').click()
+			e.preventDefault()
+			e.stopPropagation()
+		else if e.keyCode == e.charCode == 'n'.charCodeAt(0)
+			$(@).find('.ui-dialog-buttonpane button:eq(1)').click()
+			e.preventDefault()
+			e.stopPropagation()
+
 
 webterm.dialogs =
 	file_save: file_save
 	file_open: file_open
-	confirm: common_confirm
+	confirm: confirm
