@@ -1166,19 +1166,25 @@ class ASCIIBuilder
 
 	generate_diff_styles: (c) ->
 		styles = []
-		if not @equal(@foreground, c.foreground)
-			styles.push if not c.foreground then 39 else c.foreground
-		if not @equal(@background, c.background)
-			styles.push if not c.background then 49 else c.background
+		reset = false
 		if not (@equal(@bright, c.bright) and @equal(@underline, c.underline) and @equal(@blink, c.blink))
 			if @bright or @underline or @blink
 				styles.push 0
+				reset = true
 			if c.bright
 				styles.push 1
 			if c.underline
 				styles.push 4
 			if c.blink
 				styles.push 5
+		if not @equal(@foreground, c.foreground)
+			styles.push if not c.foreground then 39 else c.foreground
+		else if reset and c.foreground
+			styles.push c.foreground
+		if not @equal(@background, c.background)
+			styles.push if not c.background then 49 else c.background
+		else if reset and c.background
+			styles.push c.background
 		"\x1b[#{styles.join ';'}m"
 
 	## helpers
