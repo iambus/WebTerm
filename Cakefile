@@ -6,7 +6,7 @@ task 'build', 'Compile source', ->
 task 'watch', 'Compile source and watch', ->
 	coffee ['-w', '-c', '.'],
 		on_stdout: (s) ->
-			console.log s.replace /^.*\.coffee:\d+:\d+: error:[\s\S]*$/m, red s
+			console.log s.replace /^.*\.coffee:\d+:\d+: error:.*\n.*\r\n\s*\^\x07$/m, (m) -> red m
 		auto_recover: true
 
 task 'deps', 'Install dependencies', ->
