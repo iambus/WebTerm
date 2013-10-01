@@ -90,6 +90,9 @@ body {
     height: 16px;
     z-index: 101;
 }
+#title-panel .ui-icon-gear {
+    background-position: -193px -113px;
+}
 
 #quick-connect {
     display: none;
