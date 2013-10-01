@@ -93,6 +93,16 @@ class BBSMenu extends Feature
 		menu_show = (e) -> $(e.currentTarget).find('ul').show()
 		menu_hide = (e) -> $(e.currentTarget).find('ul').hide()
 		div.hover menu_show, menu_hide
+		# overwrite screen mouse click handler
+		target = null
+		ul.mousedown (e) ->
+			e.stopPropagation()
+			target = e.target
+		ul.mouseup (e) ->
+			e.stopPropagation()
+			if $(e.target).is target
+				screen.events.do_click e
+			target = null
 
 
 class URLRecognizer extends Feature
