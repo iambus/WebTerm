@@ -1646,6 +1646,9 @@ class edit_mode extends FeaturedMode
 	@check: test_footline(/状态 \[插入\]/)
 	name: 'edit'
 	features: [
+		common.URLRecognizer
+		common.ImagePreview
+		common.IPResolve
 		PasteWithoutConfirm
 		MousePaging
 		MouseEditingHomeEnd
