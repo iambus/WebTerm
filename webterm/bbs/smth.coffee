@@ -140,6 +140,31 @@ map_areas_by_regexp_on_line = (screen, row, regexp, bindings) ->
 			areas.push [left, right]
 		map_areas_on_line screen, row, areas, new_bindings
 
+map_all_areas_by_regexp_on_line = (screen, row, regexp, binding) ->
+	line = screen.view.text.row(row)
+	if _.isString regexp
+		regexp = new RegExp regexp, 'g'
+	if not regexp.global
+		throw new Error("RegExp must be global: #{regexp}")
+	areas = []
+	bindings = []
+	while m = regexp.exec line
+		if m.length > 1
+			start = m.index + m[0].indexOf m[1]
+			word = m[1]
+		else
+			start = m.index
+			word = m[0]
+		left = wcwidth(line.substring(0, start)) + 1
+		right = left + word.length - 1
+		areas.push [left, right]
+		if _.isFunction binding
+			bindings.push binding word
+		else
+			bindings.push binding
+	if areas.length > 0
+		map_areas_on_line screen, row, areas, bindings
+
 ##################################################
 # operations
 ##################################################
@@ -739,11 +764,9 @@ class ArticleUser extends Feature
 					(field) -> "u [#{field.match(/^\w+/)[0]}] enter"
 				]
 			# at
-			map_areas_by_regexp_on_line screen, row,
-				/(@\w{2,})[^.]/
-				[
-					(field) -> "u [#{field.substring(1)}] enter"
-				]
+			map_all_areas_by_regexp_on_line screen, row,
+				/(@\w{2,})[^.]/g
+				(field) -> "u [#{field.substring(1)}] enter"
 			# like
 			map_areas_by_regexp_on_line screen, row,
 				/\[[+-\s]\d\] (\w{2,}):/
