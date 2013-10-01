@@ -1611,7 +1611,7 @@ class anykey_mode extends FeaturedMode
 	]
 
 class enterkey_mode extends FeaturedMode
-	@check: test_footline(/^\s*(请按 ◆Enter◆ 继续|帮助信息显示完成, 按回车键继续\.\.\.|您不能给自己奖励个人积分, 按 <ENTER> 键继续\.\.\.|您不能给该用户奖励个人积分, 按 <ENTER> 键继续\.\.\.)\s*$/)
+	@check: test_footline(/^\s*(请按 ◆Enter◆ 继续|帮助信息显示完成, 按回车键继续\.\.\.|您不能给自己奖励个人积分, 按 <ENTER> 键继续\.\.\.|您不能给该用户奖励个人积分, 按 <ENTER> 键继续\.\.\.|该主题已被删除, 按回车键继续\.\.\.)\s*$/)
 	name: 'enterkey'
 	features: [
 		ClickEnter
