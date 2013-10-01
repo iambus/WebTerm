@@ -634,9 +634,9 @@ class Events
 		# mouse click events
 		@clickables = []
 		mouse_click_at = null
-		mouse_click_when = new Date()
 		$(@screen.selector).mousedown (e) =>
-			if e.button == 0 and e.which == 1
+			if e.which == 1
+				e.preventDefault()
 				# clear old selection
 				if @screen.selection
 					@screen.selection = null
@@ -645,32 +645,25 @@ class Events
 				@screen.selection = new Selection(@screen)
 				@screen.selection.start = [e.pageX, e.pageY]
 				@screen.selection.column_mode = e.altKey
-				e.preventDefault()
-			if e.button == 0
 				mouse_click_at = [e.offsetX, e.offsetY]
-				now = new Date()
-				if now - mouse_click_when < 500 and @is_clicking_anything e
-					# double clicking on a clickable, let's prevent annoying selections
-					e.preventDefault()
-				mouse_click_when = now
 		$(@screen.selector).mouseup (e) =>
-			if e.button == 0 and e.which == 1 and @screen.selection
-				if not @screen.selection.ready
-					@screen.selection = null
-				else if @screen.selection.done
-					@screen.selection = null
-					@screen.render()
-					return
-				else
-					@screen.selection.done = true
-					return
-			if e.button == 0
+			if e.which == 1
+				if @screen.selection
+					if not @screen.selection.ready
+						@screen.selection = null
+					else if @screen.selection.done
+						@screen.selection = null
+						@screen.render()
+						return
+					else
+						@screen.selection.done = true
+						return
 				if mouse_click_at?
 					# now it's real mouse click event
 					@do_click e
 					mouse_click_at = null
 		$(@screen.selector).mousemove (e) =>
-			if e.button == 0 and e.which == 1 and @screen.selection and not @screen.selection.done
+			if e.which == 1 and @screen.selection and not @screen.selection.done
 				if not @screen.selection.range?
 					start_x = @screen.selection.start[0]
 					start_y = @screen.selection.start[1]
@@ -693,14 +686,14 @@ class Events
 					if @screen.selection.update_range pos
 						@screen.render_selection()
 						e.preventDefault()
-			else if e.button == 0 and e.which == 1 and @screen.selection and @screen.selection.done
+			else if e.which == 1 and @screen.selection and @screen.selection.done
 				# when user holds on mouse at the edge of screen
 				@screen.selection = null
 				@screen.render()
 				@screen.selection = new Selection(@screen)
 				@screen.selection.start = [e.pageX, e.pageY]
 				@screen.selection.column_mode = e.altKey
-			else if e.button == 0 and e.which == 1 and not @screen.selection
+			else if e.which == 1 and not @screen.selection
 				# when user holds on mouse at the edge of screen
 				@screen.selection = new Selection(@screen)
 				@screen.selection.start = [e.pageX, e.pageY]
