@@ -1433,6 +1433,18 @@ class UserBottomBar extends Feature
 				'驻版[k]': "k"
 				'短信[w]': "w"
 				'其它键继续': "whitespace"
+		else if line == '信息[i] 寄信[m]           加,减朋友[o,d] 说明档[l] 驻版[k] 短信[w] 其它键继续'
+			map_areas_by_words_on_line screen, screen.height,
+				'信息[i]': "i"
+				'寄信[m]': "m"
+				'加': "o"
+				'o': "o"
+				'减': "d"
+				'd': "d"
+				'说明档[l]': "l"
+				'驻版[k]': "k"
+				'短信[w]': "w"
+				'其它键继续': "whitespace"
 
 ##################################################
 # board info
