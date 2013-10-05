@@ -163,9 +163,16 @@ span.selected {
     overflow-x: hidden;
     overflow-y: auto;
 }
+.screen-sider-multimedia > div.image-loader {
+    /*padding: 1px;*/
+    border: 1px solid;
+}
+.screen-sider-multimedia > div.image-loader:hover {
+    /*padding: 1px;*/
+    border: 1px solid orange;
+}
 .screen-sider-multimedia > div.image-loader > img {
     width: 100%;
-    padding: 1px;
 }
 .screen-sider-multimedia > div.image-loader > span {
     display: none;

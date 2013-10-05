@@ -75,8 +75,7 @@ screen_layout = (div) ->
 					resizable: true
 					resizeWhileDragging: true
 					slidable: true
-					size: 80
-					size: 80
+					size: 100
 #			$(div).find('.screen-sider').accordion()
 			webterm.accordion $(div).find('.webterm-accordion')
 		, 0
