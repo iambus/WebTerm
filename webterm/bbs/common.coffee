@@ -162,7 +162,7 @@ class MultiMedia extends Feature
 	render: (screen) ->
 		urls = $(screen.selector).find('a')
 		urls = (url.getAttribute('href') for url in urls)
-		screen.sider.render_multimedia urls
+		screen.sider.update_multimedia urls
 
 class IPResolve extends Feature
 	scan: (screen) ->

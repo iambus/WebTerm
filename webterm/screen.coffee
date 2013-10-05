@@ -1238,6 +1238,16 @@ class ScreenSider
 				within: screen_div
 			tooltipClass: 'image-preview-tooltip'
 
+		@urls = []
+		webterm.accordion @div, 'on', 'show', (accordion, section) =>
+			if @multimedia.parent().is section
+				@render_multimedia @urls
+
+	update_multimedia: (urls) ->
+		@urls = urls
+		if @multimedia.is ":visible"
+			@render_multimedia(urls)
+
 	render_multimedia: (urls) ->
 		images = (url for url in urls when url.match /\.(jpg|jpeg|png|gif|bmp)$/i)
 		sounds = (url for url in urls when url.match /\.(mp3|wma|wav)$/i)
