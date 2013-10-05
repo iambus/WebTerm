@@ -85,23 +85,12 @@ load_test = (screen) ->
 #	load_json screen, 'ascii_3.json'
 #	load_json screen, 'gesture_bug.json'
 
-setup_tab = (id) ->
-	if _.isNumber id
-		id = webterm.tabs.nth_id(1)
-	selector = "##{id} .screen"
-	screen = new webterm.Screen selector
-	setup screen
-	return screen
+
 
 new_tab_and_do = (callback) ->
-	webterm.tabs.add
-		icon: 'lib/smth.ico'
-		title: 'Test'
-		content: '<div class="screen"></div>'
-		on_open: (info) ->
-			screen = setup_tab info.id
-			callback screen
-			info.session = screen: screen
+	webterm.tabs.bbs_raw {icon: 'lib/smth.ico', name: 'Test'}, (screen) ->
+		setup screen
+		callback? screen
 
 new_tab = ->
 	new_tab_and_do load_test

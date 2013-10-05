@@ -89,6 +89,19 @@ screen_layout = (div, callback) ->
 			callback?()
 		, 0
 
+# only for debugging usage
+raw_bbs_tab = (address, callback) ->
+	webterm.tabs.add
+		icon: address.icon
+		title: address.name
+		content: screen_layout_html
+		on_open: (info) ->
+			screen_layout info.div, ->
+				selector = "##{info.id} .screen"
+				screen = new webterm.Screen selector
+				callback? screen
+				info.session = screen: screen
+
 new_bbs_tab = (address) ->
 	webterm.tabs.add
 		icon: address.icon
@@ -123,8 +136,9 @@ new_bbs_tab = (address) ->
 					$(info.session.screen.selector).find('.bbs-reconnect').click reconnect
 					$(info.session.screen.selector).find('.cursor').removeClass('cursor')
 					$(info.session.screen.selector).find('.blink').removeClass('blink')
-			on_closed: (info) ->
-				info.session.connection.disconnect()
+		on_closed: (info) ->
+			info.session.connection.disconnect()
 
 $ ->
 	webterm.tabs.bbs = new_bbs_tab
+	webterm.tabs.bbs_raw = raw_bbs_tab
