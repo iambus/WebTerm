@@ -1239,11 +1239,19 @@ class ScreenSider
 				collision: "fit"
 				within: screen_div
 			tooltipClass: 'image-preview-tooltip'
+			open: (event, ui) ->
+				img = $(event.originalEvent.target)
+				ui.tooltip.mouseleave ->
+					img.mouseleave()
 
 		@urls = []
 		webterm.accordion @div, 'on', 'show', (accordion, section) =>
 			if @multimedia.parent().is section
 				@render_multimedia @urls
+
+		@images = []
+		@div_images.hover ->
+			$(@).find('.hover').removeClass 'hover'
 
 	update_multimedia: (urls) ->
 		@urls = urls
@@ -1263,6 +1271,7 @@ class ScreenSider
 		@div_images.empty()
 		for url in urls
 			@show_image url
+		@focused_index = null
 		return
 
 	show_image: (url) ->
@@ -1311,6 +1320,47 @@ class ScreenSider
 		for url in urls
 			if url not in playing
 				div = $("""<div class='sound-loader'><audio controls="controls" title="#{url}"><source src="#{url}"></audio></div>""").appendTo @div_sounds
+
+	navigate_up: ->
+		@navigate_of -1
+
+	navigate_down: ->
+		@navigate_of 1
+
+	navigate_of: (n) ->
+		if not @multimedia.is ":visible"
+			webterm.accordion @multimedia.parent(), 'toggle'
+			return
+		total = @images.length
+		if total <= 0
+			return
+		if @focused_index?
+			@navigate_leave @focused_index
+		else
+			if n > 0
+				@focused_index = -1
+			else if n < 0
+				@focused_index = 0
+			else
+				throw new Error("Internal error: #{n} is invalid")
+		@focused_index = (@focused_index + total + n) % total
+		@navigate_at @focused_index
+
+	navigate_at: (n) ->
+		img = @div_images.find('img')[n]
+		if img
+			$(img).mouseenter()
+			$(img).parent().addClass('hover')
+		else
+			throw new Error("Internal error: image not found (index: #{n})?")
+
+	navigate_leave: (n) ->
+		img = @div_images.find('img')[n]
+		if img
+			$(img).mouseleave()
+			$(img).parent().removeClass('hover')
+		else
+			throw new Error("Internal error: image not found (index: #{n})?")
 
 ##################################################
 # Screen
@@ -1419,6 +1469,12 @@ class Screen
 			contexts: 'all'
 			onclick: paste # XXX: or paste-default?
 #		@context_menus.refresh()
+
+
+		@events.on_key_persisted 'ctrl-up', =>
+			@sider.navigate_up()
+		@events.on_key_persisted 'ctrl-down', =>
+			@sider.navigate_down()
 
 		@expect = new Expect @
 

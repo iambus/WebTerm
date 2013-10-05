@@ -164,11 +164,12 @@ span.selected {
     overflow-y: auto;
 }
 .screen-sider-multimedia div.image-loader {
-    /*padding: 1px;*/
     border: 1px solid;
 }
 .screen-sider-multimedia div.image-loader:hover {
-    /*padding: 1px;*/
+    border: 1px solid orange;
+}
+.screen-sider-multimedia div.image-loader.hover {
     border: 1px solid orange;
 }
 .screen-sider-multimedia div.image-loader > img {
