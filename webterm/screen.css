@@ -182,6 +182,9 @@ span.selected {
 .screen-sider-multimedia > div.image-loader.image-loading > span {
     display: block;
 }
+.screen-sider-multimedia > div.image-loader.image-loading-error > span {
+    color: red;
+}
 .ui-tooltip.image-preview-tooltip {
     max-width: 1024px;
 }

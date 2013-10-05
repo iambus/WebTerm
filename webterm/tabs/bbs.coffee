@@ -60,6 +60,10 @@ screen_layout_html = '''<div class="screen-layout" style="width: 100%; height: 1
 	<h3>位置</h3>
 	<div class="screen-sider-locations"></div>
 </div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>选项</h3>
+	<div class="screen-sider-options"></div>
+</div>
 </div>
 </div>
 </div>'''

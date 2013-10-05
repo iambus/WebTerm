@@ -1235,6 +1235,9 @@ class ScreenSider
 			tooltipClass: 'image-preview-tooltip'
 
 	show_images: (urls) ->
+		if _.isEqual @images, urls
+			return
+		@images = urls
 		@multimedia.empty()
 #		current = (img.src for img in @multimedia.find('> img'))
 		for u in urls
@@ -1260,6 +1263,8 @@ class ScreenSider
 						div.removeClass 'image-loading'
 						div.addClass 'image-loading-complete'
 					else
+						span.attr 'title', url
+						span.text "error"
 						div.addClass 'image-loading-error'
 				xhr.addEventListener 'progress', (event) ->
 					if event.loaded? and event.total?
