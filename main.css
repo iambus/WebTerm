@@ -97,6 +97,7 @@ body {
 #quick-connect {
     display: none;
     position: absolute;
+    z-index: 5;
     margin-left: 16px;
     margin-top: -16px;
 }

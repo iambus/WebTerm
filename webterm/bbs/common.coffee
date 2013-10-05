@@ -155,7 +155,11 @@ class URLRecognizer extends Feature
 
 class ImagePreview extends Feature
 	render: (screen) ->
-		$(screen.selector).find('a').preview()
+		urls = $(screen.selector).find('a')
+		urls.preview()
+		urls = (url.getAttribute('href') for url in urls)
+		images = (url for url in urls when url.match /\.(jpg|jpeg|png|gif|bmp)$/i)
+		screen.sider.show_images images
 
 class IPResolve extends Feature
 	scan: (screen) ->

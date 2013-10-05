@@ -1,0 +1,22 @@
+.webterm-accordion-section > h3 {
+    margin: 0;
+    margin-left: 2px;
+    border-bottom: 1px solid;
+    padding: 2px;
+}
+.webterm-accordion-section > div {
+    display: none;
+}
+.webterm-accordion-section > h3:hover {
+    /*background-color: rgba(128, 128, 128, 0.5);*/
+    color: orange;
+}
+.webterm-accordion-section.webterm-accordion-toggled > div {
+    display: block;
+    border-bottom: 1px solid orange;
+}
+.webterm-accordion-section.webterm-accordion-toggled > h3 {
+    /*background-color: rgba(128, 128, 128, 0.5);*/
+    color: orange;
+    border-bottom: none;
+}

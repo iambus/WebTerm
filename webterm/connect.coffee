@@ -27,12 +27,65 @@ connect = (selector, host, port, mode, on_connected) ->
 	connection: connection
 	screen: screen
 
+screen_html = '<div class="screen"></div>'
+screen_layout_html = '<div class="screen-layout" style="width: 100%; height: 100%"><div class="screen ui-layout-center"></div><div class="ui-layout-east"></div></div>'
+screen_layout_html = '''<div class="screen-layout" style="width: 100%; height: 100%">
+<div class="ui-layout-center"><div class="screen"></div></div>
+<div class="ui-layout-east">
+<div class="screen-sider webterm-accordion">
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>多媒体</h3>
+	<div class="screen-sider-multimedia"></div>
+</div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>快捷键</h3>
+	<div class="screen-sider-hotkeys"></div>
+</div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>手势</h3>
+	<div class="screen-sider-gestures"></div>
+</div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>命令</h3>
+	<div class="screen-sider-commands"></div>
+</div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>任务</h3>
+	<div class="screen-sider-jobs"></div>
+</div>
+<div class="webterm-accordion-section webterm-accordion-toggled">
+	<h3>位置</h3>
+	<div class="screen-sider-locations"></div>
+</div>
+</div>
+</div>
+</div>'''
+screen_layout = (div) ->
+	element = $(div).find('.screen-layout')
+	if element.length > 0
+		setTimeout ->
+			element.layout
+				defaults:
+					spacing_open: 3
+					spacing_closed: 3
+				east:
+					resizable: true
+					resizeWhileDragging: true
+					slidable: true
+					size: 80
+					size: 80
+#			$(div).find('.screen-sider').accordion()
+			webterm.accordion $(div).find('.webterm-accordion')
+		, 0
+
 new_bbs_tab = (address) ->
 	webterm.tabs.add
 		icon: address.icon
 		title: address.name
-		content: '<div class="screen"></div>'
+#		content: screen_html
+		content: screen_layout_html
 		on_open: (info) ->
+			screen_layout(info.div)
 			info.session = connect("##{info.id} .screen", address.host, address.port, address.module)
 			info.session.connection.on_connected = ->
 				info.li.addClass 'connected'

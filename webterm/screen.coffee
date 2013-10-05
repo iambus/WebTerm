@@ -1208,6 +1208,38 @@ class ASCIIBuilder
 ##################################################
 
 ##################################################
+# sider
+##################################################
+
+class ScreenSider
+	constructor: (@div) ->
+		@multimedia = @div.find('.screen-sider-multimedia')
+		@hotkeys = @div.find('.screen-sider-hotkeys')
+		@gestures = @div.find('.screen-sider-gestures')
+		@commands = @div.find('.screen-sider-commands')
+		@jobs = @div.find('.screen-sider-jobs')
+		@locations = @div.find('.screen-sider-locations')
+	show_images: (urls) ->
+		@multimedia.empty()
+		load_image = (url, callback) ->
+			xhr = new XMLHttpRequest()
+			xhr.open('GET', url, true)
+			xhr.responseType = 'blob'
+			xhr.onload = ->
+				if @response.size > 0
+					callback window.webkitURL.createObjectURL @response
+				else
+					callback()
+			xhr.send()
+#		current = (img.src for img in @multimedia.find('> img'))
+		for url in urls
+			do =>
+				u = url
+				img = $("<img/>").appendTo @multimedia
+				load_image u, (data) ->
+					img.attr 'src', data
+
+##################################################
 # Screen
 ##################################################
 
@@ -1215,6 +1247,10 @@ class Screen
 	constructor: (@selector, @width=80, @height=24) ->
 		if not @selector
 			throw Error("Screen must has a selector")
+
+		@div = $(@selector)
+		@sider_div = @div.parents('.screen-layout').find('.screen-sider')
+		@sider = new ScreenSider @sider_div
 
 		@term = new Term(@width, @height)
 		@data = @term.data
