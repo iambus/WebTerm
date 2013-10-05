@@ -226,6 +226,7 @@ build_out = ->
 		'webterm/settings.js'
 		'webterm/storage.js'
 		'webterm/tabs.js'
+		'webterm/tabs/bbs.js'
 		'webterm/windows.js'
 		'webterm/status_bar.js'
 		'webterm/accordion.js'
@@ -233,7 +234,6 @@ build_out = ->
 		'webterm/notifications.js'
 		'webterm/ip.js'
 		'webterm/alert.js'
-		'webterm/connect.js'
 		'webterm/address_book.js'
 
 		'lib/byr.ico'

@@ -35,7 +35,7 @@ lookup_host = (host) ->
 connect = (n) ->
 	address = nth n
 	if address?
-		webterm.new_bbs_tab address
+		webterm.tabs.bbs address
 	else
 		console.error "address book overflow: #{n}"
 

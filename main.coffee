@@ -73,7 +73,7 @@ setup_connect_dialog = ->
 			id: 'connect-ok'
 			text: '连接'
 			click: ->
-				webterm.new_bbs_tab
+				webterm.tabs.bbs
 					icon: $('#connect-icon > img').attr 'src'
 					name: $('#connect-dialog').dialog('option', 'title').match('^连接到(.+)$')?[1] ? $('#connect-host').val()
 					host: $('#connect-host').val()

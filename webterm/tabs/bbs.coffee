@@ -28,7 +28,6 @@ connect = (selector, host, port, mode, on_connected) ->
 	screen: screen
 
 screen_html = '<div class="screen"></div>'
-screen_layout_html = '<div class="screen-layout" style="width: 100%; height: 100%"><div class="screen ui-layout-center"></div><div class="ui-layout-east"></div></div>'
 screen_layout_html = '''<div class="screen-layout" style="width: 100%; height: 100%">
 <div class="ui-layout-center"><div class="screen"></div></div>
 <div class="ui-layout-east">
@@ -115,4 +114,5 @@ new_bbs_tab = (address) ->
 		on_closed: (info) ->
 			info.session.connection.disconnect()
 
-webterm.new_bbs_tab = new_bbs_tab
+$ ->
+	webterm.tabs.bbs = new_bbs_tab
