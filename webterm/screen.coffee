@@ -1229,6 +1229,8 @@ class ScreenSider
 			items: ".image-loading-complete img"
 			content: ->
 				max_width = $(screen_div).width()
+				if max_width > 1024
+					max_width = 1024
 				max_height = $(screen_div).height()
 				return "<img src='#{@getAttribute 'src'}' style='max-width: #{max_width}px; max-height: #{max_height}px'>"
 			position:
