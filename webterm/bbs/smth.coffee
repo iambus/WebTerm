@@ -1666,6 +1666,7 @@ class read_mode extends FeaturedMode
 		CleanAd
 		common.URLRecognizer
 		common.ImagePreview
+		common.MultiMedia
 		common.IPResolve
 		ArticleContextMenu
 		ArticleUser
@@ -1889,6 +1890,7 @@ class user_mode extends FeaturedMode
 		UserBottomBar
 		common.URLRecognizer
 		common.ImagePreview
+		common.MultiMedia
 		common.IPResolve
 	]
 

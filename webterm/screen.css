@@ -163,27 +163,33 @@ span.selected {
     overflow-x: hidden;
     overflow-y: auto;
 }
-.screen-sider-multimedia > div.image-loader {
+.screen-sider-multimedia div.image-loader {
     /*padding: 1px;*/
     border: 1px solid;
 }
-.screen-sider-multimedia > div.image-loader:hover {
+.screen-sider-multimedia div.image-loader:hover {
     /*padding: 1px;*/
     border: 1px solid orange;
 }
-.screen-sider-multimedia > div.image-loader > img {
+.screen-sider-multimedia div.image-loader > img {
     width: 100%;
 }
-.screen-sider-multimedia > div.image-loader > span {
+.screen-sider-multimedia div.image-loader > span {
     display: none;
     color: white;
     padding-left: 4px;
 }
-.screen-sider-multimedia > div.image-loader.image-loading > span {
+.screen-sider-multimedia div.image-loader.image-loading > span {
     display: block;
 }
-.screen-sider-multimedia > div.image-loader.image-loading-error > span {
+.screen-sider-multimedia div.image-loader.image-loading-error > span {
     color: red;
+}
+.screen-sider-multimedia div.sound-loader {
+    width: 100%;
+}
+.screen-sider-multimedia div.sound-loader > audio {
+    width: 100%;
 }
 .ui-tooltip.image-preview-tooltip {
     max-width: 1024px;

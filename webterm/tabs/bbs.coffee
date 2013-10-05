@@ -34,7 +34,11 @@ screen_layout_html = '''<div class="screen-layout" style="width: 100%; height: 1
 <div class="screen-sider webterm-accordion">
 <div class="webterm-accordion-section webterm-accordion-toggled">
 	<h3>多媒体</h3>
-	<div class="screen-sider-multimedia"></div>
+	<div class="screen-sider-multimedia">
+		<div class="screen-sider-sounds"></div>
+		<div class="screen-sider-videos"></div>
+		<div class="screen-sider-images"></div>
+	</div>
 </div>
 <div class="webterm-accordion-section webterm-accordion-toggled">
 	<h3>快捷键</h3>

@@ -157,9 +157,12 @@ class ImagePreview extends Feature
 	render: (screen) ->
 		urls = $(screen.selector).find('a')
 		urls.preview()
+
+class MultiMedia extends Feature
+	render: (screen) ->
+		urls = $(screen.selector).find('a')
 		urls = (url.getAttribute('href') for url in urls)
-		images = (url for url in urls when url.match /\.(jpg|jpeg|png|gif|bmp)$/i)
-		screen.sider.show_images images
+		screen.sider.render_multimedia urls
 
 class IPResolve extends Feature
 	scan: (screen) ->
@@ -221,6 +224,7 @@ exports =
 	BBSMenu: BBSMenu
 	URLRecognizer: URLRecognizer
 	ImagePreview: ImagePreview
+	MultiMedia: MultiMedia
 	IPResolve: IPResolve
 	CleanSignature: CleanSignature
 

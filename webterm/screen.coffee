@@ -1220,6 +1220,10 @@ class ScreenSider
 		@jobs = @div.find('.screen-sider-jobs')
 		@locations = @div.find('.screen-sider-locations')
 
+		@div_images = @multimedia.find('> .screen-sider-images')
+		@div_sounds = @multimedia.find('> .screen-sider-sounds')
+		@div_videos = @multimedia.find('> .screen-sider-videos')
+
 		screen_div = @div.parents('.screen-layout').find('.screen')
 		@multimedia.tooltip
 			items: ".image-loading-complete img"
@@ -1234,44 +1238,67 @@ class ScreenSider
 				within: screen_div
 			tooltipClass: 'image-preview-tooltip'
 
+	render_multimedia: (urls) ->
+		images = (url for url in urls when url.match /\.(jpg|jpeg|png|gif|bmp)$/i)
+		sounds = (url for url in urls when url.match /\.(mp3|wma|wav)$/i)
+		@show_images images
+		@show_sounds sounds
+
 	show_images: (urls) ->
-		if _.isEqual @images, urls
+		if _.isEqual(@images, urls)
 			return
 		@images = urls
-		@multimedia.empty()
-#		current = (img.src for img in @multimedia.find('> img'))
-		for u in urls
-			do =>
-				url = u
-				div = $("<div class='image-loader image-loading'><img/><span class='image-status'>Loading...</span></div>").appendTo @multimedia
-				img = div.find('img')
-				span = div.find('span')
-				xhr = new XMLHttpRequest()
-				xhr.open('GET', url, true)
-				xhr.responseType = 'blob'
-				get_filename = ->
-					name = xhr.getResponseHeader('Content-Disposition')?.match(/filename=(\S+)/)?[1]
-					if name?
-						return decodeURIComponent name
-				xhr.onload = ->
-					if @response.size > 0
-						img.attr 'src', window.webkitURL.createObjectURL @response
-						filename = get_filename()
-						if filename?
-							img.attr 'filename', filename
-							img.attr 'title', filename
-						div.removeClass 'image-loading'
-						div.addClass 'image-loading-complete'
-					else
-						span.attr 'title', url
-						span.text "error"
-						div.addClass 'image-loading-error'
-				xhr.addEventListener 'progress', (event) ->
-					if event.loaded? and event.total?
-						percent = Math.floor event.loaded / event.total * 100
-						span.text "#{percent}%"
-				, false
-				xhr.send()
+		@div_images.empty()
+		for url in urls
+			@show_image url
+		return
+
+	show_image: (url) ->
+		div = $("<div class='image-loader image-loading'><img/><span class='image-status'>Loading...</span></div>").appendTo @div_images
+		img = div.find('img')
+		span = div.find('span')
+		xhr = new XMLHttpRequest()
+		xhr.open('GET', url, true)
+		xhr.responseType = 'blob'
+		get_filename = ->
+			name = xhr.getResponseHeader('Content-Disposition')?.match(/filename=(\S+)/)?[1]
+			if name?
+				return decodeURIComponent name
+		xhr.onload = ->
+			if @response.size > 0
+				img.attr 'src', window.webkitURL.createObjectURL @response
+				filename = get_filename()
+				if filename?
+					img.attr 'filename', filename
+					img.attr 'title', filename
+				div.removeClass 'image-loading'
+				div.addClass 'image-loading-complete'
+			else
+				span.attr 'title', url
+				span.text "error"
+				div.addClass 'image-loading-error'
+		xhr.addEventListener 'progress', (event) ->
+			if event.loaded? and event.total?
+				percent = Math.floor event.loaded / event.total * 100
+				span.text "#{percent}%"
+		, false
+		xhr.send()
+
+	show_sounds: (urls) ->
+		if _.isEqual(@sounds, urls)
+			return
+		@sounds = urls
+#		@div_sounds.empty()
+		playing = []
+		for div in @div_sounds.children('div.sound-loader')
+			audio = $(div).children('audio')[0]
+			if audio.paused
+				$(div).remove()
+			else
+				playing.push audio.currentSrc
+		for url in urls
+			if url not in playing
+				div = $("""<div class='sound-loader'><audio controls="controls" title="#{url}"><source src="#{url}"></audio></div>""").appendTo @div_sounds
 
 ##################################################
 # Screen
