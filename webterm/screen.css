@@ -161,9 +161,17 @@ span.selected {
     font-family: 微软雅黑;
     height: 100%;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
-.screen-sider-multimedia > img {
+.screen-sider-multimedia > div.image-loader > img {
     width: 100%;
     padding: 1px;
+}
+.screen-sider-multimedia > div.image-loader > span {
+    display: none;
+    color: white;
+    padding-left: 4px;
+}
+.screen-sider-multimedia > div.image-loader.image-loading > span {
+    display: block;
 }

@@ -1221,23 +1221,28 @@ class ScreenSider
 		@locations = @div.find('.screen-sider-locations')
 	show_images: (urls) ->
 		@multimedia.empty()
-		load_image = (url, callback) ->
-			xhr = new XMLHttpRequest()
-			xhr.open('GET', url, true)
-			xhr.responseType = 'blob'
-			xhr.onload = ->
-				if @response.size > 0
-					callback window.webkitURL.createObjectURL @response
-				else
-					callback()
-			xhr.send()
 #		current = (img.src for img in @multimedia.find('> img'))
-		for url in urls
+		for u in urls
 			do =>
-				u = url
-				img = $("<img/>").appendTo @multimedia
-				load_image u, (data) ->
-					img.attr 'src', data
+				url = u
+				div = $("<div class='image-loader image-loading'><img/><span class='image-status'>Loading...</span></div>").appendTo @multimedia
+				img = div.find('img')
+				span = div.find('span')
+				xhr = new XMLHttpRequest()
+				xhr.open('GET', url, true)
+				xhr.responseType = 'blob'
+				xhr.onload = ->
+					if @response.size > 0
+						img.attr 'src', window.webkitURL.createObjectURL @response
+						div.removeClass 'image-loading'
+					else
+						div.addClass 'image-loading-error'
+				xhr.addEventListener 'progress', (event) ->
+					if event.loaded? and event.total?
+						percent = Math.floor event.loaded / event.total * 100
+						span.text "#{percent}%"
+				, false
+				xhr.send()
 
 ##################################################
 # Screen

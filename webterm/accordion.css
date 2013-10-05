@@ -9,7 +9,7 @@
 }
 .webterm-accordion-section > h3:hover {
     /*background-color: rgba(128, 128, 128, 0.5);*/
-    color: orange;
+    color: lightblue;
 }
 .webterm-accordion-section.webterm-accordion-toggled > div {
     display: block;
