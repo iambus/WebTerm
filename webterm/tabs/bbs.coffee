@@ -40,6 +40,10 @@ screen_layout_html = '''<div class="screen-layout" style="width: 100%; height: 1
 	<h3>快捷键</h3>
 	<div class="screen-sider-hotkeys"></div>
 </div>
+<div class="webterm-accordion-section">
+	<h3>版务</h3>
+	<div class="screen-sider-power-hotkeys"></div>
+</div>
 <div class="webterm-accordion-section webterm-accordion-toggled">
 	<h3>手势</h3>
 	<div class="screen-sider-gestures"></div>

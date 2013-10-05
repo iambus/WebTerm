@@ -175,3 +175,10 @@ span.selected {
 .screen-sider-multimedia > div.image-loader.image-loading > span {
     display: block;
 }
+.ui-tooltip.image-preview-tooltip {
+    max-width: 1024px;
+}
+.ui-tooltip.image-preview-tooltip img {
+    max-width: 1024px;
+    max-width: 768px;
+}

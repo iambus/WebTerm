@@ -1219,6 +1219,21 @@ class ScreenSider
 		@commands = @div.find('.screen-sider-commands')
 		@jobs = @div.find('.screen-sider-jobs')
 		@locations = @div.find('.screen-sider-locations')
+
+		screen_div = @div.parents('.screen-layout').find('.screen')
+		@multimedia.tooltip
+			items: ".image-loading-complete img"
+			content: ->
+				max_width = $(screen_div).width()
+				max_height = $(screen_div).height()
+				return "<img src='#{@getAttribute 'src'}' style='max-width: #{max_width}px; max-height: #{max_height}px'>"
+			position:
+				my: "right center"
+				at: "left center"
+				collision: "fit"
+				within: screen_div
+			tooltipClass: 'image-preview-tooltip'
+
 	show_images: (urls) ->
 		@multimedia.empty()
 #		current = (img.src for img in @multimedia.find('> img'))
@@ -1231,10 +1246,19 @@ class ScreenSider
 				xhr = new XMLHttpRequest()
 				xhr.open('GET', url, true)
 				xhr.responseType = 'blob'
+				get_filename = ->
+					name = xhr.getResponseHeader('Content-Disposition')?.match(/filename=(\S+)/)?[1]
+					if name?
+						return decodeURIComponent name
 				xhr.onload = ->
 					if @response.size > 0
 						img.attr 'src', window.webkitURL.createObjectURL @response
+						filename = get_filename()
+						if filename?
+							img.attr 'filename', filename
+							img.attr 'title', filename
 						div.removeClass 'image-loading'
+						div.addClass 'image-loading-complete'
 					else
 						div.addClass 'image-loading-error'
 				xhr.addEventListener 'progress', (event) ->
