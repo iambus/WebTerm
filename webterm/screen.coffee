@@ -1337,13 +1337,9 @@ class ScreenSider
 		if @focused_index?
 			@navigate_leave @focused_index
 		else
-			if n > 0
-				@focused_index = -1
-			else if n < 0
-				@focused_index = 0
-			else
-				throw new Error("Internal error: #{n} is invalid")
-		@focused_index = (@focused_index + total + n) % total
+			@focused_index = total
+		range = total + 1
+		@focused_index = (@focused_index + range + n) % range
 		@navigate_at @focused_index
 
 	navigate_at: (n) ->
@@ -1351,16 +1347,12 @@ class ScreenSider
 		if img
 			$(img).mouseenter()
 			$(img).parent().addClass('hover')
-		else
-			throw new Error("Internal error: image not found (index: #{n})?")
 
 	navigate_leave: (n) ->
 		img = @div_images.find('img')[n]
 		if img
 			$(img).mouseleave()
 			$(img).parent().removeClass('hover')
-		else
-			throw new Error("Internal error: image not found (index: #{n})?")
 
 ##################################################
 # Screen
