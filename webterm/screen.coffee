@@ -1245,9 +1245,8 @@ class ScreenSider
 					img.mouseleave()
 
 		@urls = []
-		webterm.accordion @div, 'on', 'show', (accordion, section) =>
-			if @multimedia.parent().is section
-				@render_multimedia @urls
+		@multimedia.parent().on 'show', =>
+			@render_multimedia @urls
 
 		@images = []
 		@div_images.hover ->
