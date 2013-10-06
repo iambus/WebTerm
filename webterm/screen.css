@@ -172,7 +172,7 @@ span.selected {
 .screen-sider-multimedia div.image-loader.hover {
     border: 1px solid orange;
 }
-.screen-sider-multimedia div.image-loader > img {
+.screen-sider-multimedia div.image-loader img {
     width: 100%;
 }
 .screen-sider-multimedia div.image-loader > span {

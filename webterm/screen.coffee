@@ -1220,12 +1220,16 @@ class ScreenSider
 		@jobs = @div.find('.screen-sider-jobs')
 		@locations = @div.find('.screen-sider-locations')
 
+		# multimedia
+
 		@div_images = @multimedia.find('> .screen-sider-images')
 		@div_sounds = @multimedia.find('> .screen-sider-sounds')
 		@div_videos = @multimedia.find('> .screen-sider-videos')
 
+		# images
+
 		screen_div = @div.parents('.screen-layout').find('.screen')
-		@multimedia.tooltip
+		@div_images.tooltip
 			items: ".image-loading-complete img"
 			content: ->
 				max_width = $(screen_div).width()
@@ -1244,13 +1248,37 @@ class ScreenSider
 				ui.tooltip.mouseleave ->
 					img.mouseleave()
 
-		@urls = []
-		@multimedia.parent().on 'show', =>
-			@render_multimedia @urls
-
 		@images = []
 		@div_images.hover ->
 			$(@).find('.hover').removeClass 'hover'
+
+		# context menu
+		@multimedia.contextMenu
+			selector: "div.image-loader, div.sound-loader"
+			callback: (key, options) ->
+				url = @attr 'src'
+				if key == 'open'
+					window.open url
+				else if key == 'copy'
+					webterm.clipboard.put url
+				else if key == 'delete'
+					@remove()
+				else if key == 'fix'
+					@addClass 'sider-fixed'
+				else
+					throw new Error("Not Implemented: #{key}")
+			items:
+				"open": {name: "打开链接", icon: "add"}
+				"copy": {name: "复制链接地址", icon: "copy"}
+				"delete": {name: "删除", icon: "delete"}
+				"fix": {name: "固定", icon: "edit"}
+			zIndex: 3
+
+		# show multimedia
+
+		@urls = []
+		@multimedia.parent().on 'show', =>
+			@render_multimedia @urls
 
 	update_multimedia: (urls) ->
 		@urls = urls
@@ -1267,14 +1295,16 @@ class ScreenSider
 		if _.isEqual(@images, urls)
 			return
 		@images = urls
-		@div_images.empty()
+		@div_images.children(':not(.sider-fixed)').remove()
+		fixed = ($(div).attr('src') for div in @div_images.children('div.image-loader'))
 		for url in urls
-			@show_image url
+			if url not in fixed
+				@show_image url
 		@focused_index = null
 		return
 
 	show_image: (url) ->
-		div = $("<div class='image-loader image-loading'><img/><span class='image-status'>Loading...</span></div>").appendTo @div_images
+		div = $("<div class='image-loader image-loading' src='#{url}'><a href='#{url}' target='_blank'><img/></a><span class='image-status'>Loading...</span></div>").appendTo @div_images
 		img = div.find('img')
 		span = div.find('span')
 		xhr = new XMLHttpRequest()
@@ -1312,13 +1342,13 @@ class ScreenSider
 		playing = []
 		for div in @div_sounds.children('div.sound-loader')
 			audio = $(div).children('audio')[0]
-			if audio.paused
-				$(div).remove()
+			if $(div).hasClass('sider-fixed') or not audio.paused
+				playing.push $(div).attr 'src'
 			else
-				playing.push audio.currentSrc
+				$(div).remove()
 		for url in urls
 			if url not in playing
-				div = $("""<div class='sound-loader'><audio controls="controls" title="#{url}"><source src="#{url}"></audio></div>""").appendTo @div_sounds
+				div = $("""<div class='sound-loader' src='#{url}'><audio controls="controls" title="#{url}"><source src="#{url}"></audio></div>""").appendTo @div_sounds
 
 	navigate_up: ->
 		@navigate_of -1
